@@ -1,6 +1,6 @@
 # First PR Practice
 
-This is a small practice repo for shiping my first pull request.
+This is a small practice repo for shipping my first pull request.
 
 ## About
 
