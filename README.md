@@ -9,5 +9,5 @@ committing, and opening a pull request.
 
 ## Remote control
 
-This change was made from a remote Claude Code session to confirm that
+    This change was made from a remote Claude Code session to confirm that
 kicking off work from outside the terminal (web/mobile) works end to end.
