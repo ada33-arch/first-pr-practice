@@ -1,6 +1,7 @@
-# Container image that runs your code. Alpine keeps the CI image build fast
-# (the docs' debian:9.5-slim example is long EOL).
-FROM alpine:3.20
+# Container image that runs your code. debian:12-slim is the modern successor
+# of the docs' long-EOL debian:9.5-slim example; glibc-based, so anything that
+# misbehaves on musl (alpine) works here at the cost of a larger image.
+FROM debian:12-slim
 
 COPY entrypoint.sh /entrypoint.sh
 

@@ -21,10 +21,15 @@ runs:
       with:
         who: ${{ inputs.who }}
 
+    # Values flow in via env: so they arrive as data, never spliced into the
+    # script text — the hardening GitHub's docs recommend against expression
+    # injection (a fork-controlled value inside ${{ }} in run: is code execution).
     - name: Assert the greeting
       shell: bash
+      env:
+        ACTUAL: ${{ steps.demo.outputs.greeting }}
+        WHO: ${{ inputs.who }}
       run: |
-        actual='${{ steps.demo.outputs.greeting }}'
-        expected='hello, ${{ inputs.who }}!'
-        echo "composite: actual=$actual expected=$expected"
-        test "$actual" = "$expected"
+        expected="hello, ${WHO}!"
+        echo "composite: actual=$ACTUAL expected=$expected"
+        test "$ACTUAL" = "$expected"
