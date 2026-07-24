@@ -20,3 +20,8 @@ jobs:
       - name: Use the composite's output
         run: |
           echo "composite returned: ${{ steps.greet.outputs.greeting }}"
+
+      - name: Run the docker demo action
+        uses: ./.github/actions/docker-demo
+        with:
+          greeting: 'hello'

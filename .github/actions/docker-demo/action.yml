@@ -1,0 +1,13 @@
+name: 'Docker Demo'
+description: 'Docker container action that echoes GITHUB_SHA and its args (Linux runners only)'
+inputs:
+  greeting:
+    description: 'First argument passed to the entrypoint'
+    required: false
+    default: 'hello'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.greeting }}
+    - 'from-docker'
