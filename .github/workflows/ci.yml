@@ -11,13 +11,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Run the lifecycle demo action
-        id: demo
-        uses: ./.github/actions/lifecycle-demo
+      - name: Greet and check via composite action
+        id: greet
+        uses: ./.github/actions/greet-and-check
         with:
           who: 'first-pr-practice'
 
-      - name: Use the action's output
+      - name: Use the composite's output
         run: |
-          echo "the action said: ${{ steps.demo.outputs.greeting }}"
-          test "${{ steps.demo.outputs.greeting }}" = "hello, first-pr-practice!"
+          echo "composite returned: ${{ steps.greet.outputs.greeting }}"
