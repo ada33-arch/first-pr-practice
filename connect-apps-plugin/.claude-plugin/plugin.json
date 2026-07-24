@@ -1,0 +1,8 @@
+{
+  "name": "connect-apps",
+  "version": "0.1.0",
+  "description": "Guided setup for connecting apps and services to Claude Code via MCP servers and connectors.",
+  "author": {
+    "name": "ada33-arch"
+  }
+}
