@@ -1,0 +1,18 @@
+name: 'Lifecycle Demo'
+description: 'Minimal JS action demonstrating the pre/main/post lifecycle with no dependencies'
+inputs:
+  who:
+    description: 'Who to greet'
+    required: false
+    default: 'world'
+outputs:
+  greeting:
+    description: 'The greeting produced by the main step'
+runs:
+  using: 'node24'
+  # pre only runs when the action is used from a published repo reference
+  # (owner/repo@ref). For local `uses: ./...` actions the runner resolves
+  # pre-steps before checkout, so it is skipped — post still runs.
+  pre: 'setup.js'
+  main: 'index.js'
+  post: 'cleanup.js'

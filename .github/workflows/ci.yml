@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lifecycle-demo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run the lifecycle demo action
+        id: demo
+        uses: ./.github/actions/lifecycle-demo
+        with:
+          who: 'first-pr-practice'
+
+      - name: Use the action's output
+        run: |
+          echo "the action said: ${{ steps.demo.outputs.greeting }}"
+          test "${{ steps.demo.outputs.greeting }}" = "hello, first-pr-practice!"
