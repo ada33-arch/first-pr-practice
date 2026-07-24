@@ -1,5 +1,6 @@
 ---
 description: Walk through connecting apps (MCP servers / connectors) to Claude Code
+allowed-tools: Bash(claude mcp list), Bash(claude mcp list:*)
 ---
 
 You are running the connect-apps setup wizard. Guide the user through
