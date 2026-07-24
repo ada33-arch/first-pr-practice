@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lifecycle-demo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Greet and check via composite action
+        id: greet
+        uses: ./.github/actions/greet-and-check
+        with:
+          who: 'first-pr-practice'
+
+      - name: Use the composite's output
+        run: |
+          echo "composite returned: ${{ steps.greet.outputs.greeting }}"
+
+      - name: Run the docker demo action
+        uses: ./.github/actions/docker-demo
+        with:
+          greeting: 'hello'

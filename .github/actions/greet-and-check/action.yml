@@ -1,0 +1,30 @@
+name: 'Greet and Check'
+description: 'Composite action that runs the lifecycle-demo JS action and asserts its greeting output'
+inputs:
+  who:
+    description: 'Who to greet'
+    required: false
+    default: 'world'
+outputs:
+  greeting:
+    description: 'The greeting produced by lifecycle-demo'
+    value: ${{ steps.demo.outputs.greeting }}
+runs:
+  using: 'composite'
+  steps:
+    # Nested local reference: resolved against the checked-out workspace,
+    # so the caller must have run actions/checkout first. Composite actions
+    # have no pre/post support — inputs are wired explicitly, not INPUT_* vars.
+    - name: Run the lifecycle demo action
+      id: demo
+      uses: ./.github/actions/lifecycle-demo
+      with:
+        who: ${{ inputs.who }}
+
+    - name: Assert the greeting
+      shell: bash
+      run: |
+        actual='${{ steps.demo.outputs.greeting }}'
+        expected='hello, ${{ inputs.who }}!'
+        echo "composite: actual=$actual expected=$expected"
+        test "$actual" = "$expected"
