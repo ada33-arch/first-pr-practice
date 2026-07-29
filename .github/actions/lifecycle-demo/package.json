@@ -1,0 +1,4 @@
+{
+  "//": "Scopes these action scripts to CommonJS. The repo root sets \"type\": \"module\" for the Agent SDK, and Node applies the nearest parent package.json to every .js file — without this, the runner parses index.js/setup.js/cleanup.js as ES modules and their require() calls throw.",
+  "type": "commonjs"
+}
