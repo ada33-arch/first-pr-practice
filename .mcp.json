@@ -3,6 +3,10 @@
     "github": {
       "type": "http",
       "url": "https://api.githubcopilot.com/mcp/"
+    },
+    "graphify": {
+      "type": "http",
+      "url": "https://api.graphify.com/mcp"
     }
   }
 }
