@@ -18,7 +18,7 @@ A practice repository for the GitHub workflow — cloning, branching, committing
 - `scripts/slack-upload.sh` — uploads a file to Slack via the three-step external-upload flow
 - `connect-apps-plugin/` — a Claude Code plugin providing `/connect-apps:setup`
 - `.claude/skills/ui-ux-pro-max/` — UI/UX design-guidance skill (definition only; the `search.py` CLI and CSV data it references are not vendored here)
-- `.mcp.json` — configures the GitHub MCP server for this repo
+- `.mcp.json` — HTTP MCP servers wired up for this repo: `github` and `graphify`
 
 ## Commands
 
