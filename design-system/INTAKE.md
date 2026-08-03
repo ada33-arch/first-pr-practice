@@ -87,7 +87,8 @@ One primary action per document. A second competing action halves both.
 
 ### 5. What imagery do you actually have?
 
-> *Photography · Product screenshots · Illustration · Logos only · Nothing yet*
+> *Photography · Upload my own · Find one for me · Product screenshots ·
+> Illustration · Logos only · Nothing yet*
 
 **Decides: media treatment — and this is the question most often skipped, then
 regretted.**
@@ -95,10 +96,16 @@ regretted.**
 | Have | Use |
 |---|---|
 | Photography | `.media--notched` / `.media--circle`, accent wash on section covers |
+| **Upload my own** | Drop it into `picker.html` and see it in all four house treatments instantly. Read in-browser; nothing is uploaded. |
+| **Find one for me** | The picker builds a search brief from your other answers and links to free-licence libraries. |
 | Product screenshots | `.device--phone` / `.device--browser` with `.float-card` |
 | Illustration | Flat vector on `.tint-card` grounds; no photo masks |
 | Logos only | `.trustbar`, big type, `.deco` geometry carrying the visual load |
 | Nothing yet | Type-led layout + geometry. **Do not** design around placeholders you cannot fill. |
+
+Either photo route adds a **sourcing line** to the spec — rights confirmation for
+your own photo, licence and attribution for sourced stock. Full rules, size
+floors and treatment guidance are in [`PHOTOS.md`](PHOTOS.md).
 
 ---
 

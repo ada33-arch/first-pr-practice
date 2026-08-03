@@ -18,6 +18,7 @@ design-system/
 ├── INTAKE.md              ← START HERE — six questions asked before any design
 ├── DESIGN-BRIEF.md        ← hand this to any designer or AI tool
 ├── FAVORITES.md           ← the web-landing reference set + its extra rules
+├── PHOTOS.md              ← sourcing, licensing and photo treatment rules
 ├── tokens/
 │   ├── tokens.json        ← platform-agnostic tokens (Figma, Style Dictionary, builds)
 │   └── tokens.css         ← CSS custom properties + the nine accent themes
@@ -48,6 +49,25 @@ the exact classes to compose from, the one doc section to read — and says
 explicitly not to re-read or regenerate the rest of the system. That keeps each
 new page or deck cheap to produce and stops parallel CSS drifting away from the
 house style.
+
+### Photos
+
+Question 5 offers two routes beyond "I already have some":
+
+- **Upload my own** — drop a file into the picker and it renders immediately in
+  all four house treatments (notched, circle, accent wash, dark scrim with type
+  over it), in your accent theme. The file is read with `FileReader` and never
+  leaves the browser. The picker flags it if the resolution is below the floor
+  for the use, or if the crop is wrong for a hero.
+- **Find one for me** — the picker builds a search brief from your other answers
+  (subject from what you're making, mood from what the audience should feel, plus
+  the composition constraints the system needs — 16:9, negative space for the
+  headline, no baked-in text) and links straight into free-licence libraries.
+
+Sourced imagery goes through free-licence libraries or bought stock only. Pulling
+images off a search results page, a competitor's site or a social feed is how a
+takedown notice ends up with the client. [`PHOTOS.md`](PHOTOS.md) has the
+licensing rules, the resolution floors, and the treatment rules.
 
 ### A worked example
 

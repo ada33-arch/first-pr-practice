@@ -55,6 +55,98 @@
 
   <form id="form" class="stack stack-5"></form>
 
+  <!-- Photo module. Appears only when the imagery answer needs one. -->
+  <section id="photo" class="card q stack stack-5" hidden style="border:1px solid var(--ink-100);">
+
+    <div class="q__head">
+      <span class="q__n">05<span style="font-size:.6em">a</span></span>
+      <h2 class="h3" id="photoTitle" style="padding:0;">Your photo</h2>
+    </div>
+
+    <!-- UPLOAD MODE -->
+    <div id="modeUpload" hidden class="stack stack-5">
+      <p class="small measure">
+        Drop an image in and see it in the house treatments straight away. Nothing
+        is uploaded anywhere — the file is read in your browser and never leaves it.
+      </p>
+
+      <label id="drop" class="stack stack-2" style="display:grid;place-items:center;text-align:center;
+             padding:var(--space-8);border:2px dashed var(--ink-200);border-radius:var(--radius-lg);
+             background:var(--surface-muted);cursor:pointer;">
+        <span class="icon-chip" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 16V4m0 0L7 9m5-5 5 5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>
+          </svg>
+        </span>
+        <span class="h4">Drop a photo, or click to choose</span>
+        <span class="caption">JPG, PNG or WebP · landscape works best for heroes</span>
+        <input type="file" id="file" accept="image/*" hidden>
+      </label>
+
+      <div id="previews" hidden class="stack stack-4">
+        <div class="bar">
+          <span class="eyebrow">In your treatments</span>
+          <span class="caption" id="dims"></span>
+        </div>
+        <div class="grid grid--4">
+          <div class="stack stack-2">
+            <div class="media media--notched" style="aspect-ratio:4/3;"><img id="p1" alt="Preview, notched mask"></div>
+            <span class="caption">.media--notched</span>
+          </div>
+          <div class="stack stack-2">
+            <div class="media media--circle"><img id="p2" alt="Preview, circular mask"></div>
+            <span class="caption">.media--circle</span>
+          </div>
+          <div class="stack stack-2">
+            <div class="media media--xl media--wash" style="aspect-ratio:4/3;"><img id="p3" alt="Preview, accent wash"></div>
+            <span class="caption">.media--wash</span>
+          </div>
+          <div class="stack stack-2">
+            <div class="media media--xl media--dim" style="aspect-ratio:4/3;position:relative;">
+              <img id="p4" alt="Preview, dark scrim">
+              <span style="position:absolute;left:8%;bottom:10%;z-index:2;color:#fff;font-family:var(--font-display);font-weight:800;font-size:1.1rem;">Headline here</span>
+            </div>
+            <span class="caption">.media--dim + type</span>
+          </div>
+        </div>
+        <p class="small" id="advice"></p>
+      </div>
+    </div>
+
+    <!-- SEARCH MODE -->
+    <div id="modeSearch" hidden class="stack stack-5">
+      <p class="small measure">
+        Here is the search brief your other answers produce. Paste it into a
+        free-licence library — the three below all permit commercial use — then
+        drop the result back into the upload box above to see it in treatment.
+      </p>
+
+      <div class="stack stack-2">
+        <span class="eyebrow">Search query</span>
+        <div class="card card--flat"><code class="spec" id="query" style="font-size:.875rem;"></code></div>
+        <div class="bar">
+          <button class="btn btn--primary" type="button" id="copyQ">Copy query</button>
+          <a class="btn btn--outline" id="lUnsplash" target="_blank" rel="noopener">Unsplash</a>
+          <a class="btn btn--outline" id="lPexels"   target="_blank" rel="noopener">Pexels</a>
+          <a class="btn btn--outline" id="lPixabay"  target="_blank" rel="noopener">Pixabay</a>
+        </div>
+      </div>
+
+      <div class="card card--flat stack stack-3">
+        <span class="eyebrow">Before you use it</span>
+        <ul class="checklist small">
+          <li>Use only these free-licence libraries, or stock you have actually bought. Do not pull images off a search engine, a competitor's site, or a social feed — those are someone's copyright, and a takedown lands on the client.</li>
+          <li>Check the licence on the individual photo, not the site. A few are editorial-only and cannot be used commercially.</li>
+          <li>Recognisable faces and private property need a model or property release for advertising use.</li>
+          <li>Record the source URL, photographer and licence next to the asset. <code>PHOTOS.md</code> has the line to keep.</li>
+          <li>Never use an AI-upscaled or watermark-removed version of a paid preview.</li>
+        </ul>
+      </div>
+    </div>
+
+    <button class="btn btn--ghost" type="button" id="skipPhoto">Skip — I'll sort imagery later</button>
+  </section>
+
   <div class="out">
     <div class="card card--raised stack stack-4" style="margin-top: var(--space-8);">
       <div class="bar">
@@ -122,6 +214,8 @@ const Q = [
   { id:'media', q:'What imagery do you actually have?',
     opts:[
       ['Photography',         {media:'masked photos (.media--notched / .media--circle), accent wash on section covers'}],
+      ['Upload my own',       {media:'your own photo, masked to the house treatments', photo:'upload'}],
+      ['Find one for me',     {media:'licensed stock sourced to brief, masked to the house treatments', photo:'search'}],
       ['Product screenshots', {media:'device frames (.device--phone / .device--browser) with floating stat cards'}],
       ['Illustration',        {media:'flat vector on tinted card grounds; no photo masks'}],
       ['Logos only',          {media:'trust bar, big type, geometric ornament carrying the visual load'}],
@@ -182,6 +276,8 @@ function render() {
 
   if (accent) document.documentElement.className = 'theme-' + (A.feel.accent);
 
+  renderPhoto();
+
   if (n === 0) return;
 
   const css = A.kind?.layer === 'web'
@@ -195,11 +291,19 @@ function render() {
   // Media answer adds only the classes it actually needs.
   const mediaCls = {
     'Photography':         '.media--notched .media--circle .media--wash .avatar',
+    'Upload my own':       '.media--notched .media--circle .media--wash .media--dim',
+    'Find one for me':     '.media--notched .media--circle .media--wash .media--dim',
     'Product screenshots': '.device--browser .device--phone .device__screen .float-card',
     'Illustration':        '.tint-card .media--xl',
     'Logos only':          '.trustbar .deco-circle .deco-dots',
     'Nothing yet':         '.deco-circle .deco-dots .offset-block',
   }[A.media?.label] || '';
+
+  const photoLine = A.media?.photo === 'search'
+    ? `\n<b>Sourcing:</b> free-licence stock only (Unsplash / Pexels / Pixabay) or\n  bought stock. Record source, photographer and licence — see PHOTOS.md.`
+    : A.media?.photo === 'upload'
+      ? `\n<b>Sourcing:</b> client-supplied. Confirm they hold the rights and that any\n  recognisable person has signed a release before it goes live.`
+      : '';
 
   document.getElementById('spec').innerHTML =
 `<b>Deliverable:</b> ${A.kind?.label || '—'}
@@ -208,7 +312,7 @@ function render() {
 <b>Brand:</b> ${A.brand?.brand || '—'}
 <b>Ground:</b> ${A.feel?.ground || '—'}
 <b>Primary action:</b> ${A.action?.cta || '—'}
-<b>Imagery:</b> ${A.media?.media || '—'}
+<b>Imagery:</b> ${A.media?.media || '—'}${photoLine}
 <b>Mode:</b> ${mode || '—'}
 <b>Sections:</b> ${A.kind?.sections || '—'}
 
@@ -234,6 +338,99 @@ ${mediaCls ? '  ' + mediaCls.split(' ').join('\n  ') : ''}
 headline; one two-tone headline at the top; 20px card radius; charts use
 the accent as series 1 and greys after.${note}`;
 }
+
+/* ---------- Photo module ------------------------------------------------- */
+
+const SUBJECT = {
+  'Presentation / deck': 'business team meeting, boardroom, people working',
+  'Pitch deck':          'founders working, startup team, whiteboard session',
+  'Report / whitepaper': 'city skyline, office architecture, analyst at desk',
+  'Landing page':        'team at laptops, modern workspace, product in use',
+  'Product site':        'person using phone, clean desk setup, product in hand',
+  'Portfolio':           'creative professional at work, studio desk, portrait',
+};
+const MOOD = {
+  'Trusted, established': 'natural light, neutral muted tones, calm, unposed',
+  'Serious about money':  'cool tones, minimal, clean lines, low clutter',
+  'Energised, warm':      'warm golden light, candid, movement, optimistic',
+  'Modern, technical':    'cool high-key light, minimal, lots of white',
+  'Calm, sustainable':    'soft daylight, greenery, airy, muted greens',
+  'Bold, unmissable':     'high contrast, saturated, graphic, strong shapes',
+};
+
+function buildQuery() {
+  const subj = SUBJECT[A.kind?.label] || 'people at work';
+  const mood = MOOD[A.feel?.label] || 'natural light, neutral tones';
+  const side = A.kind?.layer === 'web' ? 'right' : 'left';
+  return `${subj} — ${mood}, landscape 16:9, negative space on the ${side} for a headline, no text or logos in frame, no heavy filter`;
+}
+
+const photoEl = document.getElementById('photo');
+
+function renderPhoto() {
+  const mode = A.media?.photo;
+  photoEl.hidden = !mode;
+  if (!mode) return;
+  document.getElementById('modeUpload').hidden = mode !== 'upload';
+  document.getElementById('modeSearch').hidden = mode !== 'search';
+  document.getElementById('photoTitle').textContent =
+    mode === 'upload' ? 'Your photo' : 'Finding the right photo';
+
+  if (mode === 'search') {
+    const q = buildQuery();
+    document.getElementById('query').textContent = q;
+    // Stock search engines return far better results for a short lead phrase
+    // than for the full comma-separated brief — keep the brief for the human,
+    // send only the first clause to the URL.
+    const bare = encodeURIComponent(q.split('—')[0].split(',')[0].trim());
+    document.getElementById('lUnsplash').href = `https://unsplash.com/s/photos/${bare}`;
+    document.getElementById('lPexels').href   = `https://www.pexels.com/search/${bare}/`;
+    document.getElementById('lPixabay').href  = `https://pixabay.com/images/search/${bare}/`;
+  }
+}
+
+function showImage(src, w, h) {
+  ['p1','p2','p3','p4'].forEach(id => { document.getElementById(id).src = src; });
+  document.getElementById('previews').hidden = false;
+  document.getElementById('dims').textContent = `${w} × ${h}px`;
+
+  const notes = [];
+  if (w < 1600) notes.push(`At ${w}px wide this will soften on a full-bleed hero — 1600px+ is the floor, 2400px for a projected slide.`);
+  if (h > w)    notes.push('Portrait crop: use it in .media--circle or a side panel, not as a 16:9 hero.');
+  if (w / h > 2.2) notes.push('Very wide crop: good for a band, too letterboxed for a card.');
+  notes.push('Sitting type over it? Use .media--dim so the scrim carries the contrast — never lighten the type instead.');
+  document.getElementById('advice').textContent = notes.join(' ');
+}
+
+const drop = document.getElementById('drop');
+const fileInput = document.getElementById('file');
+
+function readFile(f) {
+  if (!f || !f.type.startsWith('image/')) return;
+  const r = new FileReader();
+  r.onload = e => {
+    const img = new Image();
+    img.onload = () => showImage(e.target.result, img.naturalWidth, img.naturalHeight);
+    img.src = e.target.result;
+  };
+  r.readAsDataURL(f);                    // stays in the browser; nothing is sent anywhere
+}
+
+fileInput.onchange = e => readFile(e.target.files[0]);
+['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, e => {
+  e.preventDefault(); drop.style.borderColor = 'var(--accent-500)';
+}));
+['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => {
+  e.preventDefault(); drop.style.borderColor = 'var(--ink-200)';
+}));
+drop.addEventListener('drop', e => readFile(e.dataTransfer.files[0]));
+
+document.getElementById('copyQ').onclick = () => {
+  navigator.clipboard?.writeText(document.getElementById('query').textContent);
+  const b = document.getElementById('copyQ');
+  b.textContent = 'Copied'; setTimeout(() => b.textContent = 'Copy query', 1400);
+};
+document.getElementById('skipPhoto').onclick = () => { photoEl.hidden = true; };
 
 document.getElementById('copy').onclick = () => {
   const t = document.getElementById('spec').innerText;
