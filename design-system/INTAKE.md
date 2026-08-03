@@ -63,6 +63,18 @@ go one step away from it.
 - **Flexible** — use Q2's recommendation, show the brand colour as an alternate.
 - **None** — Q2 decides outright.
 
+Answering "locked" or "flexible" opens **3a — your colours** in the picker. Type
+or pick any hex and it generates the full 50→700 ramp, derives the gradient, and
+checks contrast, applying it to the page live so you can see it before you commit.
+
+The contrast check matters more than it sounds. A custom accent is the most
+common way this system gets broken: a mid-tone brand colour often clears 4.5:1
+against *neither* white nor near-black, which means no text can legally sit on
+it. The picker says so and tells you to use it for fills and ornament only.
+
+Output is a `:root` block to paste into the **project's** stylesheet.
+`tokens.css` is never edited for one project.
+
 Whichever applies, one accent only. A brand with two colours gets the dominant
 one as the accent and the second demoted to a neutral support tint.
 
@@ -119,6 +131,47 @@ floors and treatment guidance are in [`PHOTOS.md`](PHOTOS.md).
 - **Projected** → raise contrast, no hairlines under 2px, no body text under 15pt.
 - **Printed** → light ground, CMYK-safe accent, hairlines at 0.75pt minimum.
 - **Both** → build light first, then apply `.on-dark`; never design them separately.
+
+---
+
+---
+
+## 6a. Anything else to hand? *(optional)*
+
+> *Logo · Copy / content · Existing material*
+
+Three separate slots in the picker, on purpose. A combined "upload your stuff"
+box loses what makes each one different.
+
+### Logo
+
+Previewed on **white, on ink, and on your accent** simultaneously — because the
+usual failure is a logo that looks fine in the navbar and vanishes in the dark
+footer. The picker flags:
+
+- **JPG** — no transparency, so it sits in a white box on every dark surface.
+  SVG, or PNG with an alpha channel.
+- **Aspect** — a wide wordmark works in the navbar and slide furniture but not in
+  a square avatar slot; a square mark is the opposite. Most brands need both.
+- **Resolution** — under 400px raster will blur on retina and badly when
+  projected. 800px+, or SVG.
+- **A light (knockout) variant** — if the logo disappears on the ink or accent
+  preview, you need one. Most brands have it and forget to send it.
+
+### Copy / content
+
+Paste the real words or drop a `.txt` / `.md`. **Designing against real copy
+instead of lorem ipsum is the cheapest quality win available** — placeholder text
+hides every length problem, and length problems are what break layouts.
+
+The picker flags lines over 62 characters (the body measure), and headings over
+~45 characters, which stop working as display lines at this weight and tracking.
+
+### Existing material
+
+Current site, old deck, brand guidelines. Filenames are listed only — nothing is
+read or uploaded. This exists so the material lands in the project folder instead
+of a chat thread.
 
 ---
 

@@ -29,12 +29,16 @@ design-system/
 │   └── web.css            ← gradient heroes, device mockups, rails, pricing, FAQ
 ├── powerpoint/
 │   └── SPEC.md            ← pt sizes and inch positions for a 13.333" × 7.5" slide
-└── examples/
-    ├── picker.html        ← the intake questions, interactive → outputs a scope
-    ├── index.html         ← corporate web page (deck layer)
-    ├── deck.html          ← 14-slide deck
-    ├── landing.html       ← SaaS landing page (web layer)
-    └── portfolio.html     ← built from a real intake run (see below)
+├── examples/              ← reference demos of the system; these don't change
+│   ├── picker.html        ← the intake, interactive → outputs a scope
+│   ├── index.html         ← corporate web page (deck layer)
+│   ├── deck.html          ← 14-slide deck
+│   └── landing.html       ← SaaS landing page (web layer)
+└── projects/              ← one folder per request — everything commissioned
+    ├── README.md          ← the naming and asset-folder convention
+    └── 001-portfolio-marin/
+        ├── SPEC.md        ← intake answers + the scope they produced
+        └── index.html
 ```
 
 ## Starting a new design
@@ -69,9 +73,26 @@ images off a search results page, a competitor's site or a social feed is how a
 takedown notice ends up with the client. [`PHOTOS.md`](PHOTOS.md) has the
 licensing rules, the resolution floors, and the treatment rules.
 
+### Colours and assets
+
+Say you have brand colours and the picker opens a **colour module**: type any hex
+and it generates the full 50→700 ramp, derives the gradient, checks contrast, and
+applies it to the page live. It outputs a `:root` block for the **project's**
+stylesheet — `tokens.css` is never edited for one project.
+
+The contrast check is the point. A mid-tone brand colour often clears 4.5:1
+against neither white nor near-black, meaning no text can sit on it at all. Better
+to learn that in the picker than in review.
+
+There's also an optional **assets module** with three separate slots — logo, copy,
+and existing material. Separate because the rules differ: a logo is previewed on
+white, ink *and* accent at once (the usual failure is one that looks fine in the
+navbar and vanishes in the dark footer), copy is checked against the 62-character
+body measure, and reference files are listed by name only.
+
 ### A worked example
 
-`examples/portfolio.html` was built from a real intake run — *portfolio site ·
+`projects/001-portfolio-marin/` was built from a real intake run — *portfolio site ·
 trusted/established · buy or sign up · illustration* — and shows what the process
 catches. The portfolio archetype normally opens on a **portrait hero with label
 pins**, but the imagery answer was *illustration, no photography*. The imagery

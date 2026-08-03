@@ -55,6 +55,91 @@
 
   <form id="form" class="stack stack-5"></form>
 
+  <!-- Colour module. Appears once you say you have brand colours. -->
+  <section id="colour" class="card q stack stack-5" hidden style="border:1px solid var(--ink-100);">
+    <div class="q__head">
+      <span class="q__n">03<span style="font-size:.6em">a</span></span>
+      <h2 class="h3" style="padding:0;">Your colours</h2>
+    </div>
+
+    <p class="small measure">
+      Pick your accent and the whole system re-themes from it — the ramp, the
+      gradient, buttons, charts, icon chips and section panels all derive from
+      this one value. Changes apply to this page live so you can see them.
+    </p>
+
+    <div class="grid grid--2">
+      <div class="stack stack-4">
+        <div class="stack stack-2">
+          <span class="eyebrow">Accent</span>
+          <div class="bar">
+            <input type="color" id="cAccent" value="#4059F0"
+                   style="width:52px;height:44px;border:1px solid var(--ink-200);border-radius:var(--radius-md);background:none;cursor:pointer;padding:2px;">
+            <input type="text" id="cHex" value="#4059F0" spellcheck="false" aria-label="Accent hex"
+                   style="font-family:var(--font-mono);font-size:var(--fs-small);padding:.65rem .9rem;
+                          border:1px solid var(--ink-200);border-radius:var(--radius-md);width:120px;">
+            <span class="tag" id="cContrast">—</span>
+          </div>
+          <p class="caption" id="cContrastNote"></p>
+        </div>
+
+        <div class="stack stack-2">
+          <span class="eyebrow">Generated ramp</span>
+          <div class="bar" id="cRamp" style="gap:0;border-radius:var(--radius-md);overflow:hidden;"></div>
+          <p class="caption">50 · 100 · 300 · 500 · 600 · 700 — derived from your accent.</p>
+        </div>
+
+        <div class="stack stack-2">
+          <span class="eyebrow">Ground</span>
+          <div class="opts" id="cGround">
+            <button class="opt" type="button" data-g="#FFFFFF" aria-pressed="true">White</button>
+            <button class="opt" type="button" data-g="#F7F8FA" aria-pressed="false">Off-white</button>
+            <button class="opt" type="button" data-g="#FAF6EC" aria-pressed="false">Cream</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="stack stack-4">
+        <div class="stack stack-2">
+          <span class="eyebrow">Gradient</span>
+          <div class="bar">
+            <input type="color" id="cG1" value="#2E42CC" aria-label="Gradient start"
+                   style="width:52px;height:44px;border:1px solid var(--ink-200);border-radius:var(--radius-md);background:none;cursor:pointer;padding:2px;">
+            <input type="color" id="cG2" value="#93A5FF" aria-label="Gradient end"
+                   style="width:52px;height:44px;border:1px solid var(--ink-200);border-radius:var(--radius-md);background:none;cursor:pointer;padding:2px;">
+            <button class="btn btn--ghost" type="button" id="cGReset">Reset to ramp</button>
+          </div>
+          <div id="cGPreview" style="height:64px;border-radius:var(--radius-md);"></div>
+          <p class="caption">Heroes and CTA bands only. Keep both stops inside one hue — two hues reads as two brands.</p>
+        </div>
+
+        <div class="stack stack-2">
+          <span class="eyebrow">In context</span>
+          <div class="card card--flat stack stack-3">
+            <span class="eyebrow">Section label</span>
+            <h3 class="h3">A headline with <em>emphasis</em></h3>
+            <div class="bar">
+              <span class="btn btn--primary">Primary</span>
+              <span class="btn btn--outline">Outline</span>
+              <span class="tag tag--solid">Tag</span>
+            </div>
+            <div class="meter"><div class="meter__fill" style="width:72%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stack stack-2">
+      <span class="eyebrow">CSS to keep</span>
+      <div class="card card--flat"><code class="spec" id="cCss" style="font-size:.8125rem;"></code></div>
+      <div class="bar">
+        <button class="btn btn--primary" type="button" id="cCopy">Copy CSS</button>
+        <button class="btn btn--ghost" type="button" id="cRevert">Revert to preset</button>
+      </div>
+      <p class="caption">Paste into your project's stylesheet, after <code>tokens.css</code>. Do not edit <code>tokens.css</code> itself.</p>
+    </div>
+  </section>
+
   <!-- Photo module. Appears only when the imagery answer needs one. -->
   <section id="photo" class="card q stack stack-5" hidden style="border:1px solid var(--ink-100);">
 
@@ -145,6 +230,100 @@
     </div>
 
     <button class="btn btn--ghost" type="button" id="skipPhoto">Skip — I'll sort imagery later</button>
+  </section>
+
+  <!-- Assets module. Logo, copy and reference files — kept separate on purpose. -->
+  <section id="assets" class="card q stack stack-5" hidden style="border:1px solid var(--ink-100);">
+    <div class="q__head">
+      <span class="q__n">06<span style="font-size:.6em">a</span></span>
+      <h2 class="h3" style="padding:0;">What else do you have?</h2>
+    </div>
+    <p class="small measure">
+      Optional, and each kind is kept in its own place — a logo has different
+      rules from a photo, and copy has different rules again. Everything is read
+      in your browser; nothing is uploaded.
+    </p>
+
+    <!-- LOGO -->
+    <div class="stack stack-4">
+      <span class="eyebrow">Logo</span>
+      <label id="dropLogo" class="stack stack-2" style="display:grid;place-items:center;text-align:center;
+             padding:var(--space-6);border:2px dashed var(--ink-200);border-radius:var(--radius-lg);
+             background:var(--surface-muted);cursor:pointer;">
+        <span class="h4">Drop your logo, or click to choose</span>
+        <span class="caption">SVG best · PNG with transparency fine · JPG will show a white box</span>
+        <input type="file" id="fileLogo" accept="image/*,.svg" hidden>
+      </label>
+
+      <div id="logoOut" hidden class="stack stack-4">
+        <div class="grid grid--3">
+          <div class="stack stack-2">
+            <div class="card" style="padding:var(--space-4);"><img id="logoLight" alt="Logo on white" style="max-height:44px;width:auto;"></div>
+            <span class="caption">On white — navbar / slide furniture</span>
+          </div>
+          <div class="stack stack-2">
+            <div class="card card--dark" style="padding:var(--space-4);"><img id="logoDark" alt="Logo on ink" style="max-height:44px;width:auto;"></div>
+            <span class="caption">On ink — footer / dark slide</span>
+          </div>
+          <div class="stack stack-2">
+            <div class="card card--accent" style="padding:var(--space-4);"><img id="logoAccent" alt="Logo on accent" style="max-height:44px;width:auto;"></div>
+            <span class="caption">On accent — CTA band / section panel</span>
+          </div>
+        </div>
+        <div class="card card--flat stack stack-2">
+          <span class="eyebrow">Checks</span>
+          <p class="small" id="logoNotes"></p>
+        </div>
+      </div>
+    </div>
+
+    <hr class="rule--long">
+
+    <!-- CONTENT -->
+    <div class="stack stack-4">
+      <span class="eyebrow">Copy / content</span>
+      <p class="small measure">
+        Paste the real words, or drop a <code>.txt</code> / <code>.md</code> file.
+        Designing against real copy instead of lorem ipsum is the single cheapest
+        quality win available — placeholder text hides every length problem.
+      </p>
+      <label id="dropCopy" style="display:block;">
+        <textarea id="copyText" rows="6" placeholder="Paste headlines, body copy, section titles…"
+          style="width:100%;font:inherit;font-size:var(--fs-small);padding:var(--space-4);
+                 border:1px solid var(--ink-200);border-radius:var(--radius-md);resize:vertical;"></textarea>
+        <input type="file" id="fileCopy" accept=".txt,.md,text/*" hidden>
+      </label>
+      <div class="bar">
+        <button class="btn btn--outline" type="button" id="pickCopy">Or drop a .txt / .md file</button>
+        <span class="caption" id="copyStats"></span>
+      </div>
+      <p class="small" id="copyNotes"></p>
+    </div>
+
+    <hr class="rule--long">
+
+    <!-- REFERENCE -->
+    <div class="stack stack-3">
+      <span class="eyebrow">Existing material</span>
+      <p class="small measure">
+        Current site, old deck, brand guidelines — anything the new work should
+        stay consistent with, or deliberately move away from. Listed here so it
+        lands in the project folder rather than in a chat thread.
+      </p>
+      <label id="dropRef" class="stack stack-2" style="display:grid;place-items:center;text-align:center;
+             padding:var(--space-5);border:2px dashed var(--ink-200);border-radius:var(--radius-lg);
+             background:var(--surface-muted);cursor:pointer;">
+        <span class="h4">Drop files to list them</span>
+        <span class="caption">Nothing is read or uploaded — filenames only</span>
+        <input type="file" id="fileRef" multiple hidden>
+      </label>
+      <ul id="refList" class="checklist small"></ul>
+    </div>
+
+    <div class="stack stack-2">
+      <span class="eyebrow">Where these go</span>
+      <div class="card card--flat"><code class="spec" id="assetTree" style="font-size:.8125rem;"></code></div>
+    </div>
   </section>
 
   <div class="out">
@@ -249,6 +428,9 @@ Q.forEach((item, i) => {
       row.querySelectorAll('.opt').forEach(o => o.setAttribute('aria-pressed', 'false'));
       b.setAttribute('aria-pressed', 'true');
       A[item.id] = { label, ...data };
+      // A new feeling answer reseeds the colour picker, unless the user has
+      // already dialled in a custom accent — theirs wins.
+      if (item.id === 'feel' && !C.custom) setAccentFromTheme(data.accent);
       render();
     };
     row.appendChild(b);
@@ -276,7 +458,9 @@ function render() {
 
   if (accent) document.documentElement.className = 'theme-' + (A.feel.accent);
 
+  renderColour();
   renderPhoto();
+  renderAssets();
 
   if (n === 0) return;
 
@@ -329,7 +513,10 @@ or the rest of the system. They exist and they work.
   ${(A.kind?.cls || '—').split(' ').join('\n  ')}
 ${mediaCls ? '  ' + mediaCls.split(' ').join('\n  ') : ''}
 
-<b>Theme:</b> &lt;html class="theme-${A.feel?.accent || '<choose>'}"&gt;${mode.startsWith('dark') && A.kind?.layer === 'web' ? '  + .on-dark on dark sections' : ''}
+<b>Theme:</b> &lt;html class="theme-${A.feel?.accent || '<choose>'}"&gt;${mode.startsWith('dark') && A.kind?.layer === 'web' ? '  + .on-dark on dark sections' : ''}${C.custom ? '\n  + the custom :root override from question 03a' : ''}
+${AS.logo || AS.copy.trim() || AS.refs.length ? `
+<b>Assets supplied:</b>
+${AS.logo ? `  logo/${AS.logo.filename}${AS.logo.svg ? ' (SVG)' : ` (${AS.logo.w}×${AS.logo.h})`} — needs a light variant if it vanishes on ink\n` : ''}${AS.copy.trim() ? `  content/copy.md — ${AS.copy.trim().split(/\s+/).length} words. Design against this, not lorem ipsum.\n` : ''}${AS.refs.length ? `  reference/ — ${AS.refs.length} file(s) for consistency, not for copying\n` : ''}` : ''}
 
 <b>Read only:</b> ${A.kind?.ref || '—'}
   Skip the rest of the docs — this line is the whole brief you need.
@@ -337,6 +524,175 @@ ${mediaCls ? '  ' + mediaCls.split(' ').join('\n  ') : ''}
 <b>Rules that still apply:</b> one accent hue; eyebrow label above each
 headline; one two-tone headline at the top; 20px card radius; charts use
 the accent as series 1 and greys after.${note}`;
+}
+
+/* ---------- Colour module ------------------------------------------------
+   One accent hex generates the whole ramp. Lightness steps are anchored to
+   fixed targets rather than offsets from the input, so a very dark or very
+   light accent still yields a usable 50 and 700. -------------------------- */
+
+const hex2rgb = h => {
+  h = h.replace('#','');
+  if (h.length === 3) h = h.split('').map(c => c + c).join('');
+  return [0,2,4].map(i => parseInt(h.slice(i, i+2), 16));
+};
+const rgb2hex = ([r,g,b]) =>
+  '#' + [r,g,b].map(v => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2,'0')).join('').toUpperCase();
+
+function rgb2hsl([r,g,b]) {
+  r/=255; g/=255; b/=255;
+  const mx = Math.max(r,g,b), mn = Math.min(r,g,b), d = mx-mn;
+  let h = 0;
+  if (d) {
+    if (mx === r) h = ((g-b)/d) % 6;
+    else if (mx === g) h = (b-r)/d + 2;
+    else h = (r-g)/d + 4;
+  }
+  h = (h*60 + 360) % 360;
+  const l = (mx+mn)/2;
+  const s = d ? d / (1 - Math.abs(2*l - 1)) : 0;
+  return [h, s, l];
+}
+function hsl2rgb([h,s,l]) {
+  const c = (1 - Math.abs(2*l - 1)) * s, x = c * (1 - Math.abs((h/60) % 2 - 1)), m = l - c/2;
+  const t = h < 60 ? [c,x,0] : h < 120 ? [x,c,0] : h < 180 ? [0,c,x]
+          : h < 240 ? [0,x,c] : h < 300 ? [x,0,c] : [c,0,x];
+  return t.map(v => (v + m) * 255);
+}
+
+function buildRamp(hex) {
+  const [h, s] = rgb2hsl(hex2rgb(hex));
+  const mk = (sat, li) => rgb2hex(hsl2rgb([h, Math.max(0, Math.min(1, sat)), li]));
+  return {
+    50:  mk(Math.min(s, 0.85), 0.96),
+    100: mk(Math.min(s, 0.85), 0.89),
+    300: mk(s * 0.92, 0.72),
+    500: hex.toUpperCase(),
+    600: mk(Math.min(s * 1.05, 1), 0.42),
+    700: mk(Math.min(s * 1.05, 1), 0.30),
+  };
+}
+
+// WCAG relative luminance and contrast ratio.
+const lum = hex => {
+  const [r,g,b] = hex2rgb(hex).map(v => {
+    v /= 255;
+    return v <= 0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4);
+  });
+  return 0.2126*r + 0.7152*g + 0.0722*b;
+};
+const ratio = (a, b) => {
+  const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p);
+  return (x + 0.05) / (y + 0.05);
+};
+
+const C = { accent: '#4059F0', ground: '#FFFFFF', g1: null, g2: null, on: '#FFFFFF', custom: false };
+
+function renderColour() {
+  const show = A.brand && A.brand.label !== 'No, choose for me';
+  document.getElementById('colour').hidden = !show;
+  if (!show) return;
+
+  const r = buildRamp(C.accent);
+  const rDark = ratio(C.accent, '#14181F'), rLight = ratio(C.accent, '#FFFFFF');
+  C.on = rDark >= rLight ? '#14181F' : '#FFFFFF';
+  const best = Math.max(rDark, rLight);
+
+  // Swatches
+  document.getElementById('cRamp').innerHTML = Object.entries(r)
+    .map(([k, v]) => `<span title="${k} — ${v}" style="flex:1;height:44px;background:${v}"></span>`).join('');
+
+  // Contrast badge — this is the one thing a custom accent commonly breaks.
+  const tag = document.getElementById('cContrast');
+  const pass = best >= 4.5;
+  tag.textContent = `${best.toFixed(2)}:1 ${pass ? 'AA' : 'fails AA'}`;
+  tag.style.background = pass ? 'var(--positive)' : 'var(--negative)';
+  tag.style.color = '#fff';
+  document.getElementById('cContrastNote').textContent = pass
+    ? `Text on your accent will be ${C.on === '#FFFFFF' ? 'white' : 'near-black'}.`
+    : `No text colour clears 4.5:1 on this accent. Use it for fills and ornament only, and put labels beside it rather than on it — or darken it until this passes.`;
+
+  const g1 = C.g1 || r[600], g2 = C.g2 || r[300];
+  document.getElementById('cGPreview').style.background =
+    `linear-gradient(135deg, ${g1} 0%, ${C.accent} 55%, ${g2} 100%)`;
+  if (!C.g1) document.getElementById('cG1').value = g1;
+  if (!C.g2) document.getElementById('cG2').value = g2;
+
+  // Apply live to this page
+  const root = document.documentElement;
+  if (C.custom) {
+    root.style.setProperty('--accent-50',  r[50]);
+    root.style.setProperty('--accent-100', r[100]);
+    root.style.setProperty('--accent-300', r[300]);
+    root.style.setProperty('--accent-500', r[500]);
+    root.style.setProperty('--accent-600', r[600]);
+    root.style.setProperty('--accent-700', r[700]);
+    root.style.setProperty('--accent-on',  C.on);
+    root.style.setProperty('--gradient-hero', `linear-gradient(135deg, ${g1} 0%, ${r[500]} 55%, ${g2} 100%)`);
+    root.style.setProperty('--surface-page', C.ground);
+  }
+
+  document.getElementById('cCss').textContent =
+`:root {
+  --accent-50:  ${r[50]};
+  --accent-100: ${r[100]};
+  --accent-300: ${r[300]};
+  --accent-500: ${r[500]};
+  --accent-600: ${r[600]};
+  --accent-700: ${r[700]};
+  --accent-on:  ${C.on};
+  --gradient-hero: linear-gradient(135deg, ${g1} 0%, ${r[500]} 55%, ${g2} 100%);
+  --surface-page: ${C.ground};
+}`;
+}
+
+function setAccent(hex) {
+  if (!/^#?[0-9a-f]{3}([0-9a-f]{3})?$/i.test(hex)) return;
+  C.accent = (hex[0] === '#' ? hex : '#' + hex).toUpperCase();
+  C.custom = true;
+  document.getElementById('cAccent').value = C.accent.length === 7 ? C.accent : '#4059F0';
+  document.getElementById('cHex').value = C.accent;
+  renderColour();
+}
+
+document.getElementById('cAccent').oninput = e => setAccent(e.target.value);
+document.getElementById('cHex').oninput   = e => setAccent(e.target.value.trim());
+document.getElementById('cG1').oninput = e => { C.g1 = e.target.value.toUpperCase(); C.custom = true; renderColour(); };
+document.getElementById('cG2').oninput = e => { C.g2 = e.target.value.toUpperCase(); C.custom = true; renderColour(); };
+document.getElementById('cGReset').onclick = () => { C.g1 = C.g2 = null; renderColour(); };
+
+document.getElementById('cGround').onclick = e => {
+  const b = e.target.closest('[data-g]'); if (!b) return;
+  document.querySelectorAll('#cGround .opt').forEach(o => o.setAttribute('aria-pressed', String(o === b)));
+  C.ground = b.dataset.g; C.custom = true; renderColour();
+};
+
+document.getElementById('cCopy').onclick = () => {
+  navigator.clipboard?.writeText(document.getElementById('cCss').textContent);
+  const b = document.getElementById('cCopy');
+  b.textContent = 'Copied'; setTimeout(() => b.textContent = 'Copy CSS', 1400);
+};
+document.getElementById('cRevert').onclick = () => {
+  C.custom = false; C.g1 = C.g2 = null;
+  ['--accent-50','--accent-100','--accent-300','--accent-500','--accent-600','--accent-700',
+   '--accent-on','--gradient-hero','--surface-page'].forEach(v => document.documentElement.style.removeProperty(v));
+  if (A.feel?.accent) setAccentFromTheme(A.feel.accent);
+  C.custom = false;
+  renderColour();
+};
+
+// Seed the picker from whichever preset theme the feeling answer chose.
+function setAccentFromTheme(name) {
+  const probe = document.createElement('div');
+  probe.className = 'theme-' + name;
+  document.body.appendChild(probe);
+  const v = getComputedStyle(probe).getPropertyValue('--accent-500').trim();
+  probe.remove();
+  if (v) {
+    C.accent = v.toUpperCase();
+    document.getElementById('cAccent').value = v;
+    document.getElementById('cHex').value = v.toUpperCase();
+  }
 }
 
 /* ---------- Photo module ------------------------------------------------- */
@@ -431,6 +787,127 @@ document.getElementById('copyQ').onclick = () => {
   b.textContent = 'Copied'; setTimeout(() => b.textContent = 'Copy query', 1400);
 };
 document.getElementById('skipPhoto').onclick = () => { photoEl.hidden = true; };
+
+/* ---------- Assets module: logo, copy, reference -------------------------
+   Deliberately three separate slots. A logo has constraints a photo does not
+   (transparency, a light variant for dark surfaces, clear space), and copy has
+   constraints neither has. One combined "upload your stuff" box loses all of
+   that. ---------------------------------------------------------------------- */
+
+const AS = { logo: null, copy: '', refs: [] };
+
+function slug(s) {
+  return (s || 'project').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 28);
+}
+
+function renderAssets() {
+  document.getElementById('assets').hidden = !A.kind;
+  if (!A.kind) return;
+
+  const n = String(1).padStart(3, '0');
+  const name = `${n}-${slug(A.kind.label)}`;
+  const lines = [`projects/${name}/`, `  SPEC.md`, `  index.html`];
+  const sub = [];
+  if (AS.logo)        sub.push(`    logo/${AS.logo.filename}`);
+  if (A.media?.photo) sub.push(`    photos/`);
+  if (AS.copy.trim()) sub.push(`    content/copy.md`);
+  if (AS.refs.length) sub.push(`    reference/  (${AS.refs.length} file${AS.refs.length > 1 ? 's' : ''})`);
+  if (sub.length) { lines.push(`  assets/`); lines.push(...sub); }
+  document.getElementById('assetTree').textContent = lines.join('\n');
+}
+
+/* --- Logo --- */
+const logoIn = document.getElementById('fileLogo');
+function readLogo(f) {
+  if (!f) return;
+  const isSvg = /svg/.test(f.type) || /\.svg$/i.test(f.name);
+  const isJpg = /jpe?g/.test(f.type);
+  const r = new FileReader();
+  r.onload = e => {
+    const src = e.target.result;
+    ['logoLight','logoDark','logoAccent'].forEach(id => { document.getElementById(id).src = src; });
+    document.getElementById('logoOut').hidden = false;
+
+    const img = new Image();
+    img.onload = () => {
+      const notes = [];
+      if (isJpg) notes.push('JPG has no transparency, so this will sit in a white box on the ink footer and the accent band. Get an SVG, or a PNG with an alpha channel.');
+      else if (isSvg) notes.push('SVG — scales to any size and stays crisp when projected. Best case.');
+      else notes.push('PNG — check the three previews above; if the background is not transparent you will see it on the dark and accent panels.');
+
+      const ar = img.naturalWidth / (img.naturalHeight || 1);
+      if (ar > 2.5)      notes.push(`Wide wordmark (${ar.toFixed(1)}:1). Good in the navbar and slide furniture; too wide for a square avatar slot — you will want a separate mark.`);
+      else if (ar < 1.3) notes.push(`Squarish mark (${ar.toFixed(1)}:1). Works as an icon chip and favicon; pair it with a wordmark for the navbar.`);
+
+      if (!isSvg && img.naturalWidth < 400) notes.push(`Only ${img.naturalWidth}px wide — it will blur on retina and badly on a projector. 800px+ for raster, or switch to SVG.`);
+      notes.push('Check the ink and accent previews: if the logo disappears into either, you need a light (knockout) variant. Most brands have one.');
+      document.getElementById('logoNotes').textContent = notes.join(' ');
+
+      AS.logo = { filename: f.name, w: img.naturalWidth, h: img.naturalHeight, svg: isSvg };
+      renderAssets(); render();
+    };
+    img.onerror = () => {                       // SVG without intrinsic size
+      document.getElementById('logoNotes').textContent =
+        'SVG loaded. It scales cleanly — just confirm it has no hard-coded white background by checking the ink and accent previews above.';
+      AS.logo = { filename: f.name, svg: true };
+      renderAssets(); render();
+    };
+    img.src = src;
+  };
+  r.readAsDataURL(f);
+}
+logoIn.onchange = e => readLogo(e.target.files[0]);
+
+/* --- Copy --- */
+const copyArea = document.getElementById('copyText');
+function analyseCopy() {
+  const t = AS.copy = copyArea.value;
+  const words = t.trim() ? t.trim().split(/\s+/).length : 0;
+  const lines = t.split('\n').filter(l => l.trim());
+  document.getElementById('copyStats').textContent = words ? `${words} words · ${lines.length} lines` : '';
+
+  const notes = [];
+  const longest = lines.reduce((m, l) => Math.max(m, l.length), 0);
+  if (longest > 70) notes.push(`Your longest line is ${longest} characters. Body copy is capped at 62 characters per line in this system, so that will wrap — check it still reads well broken.`);
+  const heads = lines.filter(l => l.length < 60 && !/[.!?]$/.test(l.trim()));
+  if (heads.length) notes.push(`${heads.length} line${heads.length > 1 ? 's look' : ' looks'} like a heading. Headlines here are tightly tracked and heavy — anything over about 45 characters stops working as a display line.`);
+  if (words > 0 && words < 40) notes.push('Not much copy yet. That is fine, but the layout will be sized to it — add the rest before the design is locked, not after.');
+  document.getElementById('copyNotes').textContent = notes.join(' ');
+  renderAssets(); render();
+}
+copyArea.oninput = analyseCopy;
+document.getElementById('pickCopy').onclick = () => document.getElementById('fileCopy').click();
+document.getElementById('fileCopy').onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = ev => { copyArea.value = ev.target.result; analyseCopy(); };
+  r.readAsText(f);
+};
+
+/* --- Reference files: filenames only, never read --- */
+document.getElementById('fileRef').onchange = e => {
+  AS.refs = [...e.target.files].map(f => `${f.name} · ${(f.size/1024).toFixed(0)} KB`);
+  document.getElementById('refList').innerHTML = AS.refs.map(r => `<li>${r}</li>`).join('');
+  renderAssets(); render();
+};
+
+// Shared drag-and-drop wiring for the three zones.
+[['dropLogo', f => readLogo(f)],
+ ['dropRef',  null],
+ ['dropCopy', f => { const r = new FileReader(); r.onload = ev => { copyArea.value = ev.target.result; analyseCopy(); }; r.readAsText(f); }]
+].forEach(([id, handler]) => {
+  const z = document.getElementById(id);
+  ['dragenter','dragover'].forEach(ev => z.addEventListener(ev, e => { e.preventDefault(); z.style.borderColor = 'var(--accent-500)'; }));
+  ['dragleave','drop'].forEach(ev => z.addEventListener(ev, e => { e.preventDefault(); z.style.borderColor = 'var(--ink-200)'; }));
+  z.addEventListener('drop', e => {
+    const fs = e.dataTransfer.files;
+    if (id === 'dropRef') {
+      AS.refs = [...fs].map(f => `${f.name} · ${(f.size/1024).toFixed(0)} KB`);
+      document.getElementById('refList').innerHTML = AS.refs.map(r => `<li>${r}</li>`).join('');
+      renderAssets(); render();
+    } else if (handler) handler(fs[0]);
+  });
+});
 
 document.getElementById('copy').onclick = () => {
   const t = document.getElementById('spec').innerText;
