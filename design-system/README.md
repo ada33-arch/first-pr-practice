@@ -32,7 +32,8 @@ design-system/
     ├── picker.html        ← the intake questions, interactive → outputs a scope
     ├── index.html         ← corporate web page (deck layer)
     ├── deck.html          ← 14-slide deck
-    └── landing.html       ← SaaS landing page (web layer)
+    ├── landing.html       ← SaaS landing page (web layer)
+    └── portfolio.html     ← built from a real intake run (see below)
 ```
 
 ## Starting a new design
@@ -47,6 +48,20 @@ the exact classes to compose from, the one doc section to read — and says
 explicitly not to re-read or regenerate the rest of the system. That keeps each
 new page or deck cheap to produce and stops parallel CSS drifting away from the
 house style.
+
+### A worked example
+
+`examples/portfolio.html` was built from a real intake run — *portfolio site ·
+trusted/established · buy or sign up · illustration* — and shows what the process
+catches. The portfolio archetype normally opens on a **portrait hero with label
+pins**, but the imagery answer was *illustration, no photography*. The imagery
+answer wins: no portrait, no photo masks, inline SVG on tinted grounds instead.
+That collision would have surfaced as a revision round; here it surfaced before
+anything was drawn.
+
+The whole page is one file. It imports the system, composes from existing
+classes, and adds five lines of scoped CSS for one hero-specific grid fix —
+nothing in `css/` or `tokens/` was touched.
 
 Open any example file directly in a browser — no build step, no dependencies,
 no network requests.
