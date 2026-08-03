@@ -115,7 +115,7 @@
 
         <div class="stack stack-2">
           <span class="eyebrow">In context</span>
-          <div class="card card--flat stack stack-3">
+          <div class="card card--flat stack stack-3" id="cPreview">
             <span class="eyebrow">Section label</span>
             <h3 class="h3">A headline with <em>emphasis</em></h3>
             <div class="bar">
@@ -452,9 +452,18 @@ function render() {
     note = '\n\n⚠︎  You chose dark for a deck. Decks stay light-ground in this system;\n    the spec has been corrected. Use a dark section slide for contrast instead.';
   }
 
-  // Accent: locked brand overrides the recommendation.
+  // Accent: a hex dialled into the colour module is the real answer and
+  // supersedes the family the feeling question suggested.
   let accent = A.feel?.accent || '';
-  if (A.brand?.label === 'Yes, locked' && accent) accent += ' (nearest ramp — override with the real brand values)';
+  if (C.custom) {
+    accent = `${C.accent} (custom — text on it: ${C.on === '#FFFFFF' ? 'white' : 'near-black'})`;
+  } else if (A.brand?.label === 'Yes, locked' && accent) {
+    accent += ' (nearest ramp — override with the real brand values)';
+  }
+
+  const groundName = C.custom
+    ? ({ '#FFFFFF': 'white', '#F7F8FA': 'off-white', '#FAF6EC': 'cream' }[C.ground] || C.ground)
+    : (A.feel?.ground || '—');
 
   if (accent) document.documentElement.className = 'theme-' + (A.feel.accent);
 
@@ -494,7 +503,7 @@ function render() {
 <b>Layer:</b> ${A.kind?.layer === 'web' ? 'web' : A.kind?.layer === 'slides' ? 'deck / slides' : '—'}
 <b>Accent:</b> ${sw}${accent || '—'}
 <b>Brand:</b> ${A.brand?.brand || '—'}
-<b>Ground:</b> ${A.feel?.ground || '—'}
+<b>Ground:</b> ${groundName}
 <b>Primary action:</b> ${A.action?.cta || '—'}
 <b>Imagery:</b> ${A.media?.media || '—'}${photoLine}
 <b>Mode:</b> ${mode || '—'}
@@ -629,7 +638,21 @@ function renderColour() {
     root.style.setProperty('--accent-700', r[700]);
     root.style.setProperty('--accent-on',  C.on);
     root.style.setProperty('--gradient-hero', `linear-gradient(135deg, ${g1} 0%, ${r[500]} 55%, ${g2} 100%)`);
-    root.style.setProperty('--surface-page', C.ground);
+  }
+
+  // Ground is a setting for *your* page, not for this one. Applying it to
+  // :root would override the picker's own light/dark theme and leave light
+  // text on a white card. It previews scoped to the sample block instead.
+  const prev = document.getElementById('cPreview');
+  if (prev) {
+    prev.style.setProperty('--surface-page', C.ground);
+    prev.style.setProperty('--surface-muted', C.ground);
+    prev.style.background = C.ground;
+    prev.style.setProperty('--fg-strong', '#14181F');
+    prev.style.setProperty('--fg-body', '#3A4761');
+    prev.style.setProperty('--fg-muted', '#8993A6');
+    prev.style.setProperty('--ink-100', '#ECEFF3');
+    prev.style.setProperty('--ink-200', '#D8DDE5');
   }
 
   document.getElementById('cCss').textContent =
@@ -652,19 +675,19 @@ function setAccent(hex) {
   C.custom = true;
   document.getElementById('cAccent').value = C.accent.length === 7 ? C.accent : '#4059F0';
   document.getElementById('cHex').value = C.accent;
-  renderColour();
+  render();
 }
 
 document.getElementById('cAccent').oninput = e => setAccent(e.target.value);
 document.getElementById('cHex').oninput   = e => setAccent(e.target.value.trim());
-document.getElementById('cG1').oninput = e => { C.g1 = e.target.value.toUpperCase(); C.custom = true; renderColour(); };
-document.getElementById('cG2').oninput = e => { C.g2 = e.target.value.toUpperCase(); C.custom = true; renderColour(); };
-document.getElementById('cGReset').onclick = () => { C.g1 = C.g2 = null; renderColour(); };
+document.getElementById('cG1').oninput = e => { C.g1 = e.target.value.toUpperCase(); C.custom = true; render(); };
+document.getElementById('cG2').oninput = e => { C.g2 = e.target.value.toUpperCase(); C.custom = true; render(); };
+document.getElementById('cGReset').onclick = () => { C.g1 = C.g2 = null; render(); };
 
 document.getElementById('cGround').onclick = e => {
   const b = e.target.closest('[data-g]'); if (!b) return;
   document.querySelectorAll('#cGround .opt').forEach(o => o.setAttribute('aria-pressed', String(o === b)));
-  C.ground = b.dataset.g; C.custom = true; renderColour();
+  C.ground = b.dataset.g; C.custom = true; render();
 };
 
 document.getElementById('cCopy').onclick = () => {
@@ -675,10 +698,10 @@ document.getElementById('cCopy').onclick = () => {
 document.getElementById('cRevert').onclick = () => {
   C.custom = false; C.g1 = C.g2 = null;
   ['--accent-50','--accent-100','--accent-300','--accent-500','--accent-600','--accent-700',
-   '--accent-on','--gradient-hero','--surface-page'].forEach(v => document.documentElement.style.removeProperty(v));
+   '--accent-on','--gradient-hero'].forEach(v => document.documentElement.style.removeProperty(v));
   if (A.feel?.accent) setAccentFromTheme(A.feel.accent);
   C.custom = false;
-  renderColour();
+  render();
 };
 
 // Seed the picker from whichever preset theme the feeling answer chose.

@@ -288,14 +288,16 @@
    Deck — a scrollable grid of slide thumbnails
    -------------------------------------------------------------------------- */
 
+/* The track minimum is capped at 100% so a viewport narrower than the minimum
+   collapses to one column instead of forcing the grid wider than the screen. */
 .deck {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
   gap: var(--space-6);
 }
 
 .deck--single { grid-template-columns: 1fr; }
-.deck--wide   { grid-template-columns: repeat(auto-fill, minmax(460px, 1fr)); }
+.deck--wide   { grid-template-columns: repeat(auto-fill, minmax(min(460px, 100%), 1fr)); }
 
 .deck__slide { display: flex; flex-direction: column; gap: var(--space-2); }
 .deck__caption {
