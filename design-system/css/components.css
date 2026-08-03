@@ -1,0 +1,578 @@
+/* ==========================================================================
+   Corporate Deck Design System — Components
+   The recurring furniture: cards, stats, steps, timelines, buttons, tables,
+   photo treatments and the decorative geometry.
+   Requires: tokens.css, base.css
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Grid
+   -------------------------------------------------------------------------- */
+
+.grid {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr));
+}
+.grid--2 { --cols: 2; }
+.grid--3 { --cols: 3; }
+.grid--4 { --cols: 4; }
+.grid--gap-lg { gap: var(--space-7); }
+
+/* Asymmetric split: the workhorse layout for "headline left, content right". */
+.split {
+  display: grid;
+  gap: var(--space-8);
+  grid-template-columns: minmax(0, var(--split, 5fr)) minmax(0, 7fr);
+  align-items: center;
+}
+.split--even    { --split: 6fr; }
+.split--wide-l  { --split: 7fr; }
+
+@media (max-width: 900px) {
+  .grid { grid-template-columns: 1fr; }
+  .grid--2, .grid--3, .grid--4 { grid-template-columns: 1fr; }
+  .split { grid-template-columns: 1fr; gap: var(--space-6); }
+}
+
+/* --------------------------------------------------------------------------
+   Card — the base container for almost every content block
+   -------------------------------------------------------------------------- */
+
+.card {
+  background: var(--surface-page);
+  border: 1px solid var(--ink-100);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--duration-base) var(--ease-standard),
+              transform var(--duration-base) var(--ease-standard);
+}
+
+.card--raised { box-shadow: var(--shadow-md); border-color: transparent; }
+.card--flat   { box-shadow: none; background: var(--surface-muted); border-color: transparent; }
+.card--accent { background: var(--accent-500); border-color: transparent; color: var(--accent-on); }
+.card--dark   { background: var(--ink-900); border-color: transparent; }
+.card--interactive:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+
+.card--accent .card__title,
+.card--accent .h3 { color: var(--accent-on); }
+.card--accent .card__body { color: color-mix(in srgb, var(--accent-on) 78%, transparent); }
+
+/* Left accent bar — used to mark the "featured" item in a row of three. */
+.card--barred {
+  border-left: 4px solid var(--accent-500);
+  border-radius: var(--radius-sm) var(--radius-lg) var(--radius-lg) var(--radius-sm);
+}
+
+/* Top accent bar — the alternative emphasis treatment. */
+.card--capped { border-top: 4px solid var(--accent-500); }
+
+.card__title { font-family: var(--font-display); font-size: var(--fs-h4); font-weight: var(--fw-bold); color: var(--fg-strong); }
+.card__body  { font-size: var(--fs-small); color: var(--fg-body); margin-top: var(--space-2); }
+
+/* --------------------------------------------------------------------------
+   Icon chip — icon in a rounded square or circle, always accent-filled
+   -------------------------------------------------------------------------- */
+
+.icon-chip {
+  display: inline-grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  background: var(--accent-500);
+  color: var(--accent-on);
+  flex: none;
+}
+
+.icon-chip--round { border-radius: var(--radius-pill); }
+.icon-chip--soft  { background: var(--accent-50); color: var(--accent-700); }
+.icon-chip--dark  { background: var(--ink-900); color: #fff; }
+.icon-chip--outline {
+  background: transparent;
+  border: 2px solid var(--accent-500);
+  color: var(--accent-600);
+}
+.icon-chip--sm { width: 38px; height: 38px; border-radius: var(--radius-sm); }
+.icon-chip--lg { width: 72px; height: 72px; border-radius: var(--radius-lg); }
+
+.icon-chip svg { width: 45%; height: 45%; }
+
+/* Feature row: chip left, copy right. The most-used content atom in the set. */
+.feature {
+  display: flex;
+  gap: var(--space-4);
+  align-items: flex-start;
+}
+.feature__title { font-family: var(--font-display); font-weight: var(--fw-semibold); color: var(--fg-strong); }
+.feature__body  { font-size: var(--fs-small); color: var(--fg-body); margin-top: var(--space-1); }
+
+/* --------------------------------------------------------------------------
+   Stat — big number over a quiet label
+   -------------------------------------------------------------------------- */
+
+.stat { display: flex; flex-direction: column; gap: var(--space-1); }
+
+.stat__value {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 4vw, 3.25rem);
+  font-weight: var(--fw-black);
+  line-height: 1;
+  letter-spacing: -0.035em;
+  color: var(--accent-600);
+  font-variant-numeric: tabular-nums;
+}
+
+.stat__label {
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+.stat__note { font-size: var(--fs-small); color: var(--fg-body); }
+.stat--ink .stat__value { color: var(--fg-strong); }
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-6);
+}
+
+/* Divided stat strip — hairline rules between each figure. */
+.stat-row--divided > .stat + .stat {
+  border-left: 1px solid var(--ink-200);
+  padding-left: var(--space-6);
+}
+.on-dark .stat-row--divided > .stat + .stat { border-left-color: rgba(255,255,255,0.18); }
+.on-dark .stat__value { color: var(--accent-300); }
+
+@media (max-width: 700px) {
+  .stat-row--divided > .stat + .stat { border-left: 0; padding-left: 0; }
+}
+
+/* --------------------------------------------------------------------------
+   Numbered steps — "01 / 02 / 03" process rows
+   -------------------------------------------------------------------------- */
+
+.steps { display: grid; gap: var(--space-6); grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); counter-reset: step; }
+
+.step { position: relative; padding-top: var(--space-6); }
+
+.step::before {
+  counter-increment: step;
+  content: "0" counter(step);
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: var(--fw-black);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--accent-100);
+}
+
+.step__title { font-family: var(--font-display); font-weight: var(--fw-bold); color: var(--fg-strong); position: relative; }
+.step__body  { font-size: var(--fs-small); margin-top: var(--space-2); }
+
+/* Badge variant — the number sits in a filled chip instead of ghosting behind. */
+.step-badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 44px;
+  height: 44px;
+  padding-inline: var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--accent-500);
+  color: var(--accent-on);
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------------------------------------------------------------------------
+   Timeline — horizontal milestone track
+   -------------------------------------------------------------------------- */
+
+.timeline {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: var(--space-5);
+  position: relative;
+  padding-top: var(--space-7);
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--ink-200);
+}
+
+.timeline__item { position: relative; }
+
+.timeline__item::before {
+  content: "";
+  position: absolute;
+  top: calc(var(--space-7) * -1 + 4px);
+  left: 0;
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-500);
+  box-shadow: 0 0 0 4px var(--surface-page);
+}
+
+.timeline__date {
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  color: var(--accent-600);
+  font-variant-numeric: tabular-nums;
+}
+.timeline__body { font-size: var(--fs-small); margin-top: var(--space-1); }
+
+@media (max-width: 800px) {
+  .timeline { grid-auto-flow: row; padding-top: 0; padding-left: var(--space-6); }
+  .timeline::before { top: 0; bottom: 0; left: 6px; right: auto; width: 2px; height: auto; }
+  .timeline__item::before { top: 4px; left: calc(var(--space-6) * -1); }
+}
+
+/* --------------------------------------------------------------------------
+   Buttons
+   -------------------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.85rem 1.75rem;
+  border: 2px solid transparent;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-display);
+  font-size: var(--fs-small);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--duration-base) var(--ease-standard),
+              color var(--duration-base) var(--ease-standard),
+              transform var(--duration-fast) var(--ease-standard);
+}
+
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+
+.btn--primary { background: var(--accent-500); color: var(--accent-on); }
+.btn--primary:hover { background: var(--accent-600); color: var(--accent-on); }
+
+.btn--ink { background: var(--ink-900); color: #fff; }
+.btn--ink:hover { background: var(--ink-800); color: #fff; }
+
+.btn--outline { border-color: var(--accent-500); color: var(--accent-600); background: transparent; }
+.btn--outline:hover { background: var(--accent-500); color: var(--accent-on); }
+
+.btn--ghost { color: var(--fg-strong); background: transparent; padding-inline: var(--space-2); }
+.btn--ghost:hover { color: var(--accent-600); }
+
+.btn--square { border-radius: var(--radius-md); }
+.btn--lg { padding: 1.05rem 2.25rem; font-size: var(--fs-body); }
+
+/* Pill tag / chip label */
+.tag {
+  display: inline-block;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-pill);
+  background: var(--accent-50);
+  color: var(--accent-700);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.04em;
+}
+.tag--solid { background: var(--accent-500); color: var(--accent-on); }
+.tag--ink   { background: var(--ink-900); color: #fff; }
+
+/* --------------------------------------------------------------------------
+   Media — photo treatments
+   -------------------------------------------------------------------------- */
+
+.media {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--surface-sunken);
+}
+.media img { width: 100%; height: 100%; object-fit: cover; }
+
+.media--xl     { border-radius: var(--radius-xl); }
+.media--pill   { border-radius: var(--radius-pill); }
+.media--blob   { border-radius: var(--radius-blob); }
+.media--square { border-radius: 0; }
+
+/* The rounded-rect-with-one-square-corner mask used on section covers. */
+.media--notched { border-radius: var(--radius-xl) var(--radius-xl) var(--radius-xl) 0; }
+
+.media--circle { border-radius: var(--radius-pill); aspect-ratio: 1; }
+.media--4x3 { aspect-ratio: 4 / 3; }
+.media--16x9 { aspect-ratio: 16 / 9; }
+.media--3x4 { aspect-ratio: 3 / 4; }
+
+/* Accent duotone wash — turns any stock photo into brand furniture. */
+.media--wash { position: relative; }
+.media--wash::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--accent-500);
+  mix-blend-mode: multiply;
+  opacity: 0.55;
+}
+
+.media--dim { position: relative; }
+.media--dim::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(20,24,31,0.15) 0%, rgba(20,24,31,0.72) 100%);
+}
+
+/* Avatar */
+.avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: var(--radius-pill);
+  object-fit: cover;
+  border: 4px solid var(--surface-page);
+  box-shadow: var(--shadow-md);
+}
+.avatar--sm { width: 48px; height: 48px; border-width: 2px; }
+.avatar--ring { border-color: var(--accent-500); }
+
+/* --------------------------------------------------------------------------
+   Decorative geometry
+   The blobs, quarter-circles and offset blocks that sit behind content.
+   All are aria-hidden ornaments — never put meaning in them.
+   -------------------------------------------------------------------------- */
+
+/* Ornaments sit on a negative layer so they fall behind in-flow content
+   without needing a z-index on the content itself — which would otherwise
+   clobber the `position: absolute` on slide furniture. `.has-deco` isolates,
+   so a negative layer never escapes behind the container's own background. */
+.deco { position: absolute; pointer-events: none; z-index: -1; }
+
+.deco-circle {
+  border-radius: var(--radius-pill);
+  background: var(--accent-500);
+}
+.deco-circle--soft  { background: var(--accent-50); }
+.deco-circle--ink   { background: var(--ink-100); }
+.deco-circle--ring  { background: transparent; border: 2px solid var(--accent-300); }
+
+/* Quarter-circle corner ornament. */
+.deco-quarter {
+  border-radius: 0 0 100% 0;
+  background: var(--accent-100);
+}
+
+.deco-blob {
+  border-radius: var(--radius-blob);
+  background: var(--accent-100);
+}
+
+/* Dotted matrix — the small grid of dots tucked into slide corners. */
+.deco-dots {
+  background-image: radial-gradient(var(--accent-300) 1.5px, transparent 1.5px);
+  background-size: 12px 12px;
+  opacity: 0.6;
+}
+
+/* Offset block behind a card or image — the "stacked paper" look.
+   The accent slab is kept *inside* the element's own box (via padding) rather
+   than bled outside it, so the effect survives any ancestor that clips
+   overflow — which `.has-deco` and `.slide` both do. */
+.offset-block {
+  position: relative;
+  isolation: isolate;
+  padding: 0 var(--offset-shift, var(--space-5)) var(--offset-shift, var(--space-5)) 0;
+}
+.offset-block::before {
+  content: "";
+  position: absolute;
+  inset: var(--offset-shift, var(--space-5)) 0 0 var(--offset-shift, var(--space-5));
+  background: var(--accent-500);
+  border-radius: var(--radius-lg);
+  z-index: -1;
+}
+
+/* Shift the slab to the other side. */
+.offset-block--left {
+  padding: 0 0 var(--offset-shift, var(--space-5)) var(--offset-shift, var(--space-5));
+}
+.offset-block--left::before {
+  inset: var(--offset-shift, var(--space-5)) var(--offset-shift, var(--space-5)) 0 0;
+}
+
+.slide .offset-block { --offset-shift: 2.4cqw; }
+
+/* Anything that hosts .deco children needs this. */
+.has-deco { position: relative; overflow: hidden; isolation: isolate; }
+
+/* --------------------------------------------------------------------------
+   Progress / meters
+   -------------------------------------------------------------------------- */
+
+.meter {
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--ink-100);
+  overflow: hidden;
+}
+.meter__fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent-500);
+}
+.meter--thick { height: 14px; }
+
+.meter-row { display: grid; gap: var(--space-2); }
+.meter-row__head {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--fs-small);
+  font-weight: var(--fw-semibold);
+  color: var(--fg-strong);
+}
+
+/* --------------------------------------------------------------------------
+   Table
+   -------------------------------------------------------------------------- */
+
+.table-wrap { overflow-x: auto; }
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-small);
+  min-width: 520px;
+}
+
+.table th {
+  text-align: left;
+  font-family: var(--font-display);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 2px solid var(--ink-200);
+  white-space: nowrap;
+}
+
+.table td {
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--ink-100);
+  color: var(--fg-body);
+}
+
+.table tbody tr:hover { background: var(--surface-muted); }
+.table td:first-child { font-weight: var(--fw-semibold); color: var(--fg-strong); }
+
+/* --------------------------------------------------------------------------
+   Quote / testimonial
+   -------------------------------------------------------------------------- */
+
+.quote {
+  position: relative;
+  padding-left: var(--space-7);
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: var(--fw-medium);
+  line-height: 1.5;
+  color: var(--fg-strong);
+}
+
+.quote::before {
+  content: "\201C";
+  position: absolute;
+  left: 0;
+  top: -0.35em;
+  font-size: 4rem;
+  line-height: 1;
+  color: var(--accent-300);
+}
+
+.quote__cite {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+  font-family: var(--font-body);
+  font-size: var(--fs-small);
+  font-weight: var(--fw-regular);
+  color: var(--fg-muted);
+}
+.quote__name { font-weight: var(--fw-semibold); color: var(--fg-strong); display: block; }
+
+/* --------------------------------------------------------------------------
+   SWOT — the 2x2 that appears in nearly every deck in the reference set
+   -------------------------------------------------------------------------- */
+
+.swot { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+.swot > * { padding: var(--space-5); border-radius: var(--radius-lg); }
+.swot__s { background: var(--accent-500); color: var(--accent-on); }
+.swot__w { background: var(--ink-900); color: #fff; }
+.swot__o { background: var(--accent-50); color: var(--ink-900); }
+.swot__t { background: var(--surface-muted); color: var(--ink-900); }
+.swot__label {
+  font-family: var(--font-display);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+.swot__body { font-size: var(--fs-small); margin-top: var(--space-2); }
+
+@media (max-width: 700px) { .swot { grid-template-columns: 1fr; } }
+
+/* --------------------------------------------------------------------------
+   Navbar (web templates)
+   -------------------------------------------------------------------------- */
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  padding: var(--space-4) 0;
+}
+
+.navbar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: var(--fw-bold);
+  letter-spacing: -0.01em;
+  color: var(--fg-strong);
+  text-decoration: none;
+}
+
+.navbar__links {
+  display: flex;
+  gap: var(--space-6);
+  list-style: none;
+  font-size: var(--fs-small);
+  font-weight: var(--fw-medium);
+}
+.navbar__links a { color: var(--fg-body); text-decoration: none; }
+.navbar__links a:hover { color: var(--accent-600); }
+
+@media (max-width: 800px) { .navbar__links { display: none; } }
