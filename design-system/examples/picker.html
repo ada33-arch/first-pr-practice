@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en" class="theme-violet">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design Intake — Corporate Deck Design System</title>
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/components.css">
+<link rel="stylesheet" href="../css/web.css">
+<style>
+  body { background: var(--surface-muted); }
+  /* Bottom padding keeps the last question scrollable clear of the sticky
+     spec panel — without it the panel overlays the options and eats clicks. */
+  .wrap { max-width: 940px; margin-inline: auto; padding: var(--space-9) var(--space-5) 56vh; }
+  .q { margin-bottom: var(--space-6); }
+  .q__head { display: flex; gap: var(--space-4); align-items: baseline; margin-bottom: var(--space-4); }
+  .q__n { font-family: var(--font-display); font-weight: var(--fw-black); font-size: 1.5rem;
+          color: var(--accent-500); font-variant-numeric: tabular-nums; }
+  .opts { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .opt {
+    padding: 0.6rem 1.1rem; border: 1.5px solid var(--ink-200); border-radius: var(--radius-pill);
+    background: var(--surface-page); font: inherit; font-size: var(--fs-small);
+    font-weight: var(--fw-medium); color: var(--fg-body); cursor: pointer;
+    transition: all var(--duration-fast) var(--ease-standard);
+  }
+  .opt:hover { border-color: var(--accent-300); color: var(--fg-strong); }
+  .opt[aria-pressed="true"] {
+    background: var(--accent-500); border-color: var(--accent-500);
+    color: var(--accent-on); font-weight: var(--fw-semibold);
+  }
+  .out { position: sticky; bottom: var(--space-4); z-index: 5; }
+  .out > .card { max-height: 48vh; overflow: auto; }
+  .spec { font-family: var(--font-mono); font-size: 0.8125rem; line-height: 1.7;
+          white-space: pre-wrap; word-break: break-word; }
+  .spec b { font-weight: 700; color: var(--accent-600); }
+  .swatch { width: 20px; height: 20px; border-radius: var(--radius-pill);
+            display: inline-block; vertical-align: -4px; margin-right: 6px; }
+  .bar { display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center; }
+  .progress { flex: 1; min-width: 140px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="stack stack-3" style="margin-bottom: var(--space-8);">
+    <span class="eyebrow">Before we design anything</span>
+    <h1 class="h1">Six questions</h1>
+    <p class="body measure">
+      Every answer changes a concrete setting. Answer these and you get a spec you
+      can hand to any designer — or paste into an AI tool — and get back something
+      that looks like it belongs to the rest of your work.
+    </p>
+  </header>
+
+  <form id="form" class="stack stack-5"></form>
+
+  <div class="out">
+    <div class="card card--raised stack stack-4" style="margin-top: var(--space-8);">
+      <div class="bar">
+        <span class="eyebrow">Your spec</span>
+        <div class="progress">
+          <div class="meter"><div class="meter__fill" id="prog" style="width:0%"></div></div>
+        </div>
+        <span class="caption" id="count">0 of 6</span>
+      </div>
+      <div class="spec" id="spec">Answer the questions above and your spec appears here.</div>
+      <div class="bar">
+        <button class="btn btn--primary" type="button" id="copy">Copy spec</button>
+        <button class="btn btn--ghost" type="button" id="reset">Start over</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const Q = [
+  { id:'kind', q:'What are you making?',
+    opts:[
+      ['Presentation / deck', {layer:'slides', sections:'the 14-step deck sequence',
+        cls:'.slide .slide__inner .slide--chromed .slide__logo .slide__kicker .slide__pagenum .slide-cover .slide-section .agenda .steps .stat-row .timeline .swot .quote .slide-close',
+        ref:'DESIGN-BRIEF.md §8 (deck sequence), README §Building slides'}],
+      ['Pitch deck', {layer:'slides', sections:'cover, problem, solution, market, model, traction, team, ask',
+        cls:'.slide .slide-cover .slide-section .split .card .stat-row .timeline .grid--3 .slide-close',
+        ref:'DESIGN-BRIEF.md §8'}],
+      ['Report / whitepaper', {layer:'slides', sections:'cover, contents, sections, charts, closing',
+        cls:'.slide .slide-cover .agenda .slide-section .split .table .stat-row .slide-close',
+        ref:'DESIGN-BRIEF.md §7 (charts), §8'}],
+      ['Landing page', {layer:'web', sections:'hero, trust bar, features, how-it-works, stats, pricing, FAQ, CTA',
+        cls:'.hero-gradient .orb .wave .badge-pill .trustbar .tint-grid/.tint-card .rail/.rail__num .stat-row .price-grid/.price-card .faq .cta-band',
+        ref:'FAVORITES.md §Rules specific to this set'}],
+      ['Product site', {layer:'web', sections:'hero with device mockup, features, integrations, pricing, FAQ, CTA',
+        cls:'.hero-gradient .device--browser/.device--phone .float-card .trustbar .tint-grid .price-grid .faq .cta-band',
+        ref:'FAVORITES.md §Rules specific to this set'}],
+      ['Portfolio', {layer:'web', sections:'hero with portrait, selected work, services, process, testimonials, contact',
+        cls:'.hero-gradient .pin .media--blob .grid--4 .feature .rail .quote .cta-band .field-group',
+        ref:'FAVORITES.md (ref 5, 6, 7)'}],
+    ]},
+  { id:'feel', q:'What should the audience feel in the first five seconds?',
+    opts:[
+      ['Trusted, established',   {accent:'navy',     ground:'white'}],
+      ['Serious about money',    {accent:'indigo',   ground:'white'}],
+      ['Energised, warm',        {accent:'amber',    ground:'white'}],
+      ['Modern, technical',      {accent:'violet',   ground:'white'}],
+      ['Calm, sustainable',      {accent:'green',    ground:'off-white'}],
+      ['Bold, unmissable',       {accent:'coral',    ground:'cream'}],
+    ]},
+  { id:'brand', q:'Do you already have brand colours, a logo, or fonts?',
+    opts:[
+      ['Yes, locked',       {brand:'locked —  map the brand colour onto the nearest ramp and override --accent-*'}],
+      ['Yes, but flexible', {brand:'flexible — use the recommended accent, keep the brand colour as an alternate'}],
+      ['No, choose for me', {brand:'none — the recommended accent decides'}],
+    ]},
+  { id:'action', q:'What is the one thing you want the reader to do?',
+    opts:[
+      ['Book a call',      {cta:'primary CTA in the hero, CTA band before the footer'}],
+      ['Buy / sign up',    {cta:'hero CTA + pricing grid with a featured tier + closing CTA band'}],
+      ['Approve the plan', {cta:'no CTA band; the closing states the decision and the date needed'}],
+      ['Just understand',  {cta:'no CTA; ends on a summary or contact section'}],
+    ]},
+  { id:'media', q:'What imagery do you actually have?',
+    opts:[
+      ['Photography',         {media:'masked photos (.media--notched / .media--circle), accent wash on section covers'}],
+      ['Product screenshots', {media:'device frames (.device--phone / .device--browser) with floating stat cards'}],
+      ['Illustration',        {media:'flat vector on tinted card grounds; no photo masks'}],
+      ['Logos only',          {media:'trust bar, big type, geometric ornament carrying the visual load'}],
+      ['Nothing yet',         {media:'type-led layout and geometry — no placeholder-driven design'}],
+    ]},
+  { id:'mode', q:'Light or dark, and where does this live?',
+    opts:[
+      ['Light, on screen', {mode:'light ground, screen'}],
+      ['Dark, on screen',  {mode:'dark ground (.on-dark) — web only'}],
+      ['Printed',          {mode:'light ground, CMYK-safe accent, hairlines ≥ 0.75pt'}],
+      ['Projected',        {mode:'light ground, raised contrast, no body text under 15pt'}],
+    ]},
+];
+
+const A = {};
+const form = document.getElementById('form');
+
+Q.forEach((item, i) => {
+  const fs = document.createElement('fieldset');
+  fs.className = 'card q';
+  fs.style.border = '1px solid var(--ink-100)';
+  fs.innerHTML = `<div class="q__head"><span class="q__n">0${i+1}</span>
+      <legend class="h3" style="padding:0;">${item.q}</legend></div>`;
+  const row = document.createElement('div');
+  row.className = 'opts';
+  item.opts.forEach(([label, data]) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'opt'; b.textContent = label;
+    b.setAttribute('aria-pressed', 'false');
+    b.onclick = () => {
+      row.querySelectorAll('.opt').forEach(o => o.setAttribute('aria-pressed', 'false'));
+      b.setAttribute('aria-pressed', 'true');
+      A[item.id] = { label, ...data };
+      render();
+    };
+    row.appendChild(b);
+  });
+  fs.appendChild(row);
+  form.appendChild(fs);
+});
+
+function render() {
+  const n = Object.keys(A).length;
+  document.getElementById('prog').style.width = (n / Q.length * 100) + '%';
+  document.getElementById('count').textContent = `${n} of ${Q.length}`;
+
+  // Dark is web-only; a deck answer overrides it.
+  let mode = A.mode?.mode || '';
+  let note = '';
+  if (A.kind?.layer === 'slides' && mode.startsWith('dark')) {
+    mode = 'light ground (dark is web-only — decks stay light)';
+    note = '\n\n⚠︎  You chose dark for a deck. Decks stay light-ground in this system;\n    the spec has been corrected. Use a dark section slide for contrast instead.';
+  }
+
+  // Accent: locked brand overrides the recommendation.
+  let accent = A.feel?.accent || '';
+  if (A.brand?.label === 'Yes, locked' && accent) accent += ' (nearest ramp — override with the real brand values)';
+
+  if (accent) document.documentElement.className = 'theme-' + (A.feel.accent);
+
+  if (n === 0) return;
+
+  const css = A.kind?.layer === 'web'
+    ? 'tokens/tokens.css, css/base.css, css/components.css, css/web.css'
+    : A.kind?.layer === 'slides'
+      ? 'tokens/tokens.css, css/base.css, css/components.css, css/slides.css'
+      : '—';
+
+  const sw = A.feel ? `<span class="swatch" style="background:var(--accent-500)"></span>` : '';
+
+  // Media answer adds only the classes it actually needs.
+  const mediaCls = {
+    'Photography':         '.media--notched .media--circle .media--wash .avatar',
+    'Product screenshots': '.device--browser .device--phone .device__screen .float-card',
+    'Illustration':        '.tint-card .media--xl',
+    'Logos only':          '.trustbar .deco-circle .deco-dots',
+    'Nothing yet':         '.deco-circle .deco-dots .offset-block',
+  }[A.media?.label] || '';
+
+  document.getElementById('spec').innerHTML =
+`<b>Deliverable:</b> ${A.kind?.label || '—'}
+<b>Layer:</b> ${A.kind?.layer === 'web' ? 'web' : A.kind?.layer === 'slides' ? 'deck / slides' : '—'}
+<b>Accent:</b> ${sw}${accent || '—'}
+<b>Brand:</b> ${A.brand?.brand || '—'}
+<b>Ground:</b> ${A.feel?.ground || '—'}
+<b>Primary action:</b> ${A.action?.cta || '—'}
+<b>Imagery:</b> ${A.media?.media || '—'}
+<b>Mode:</b> ${mode || '—'}
+<b>Sections:</b> ${A.kind?.sections || '—'}
+
+<b>━━ SCOPE — touch only what is listed ━━</b>
+
+<b>Import (already written, do not modify):</b>
+  ${css.split(', ').join('\n  ')}
+
+<b>Write exactly one new file:</b> your page or deck markup.
+<b>Do not</b> re-read, regenerate or restate the tokens, the components,
+or the rest of the system. They exist and they work.
+
+<b>Classes to compose from:</b>
+  ${(A.kind?.cls || '—').split(' ').join('\n  ')}
+${mediaCls ? '  ' + mediaCls.split(' ').join('\n  ') : ''}
+
+<b>Theme:</b> &lt;html class="theme-${A.feel?.accent || '<choose>'}"&gt;${mode.startsWith('dark') && A.kind?.layer === 'web' ? '  + .on-dark on dark sections' : ''}
+
+<b>Read only:</b> ${A.kind?.ref || '—'}
+  Skip the rest of the docs — this line is the whole brief you need.
+
+<b>Rules that still apply:</b> one accent hue; eyebrow label above each
+headline; one two-tone headline at the top; 20px card radius; charts use
+the accent as series 1 and greys after.${note}`;
+}
+
+document.getElementById('copy').onclick = () => {
+  const t = document.getElementById('spec').innerText;
+  navigator.clipboard?.writeText(t);
+  const b = document.getElementById('copy');
+  b.textContent = 'Copied'; setTimeout(() => b.textContent = 'Copy spec', 1400);
+};
+document.getElementById('reset').onclick = () => {
+  for (const k in A) delete A[k];
+  document.querySelectorAll('.opt').forEach(o => o.setAttribute('aria-pressed', 'false'));
+  document.documentElement.className = 'theme-violet';
+  document.getElementById('spec').textContent = 'Answer the questions above and your spec appears here.';
+  render();
+};
+</script>
+</body>
+</html>

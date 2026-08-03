@@ -15,6 +15,7 @@ corners, oversized section numerals, and soft geometric ornament.
 
 ```
 design-system/
+├── INTAKE.md              ← START HERE — six questions asked before any design
 ├── DESIGN-BRIEF.md        ← hand this to any designer or AI tool
 ├── FAVORITES.md           ← the web-landing reference set + its extra rules
 ├── tokens/
@@ -28,10 +29,24 @@ design-system/
 ├── powerpoint/
 │   └── SPEC.md            ← pt sizes and inch positions for a 13.333" × 7.5" slide
 └── examples/
+    ├── picker.html        ← the intake questions, interactive → outputs a scope
     ├── index.html         ← corporate web page (deck layer)
     ├── deck.html          ← 14-slide deck
     └── landing.html       ← SaaS landing page (web layer)
 ```
+
+## Starting a new design
+
+Don't pick a layout first — **answer the six questions in
+[`INTAKE.md`](INTAKE.md)**, or run [`examples/picker.html`](examples/picker.html)
+and click through them. Each answer maps to a fixed setting, so the same answers
+always produce the same starting point.
+
+The output is a **scope**, not a restatement: it names the exact files to import,
+the exact classes to compose from, the one doc section to read — and says
+explicitly not to re-read or regenerate the rest of the system. That keeps each
+new page or deck cheap to produce and stops parallel CSS drifting away from the
+house style.
 
 Open any example file directly in a browser — no build step, no dependencies,
 no network requests.

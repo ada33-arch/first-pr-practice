@@ -4,6 +4,12 @@
 to keep. Anything not specified here is open to interpretation; anything
 specified here is not.
 
+> **Before designing anything, run the intake.** Six questions in
+> [`INTAKE.md`](INTAKE.md) (or click through `examples/picker.html`) decide the
+> layer, accent, ground, CTA, imagery and mode — and produce a *scope* naming the
+> exact files and classes for the job, so nobody re-reads the whole system to
+> build one page.
+
 This brief was distilled from a 32-template reference set of corporate
 presentation and web designs. It describes what those designs have in common —
 the rules that make them read as one house style rather than 32 unrelated files.
