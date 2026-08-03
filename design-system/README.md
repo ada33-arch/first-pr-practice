@@ -15,6 +15,8 @@ corners, oversized section numerals, and soft geometric ornament.
 
 ```
 design-system/
+├── index.html             ← the site's front door — routes three audiences
+├── SHARING.md             ← how anyone else uses this (link / file / repo)
 ├── INTAKE.md              ← START HERE — six questions asked before any design
 ├── DESIGN-BRIEF.md        ← hand this to any designer or AI tool
 ├── FAVORITES.md           ← the web-landing reference set + its extra rules
@@ -29,8 +31,11 @@ design-system/
 │   └── web.css            ← gradient heroes, device mockups, rails, pricing, FAQ
 ├── powerpoint/
 │   └── SPEC.md            ← pt sizes and inch positions for a 13.333" × 7.5" slide
+├── tools/
+│   └── build-standalone.js ← rebuilds the one-file intake after CSS changes
 ├── examples/              ← reference demos of the system; these don't change
 │   ├── picker.html        ← the intake, interactive → outputs a scope
+│   ├── intake-standalone.html ← the intake as ONE file, works offline
 │   ├── index.html         ← corporate web page (deck layer)
 │   ├── deck.html          ← 14-slide deck
 │   └── landing.html       ← SaaS landing page (web layer)
@@ -40,6 +45,26 @@ design-system/
         ├── SPEC.md        ← intake answers + the scope they produced
         └── index.html
 ```
+
+## Giving it to someone else
+
+Three routes, differing only in what the other person has to install — see
+[`SHARING.md`](SHARING.md).
+
+| Route | They need | Best for |
+|---|---|---|
+| **A link** — `index.html` as a site | A browser | Clients, one-off collaborators |
+| **A file** — `examples/intake-standalone.html` | A browser | Email, offline, no internet |
+| **The repo** | git | Designers building with it repeatedly |
+
+A GitHub Pages workflow ships in `.github/workflows/pages.yml`. It needs one
+switch flipped once — **Settings → Pages → Source → "GitHub Actions"** — after
+which the site is live at `https://<owner>.github.io/<repo>/`.
+
+The intake's **Download starter file** button is what makes this useful to
+someone without the repo: instead of a scope telling them to import files they
+don't have, they get a single self-contained HTML file with the CSS inlined,
+their accent baked in, and a scaffold of their chosen sections.
 
 ## Starting a new design
 

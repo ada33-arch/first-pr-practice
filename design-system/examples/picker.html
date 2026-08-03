@@ -338,8 +338,10 @@
       <div class="spec" id="spec">Answer the questions above and your spec appears here.</div>
       <div class="bar">
         <button class="btn btn--primary" type="button" id="copy">Copy spec</button>
+        <button class="btn btn--ink" type="button" id="starter">Download starter file</button>
         <button class="btn btn--ghost" type="button" id="reset">Start over</button>
       </div>
+      <p class="caption" id="starterNote">One self-contained HTML file — your theme baked in, no repo or build needed.</p>
     </div>
   </div>
 
@@ -931,6 +933,333 @@ document.getElementById('fileRef').onchange = e => {
     } else if (handler) handler(fs[0]);
   });
 });
+
+/* ---------- Starter file -------------------------------------------------
+   The scope tells someone what to import — which is useless if they don't
+   have the repo. This hands them a single working file instead: every
+   stylesheet inlined, their accent baked in, and a scaffold of the sections
+   their answers chose. No clone, no build, no network. -------------------- */
+
+async function collectCSS() {
+  // Standalone/hosted build: the CSS is already inline.
+  const inline = [...document.querySelectorAll('style')]
+    .map(s => s.textContent).filter(t => t.includes('--accent-500')).join('\n');
+  if (inline) return inline;
+  // Served over http(s): fetch the linked sheets.
+  const links = [...document.querySelectorAll('link[rel="stylesheet"]')].map(l => l.href);
+  if (location.protocol === 'file:') return null;   // fetch is blocked on file://
+  try {
+    const parts = await Promise.all(links.map(h => fetch(h).then(r => r.text())));
+    return parts.join('\n');
+  } catch { return null; }
+}
+
+function starterBody() {
+  const web = A.kind?.layer === 'web';
+  const eyebrow = A.kind?.label || 'Your project';
+  if (!web) {
+    return `<div class="deck deck--wide">
+
+  <!-- Cover -->
+  <div class="deck__slide">
+    <div class="slide">
+      <div class="slide-cover">
+        <div class="slide-cover__type">
+          <span class="eyebrow">${eyebrow}</span>
+          <h1 class="display headline-pair">
+            <span class="headline-pair__light">Your title</span>
+            <span class="headline-pair__heavy text-accent">Here</span>
+          </h1>
+          <hr class="rule">
+          <p class="small text-muted">Presented by <strong class="text-strong">Name</strong><br>Date · Place</p>
+        </div>
+        <div class="slide-cover__media" style="background:var(--accent-50)"></div>
+      </div>
+    </div>
+    <p class="deck__caption">01 — Cover</p>
+  </div>
+
+  <!-- Agenda -->
+  <div class="deck__slide">
+    <div class="slide slide--chromed">
+      <div class="slide__logo">Your logo</div>
+      <div class="slide__kicker">Contents</div>
+      <div class="slide__pagenum">02</div>
+      <div class="slide__inner">
+        <div class="stack stack-5">
+          <div class="stack stack-2">
+            <span class="eyebrow">Table of contents</span>
+            <h2 class="h1">What we'll cover</h2>
+          </div>
+          <div class="agenda">
+            <div class="agenda__item"><span class="agenda__num">01</span><span class="agenda__label">First section</span></div>
+            <div class="agenda__item"><span class="agenda__num">03</span><span class="agenda__label">Third section</span></div>
+            <div class="agenda__item"><span class="agenda__num">02</span><span class="agenda__label">Second section</span></div>
+            <div class="agenda__item"><span class="agenda__num">04</span><span class="agenda__label">Fourth section</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="deck__caption">02 — Agenda</p>
+  </div>
+
+  <!-- Section divider -->
+  <div class="deck__slide">
+    <div class="slide">
+      <div class="slide-section">
+        <div class="slide-section__panel">
+          <span class="numeral">01</span>
+          <h2 class="h1">First section</h2>
+        </div>
+        <div class="slide-cover__media" style="background:var(--accent-50)"></div>
+      </div>
+    </div>
+    <p class="deck__caption">03 — Section divider</p>
+  </div>
+
+  <!-- Three cards -->
+  <div class="deck__slide">
+    <div class="slide slide--muted slide--chromed">
+      <div class="slide__logo">Your logo</div>
+      <div class="slide__kicker">First section</div>
+      <div class="slide__pagenum">04</div>
+      <div class="slide__inner">
+        <div class="stack stack-5">
+          <div class="stack stack-2">
+            <span class="eyebrow">What we do</span>
+            <h2 class="h2">Three points</h2>
+          </div>
+          <div class="grid grid--3">
+            <article class="card stack stack-3"><span class="icon-chip"></span><h3 class="card__title">One</h3><p class="card__body">Replace this with the real point.</p></article>
+            <article class="card card--capped stack stack-3"><span class="icon-chip"></span><h3 class="card__title">Two</h3><p class="card__body">Replace this with the real point.</p></article>
+            <article class="card stack stack-3"><span class="icon-chip"></span><h3 class="card__title">Three</h3><p class="card__body">Replace this with the real point.</p></article>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="deck__caption">04 — Three cards</p>
+  </div>
+
+  <!-- Closing -->
+  <div class="deck__slide">
+    <div class="slide slide--accent">
+      <div class="slide-close">
+        <span class="eyebrow" style="color:color-mix(in srgb, var(--accent-on) 70%, transparent)">For your time</span>
+        <h2 class="display">Thank you</h2>
+        <p class="small">hello@example.com</p>
+      </div>
+    </div>
+    <p class="deck__caption">05 — Closing</p>
+  </div>
+
+</div>`;
+  }
+
+  const wantsPricing = /Buy|sign up/.test(A.action?.label || '');
+  return `<header class="container">
+  <nav class="navbar">
+    <span class="navbar__brand">Your brand</span>
+    <ul class="navbar__links"><li><a href="#features">Features</a></li><li><a href="#how">How it works</a></li></ul>
+    <a class="btn btn--primary" href="#cta">${wantsPricing ? 'Start free trial' : 'Book a call'}</a>
+  </nav>
+</header>
+
+<section class="hero-gradient">
+  <div class="container" style="padding-block:var(--space-11) var(--space-9)">
+    <div class="split" style="align-items:center">
+      <div class="stack stack-5">
+        <span class="badge-pill"><span class="badge-pill__flag">New</span> Your announcement</span>
+        <h1 class="h1">Your headline goes <em>here</em>.</h1>
+        <p class="body-lg measure" style="color:rgba(255,255,255,.82)">
+          One or two sentences saying what this is and who it's for. Replace with
+          the real words before you design around it.
+        </p>
+        <div style="display:flex;gap:var(--space-3);flex-wrap:wrap">
+          <a class="btn btn--ink btn--lg" href="#cta">${wantsPricing ? 'Start free trial' : 'Book a call'}</a>
+          <a class="btn btn--lg" href="#features" style="background:rgba(255,255,255,.16);color:#fff">Learn more</a>
+        </div>
+      </div>
+      <div style="position:relative;display:grid;place-items:center;isolation:isolate">
+        <div class="orb" style="width:340px;height:340px;top:-40px;right:-30px" aria-hidden="true"></div>
+        <div class="device device--browser" style="width:100%;max-width:520px">
+          <div class="device__screen" style="aspect-ratio:16/10;background:var(--surface-muted)"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="wave" aria-hidden="true">
+    <svg viewBox="0 0 1440 90" preserveAspectRatio="none"><path d="M0,45 C240,95 480,0 720,25 C960,50 1200,90 1440,55 L1440,90 L0,90 Z"/></svg>
+  </div>
+</section>
+
+<section class="section" style="padding-block:var(--space-8)">
+  <div class="container trustbar">
+    <span class="trustbar__label">Trusted by</span>
+    <ul class="trustbar__logos"><li>Client</li><li>Client</li><li>Client</li><li>Client</li></ul>
+  </div>
+</section>
+
+<section class="section section--muted" id="features">
+  <div class="container stack stack-6">
+    <div class="stack stack-3" style="max-width:52ch">
+      <span class="eyebrow">Features</span>
+      <h2 class="h2">What it does</h2>
+      <hr class="rule">
+    </div>
+    <div class="tint-grid">
+      <article class="tint-card tint-1"><span class="icon-chip icon-chip--sm"></span><h3 class="tint-card__title">One</h3><p class="tint-card__body">Replace with the real benefit.</p></article>
+      <article class="tint-card tint-2"><span class="icon-chip icon-chip--sm"></span><h3 class="tint-card__title">Two</h3><p class="tint-card__body">Replace with the real benefit.</p></article>
+      <article class="tint-card tint-3"><span class="icon-chip icon-chip--sm"></span><h3 class="tint-card__title">Three</h3><p class="tint-card__body">Replace with the real benefit.</p></article>
+      <article class="tint-card tint-4"><span class="icon-chip icon-chip--sm"></span><h3 class="tint-card__title">Four</h3><p class="tint-card__body">Replace with the real benefit.</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="how">
+  <div class="container stack stack-8">
+    <div class="stack stack-3 text-center">
+      <span class="eyebrow">How it works</span>
+      <h2 class="h2">Three steps</h2>
+      <hr class="rule rule--center">
+    </div>
+    <div class="rail">
+      <div class="rail__row">
+        <div class="rail__copy stack stack-3"><h3 class="h3">First step</h3><p class="small measure-sm">Replace with the real step.</p></div>
+        <div class="rail__num rail__num--label">01</div>
+        <div class="rail__visual"><div class="media media--xl" style="aspect-ratio:4/3;background:var(--accent-50)"></div></div>
+      </div>
+      <div class="rail__row rail__row--flip">
+        <div class="rail__copy stack stack-3"><h3 class="h3">Second step</h3><p class="small measure-sm">Replace with the real step.</p></div>
+        <div class="rail__num rail__num--label">02</div>
+        <div class="rail__visual"><div class="media media--xl" style="aspect-ratio:4/3;background:var(--accent-50)"></div></div>
+      </div>
+      <div class="rail__row">
+        <div class="rail__copy stack stack-3"><h3 class="h3">Third step</h3><p class="small measure-sm">Replace with the real step.</p></div>
+        <div class="rail__num rail__num--label">03</div>
+        <div class="rail__visual"><div class="media media--xl" style="aspect-ratio:4/3;background:var(--accent-50)"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+${wantsPricing ? `
+<section class="section section--muted" id="pricing">
+  <div class="container stack stack-6">
+    <div class="stack stack-3 text-center">
+      <span class="eyebrow">Pricing</span>
+      <h2 class="h2">Simple plans</h2>
+      <hr class="rule rule--center">
+    </div>
+    <div class="price-grid">
+      <article class="price-card stack stack-4">
+        <h3 class="h3">Starter</h3><p class="caption">For small teams</p>
+        <div><span class="price-card__amount">$0</span> <span class="price-card__period">/ month</span></div>
+        <ul class="checklist"><li>Feature one</li><li>Feature two</li></ul>
+        <a class="btn btn--outline" href="#cta">Get started</a>
+      </article>
+      <article class="price-card price-card--featured stack stack-4">
+        <span class="price-card__flag">Most popular</span>
+        <h3 class="h3">Pro</h3><p class="caption">For growing teams</p>
+        <div><span class="price-card__amount">$9</span> <span class="price-card__period">/ user / month</span></div>
+        <ul class="checklist"><li>Everything in Starter</li><li>Feature three</li><li>Feature four</li></ul>
+        <a class="btn btn--primary" href="#cta">Start free trial</a>
+      </article>
+      <article class="price-card stack stack-4">
+        <h3 class="h3">Enterprise</h3><p class="caption">For large organisations</p>
+        <div><span class="price-card__amount">Custom</span></div>
+        <ul class="checklist"><li>Everything in Pro</li><li>Dedicated support</li></ul>
+        <a class="btn btn--outline" href="#cta">Contact sales</a>
+      </article>
+    </div>
+  </div>
+</section>` : ''}
+
+<section class="section" id="cta">
+  <div class="container">
+    <div class="cta-band cta-band--gradient">
+      <div class="stack stack-2">
+        <h3 class="h3">Your closing line</h3>
+        <p class="small" style="color:rgba(255,255,255,.82)">One sentence of reassurance.</p>
+      </div>
+      <a class="btn btn--ink btn--lg" href="#">${wantsPricing ? 'Start free trial' : 'Book a call'}</a>
+    </div>
+  </div>
+</section>
+
+<footer class="section section--dark on-dark" style="padding-block:var(--space-8)">
+  <div class="container stack stack-3">
+    <span class="navbar__brand" style="color:#fff">Your brand</span>
+    <p class="small" style="max-width:36ch">One line about what you do.</p>
+  </div>
+</footer>`;
+}
+
+document.getElementById('starter').onclick = async () => {
+  const btn = document.getElementById('starter');
+  const note = document.getElementById('starterNote');
+  if (!A.kind) { note.textContent = 'Answer question 1 first — the starter depends on what you\'re making.'; return; }
+
+  btn.textContent = 'Building…';
+  const css = await collectCSS();
+  if (!css) {
+    btn.textContent = 'Download starter file';
+    note.textContent = 'Can\'t read the stylesheets from a file:// page. Open examples/intake-standalone.html instead, or serve this folder over http — then the starter builds fine.';
+    return;
+  }
+
+  const r = C.custom ? buildRamp(C.accent) : null;
+  const override = r ? `
+/* Your colours, from question 03a */
+:root {
+  --accent-50:  ${r[50]};
+  --accent-100: ${r[100]};
+  --accent-300: ${r[300]};
+  --accent-500: ${r[500]};
+  --accent-600: ${r[600]};
+  --accent-700: ${r[700]};
+  --accent-on:  ${C.on};
+  --gradient-hero: linear-gradient(135deg, ${C.g1 || r[600]} 0%, ${r[500]} 55%, ${C.g2 || r[300]} 100%);
+  --surface-page: ${C.ground};
+}` : '';
+
+  const theme = A.feel?.accent || 'violet';
+  const kind  = A.kind.label;
+  const file  = `${slug(kind)}-starter.html`;
+
+  const doc = `<!doctype html>
+<html lang="en" class="theme-${theme}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${kind}</title>
+<!--
+  Built from the design system intake.
+  Deliverable : ${kind}
+  Layer       : ${A.kind.layer === 'web' ? 'web' : 'deck / slides'}
+  Accent      : ${C.custom ? C.accent + ' (custom)' : theme}
+  Sections    : ${A.kind.sections}
+
+  Everything is inlined — no build, no dependencies, no network requests.
+  Replace the placeholder copy with the real words before designing around it.
+-->
+<style>
+${css}
+${override}
+<\/style>
+<\/head>
+<body>
+${starterBody()}
+<\/body>
+<\/html>`;
+
+  const url = URL.createObjectURL(new Blob([doc], { type: 'text/html' }));
+  const a = document.createElement('a');
+  a.href = url; a.download = file; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+
+  btn.textContent = 'Downloaded';
+  note.textContent = `${file} — ${(doc.length/1024).toFixed(0)}KB, self-contained. Open it in any browser and start editing.`;
+  setTimeout(() => { btn.textContent = 'Download starter file'; }, 2500);
+};
 
 document.getElementById('copy').onclick = () => {
   const t = document.getElementById('spec').innerText;

@@ -1,0 +1,64 @@
+name: Deploy design system to Pages
+
+# Publishes design-system/ as a public website, so anyone can use the intake
+# and browse the examples from a URL without cloning anything.
+#
+# One-time setup: repo Settings → Pages → Source: "GitHub Actions".
+# Until that is switched on this workflow builds but cannot deploy.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'design-system/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Let a running deploy finish rather than cancelling it mid-publish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the site has no external dependencies
+        run: |
+          # The system is meant to be self-contained. A stray CDN link would
+          # break it offline and behind strict CSP, so fail the build instead.
+          if grep -rIn --include='*.html' -E '(src|href)="https?://' design-system/ ; then
+            echo "::error::Found an external asset reference in design-system/"
+            exit 1
+          fi
+          echo "No external asset references."
+
+      - name: Verify entry points exist
+        run: |
+          for f in index.html examples/picker.html examples/deck.html \
+                   examples/landing.html examples/intake-standalone.html; do
+            test -f "design-system/$f" || { echo "::error::missing design-system/$f"; exit 1; }
+          done
+          echo "All entry points present."
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: design-system
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
