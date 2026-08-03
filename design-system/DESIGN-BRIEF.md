@@ -37,15 +37,18 @@ highlighted word in a headline. A second accent hue is never introduced.
 
 ### Approved accent families
 
-Pick one per document. All six are equally house-correct.
+Pick one per document. All nine are equally house-correct.
 
 | Theme | Signature | Notes |
 |---|---|---|
-| **Amber** | `#F5B21A` | The signature default. Warmest, most-used. Dark text on top. |
+| **Amber** | `#F5B21A` | **Default for decks.** Warmest, most-used. Dark text on top. |
+| **Violet** | `#7C4DFF` | **Default for web.** Signature of the favourites set. White text on top. |
 | **Electric** | `#2B50EE` | Tech, SaaS, product. White text on top. |
+| **Indigo** | `#4059F0` | Fintech, payments, product. White text on top. |
 | **Navy** | `#2B4A8B` | Finance, consulting, formal. White text on top. |
 | **Teal** | `#22BCCE` | Product, startup, healthcare. Dark text on top. |
 | **Green** | `#17A673` | Sustainability, wellness. White text on top. |
+| **Lime** | `#C3DE4A` | Pairs with a cream ground, not white. Dark text on top. |
 | **Coral** | `#E85D33` | Marketing, creative, retail. White text on top. |
 
 Full ramps (50 → 700) live in `tokens/tokens.json`.
@@ -59,8 +62,11 @@ Full ramps (50 → 700) live in `tokens/tokens.json`.
 ### Hard rules
 
 - **Never** put two accent families in one document.
-- **Never** use a gradient as a brand colour. Gradients are permitted only as a
-  photo scrim or a subtle decorative blob.
+- **Never** use a gradient as a brand colour. In decks, gradients are permitted
+  only as a photo scrim. On web pages they may additionally fill a hero surface,
+  a CTA band, or a glow orb — and must run *within one accent ramp*
+  (`accent-600 → accent-500 → accent-300`), so it is still one hue. See
+  [`FAVORITES.md`](FAVORITES.md) §"Rules specific to this set".
 - Accent-on-accent text must clear 4.5:1 — use `--accent-on` from the tokens,
   which is already set correctly per theme.
 
@@ -241,22 +247,35 @@ Stating the negative space saves rounds of revision:
 
 | File | What it is |
 |---|---|
+| `FAVORITES.md` | The second reference set — web landing pages — and the rules specific to it |
 | `tokens/tokens.json` | Platform-agnostic tokens — import into Figma, Style Dictionary, or a build |
-| `tokens/tokens.css` | CSS custom properties + the six accent themes |
+| `tokens/tokens.css` | CSS custom properties + the nine accent themes |
 | `css/base.css` | Reset and typographic primitives |
 | `css/components.css` | Cards, stats, steps, timelines, SWOT, buttons, media |
 | `css/slides.css` | 16:9 slide surfaces and slide archetypes |
+| `css/web.css` | Web-only: gradient heroes, device mockups, rails, pricing, FAQ, marquee |
 | `powerpoint/SPEC.md` | Point sizes and inch positions for a 13.333″ × 7.5″ slide |
-| `examples/index.html` | Web landing page built from the system |
+| `examples/index.html` | Corporate web page built from the deck layer |
 | `examples/deck.html` | Full slide deck built from the system |
+| `examples/landing.html` | SaaS landing page built from the web layer |
+
+**Which layer to start from:** presentations and reports use the deck layer and
+default to amber; landing pages, SaaS sites and portfolios use the web layer and
+default to violet. Both share the same tokens, so a deck and a site for the same
+client stay in family.
 
 ### Prompt to hand an AI tool
 
 > Build this using the Corporate Deck Design System. Single accent hue
-> (`{amber|electric|navy|teal|green|coral}`), near-black ink anchor, white ground.
-> Poppins display / Inter body. Uppercase tracked eyebrow labels above headlines,
-> one two-tone headline on the cover, 20px card radius, oversized section
-> numerals, accent-filled icon chips, masked photography, charts with the accent
-> as series 1 and greys after. Follow the standard deck sequence. Import
-> `tokens/tokens.css` and use the existing component classes rather than writing
-> new CSS.
+> (`{amber|violet|electric|indigo|navy|teal|green|lime|coral}`), near-black ink
+> anchor, white ground. Poppins display / Inter body. Uppercase tracked eyebrow
+> labels above headlines, one two-tone headline at the top, 20px card radius,
+> oversized section numerals, accent-filled icon chips, masked photography,
+> charts with the accent as series 1 and greys after. Import `tokens/tokens.css`
+> and use the existing component classes rather than writing new CSS.
+>
+> For a **deck**: also import `css/slides.css`, follow the standard deck
+> sequence, default to amber.
+> For a **web page**: also import `css/web.css`, default to violet, use a
+> gradient hero with a device mockup, a trust bar, tinted feature cards, a step
+> rail, pricing with a featured tier, an FAQ, and a CTA band.

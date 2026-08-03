@@ -132,6 +132,14 @@
   --ease-enter:    cubic-bezier(0, 0, 0.2, 1);
   --ease-exit:     cubic-bezier(0.4, 0, 1, 1);
 
+  /* --- Gradient & glow --------------------------------------------------
+     Decks stay flat; the web-landing family uses these for hero surfaces and
+     the soft orbs behind content. Never as a brand colour — see the brief. */
+  --gradient-hero:  linear-gradient(135deg, var(--accent-600) 0%, var(--accent-500) 55%, var(--accent-300) 100%);
+  --gradient-sheen: linear-gradient(135deg, var(--accent-50) 0%, var(--surface-page) 60%);
+  --gradient-text:  linear-gradient(90deg, var(--accent-500), var(--accent-300));
+  --glow-accent:    radial-gradient(circle, color-mix(in srgb, var(--accent-500) 38%, transparent) 0%, transparent 70%);
+
   /* --- Layout ---------------------------------------------------------- */
   --container-max: 1200px;
   --section-py:    6rem;
@@ -176,6 +184,27 @@
   --accent-50: #FDEEEA; --accent-100: #FAD5CB; --accent-300: #F29B80;
   --accent-500: #E85D33; --accent-600: #C64720; --accent-700: #993518;
   --accent-on: #FFFFFF;
+}
+
+/* Added from the favourites set — the web-landing family. Violet is the
+   signature there; lime is the cream-ground outlier. */
+
+.theme-violet {
+  --accent-50: #F3EEFF; --accent-100: #E2D6FF; --accent-300: #A98BFF;
+  --accent-500: #7C4DFF; --accent-600: #6534E0; --accent-700: #4B24A8;
+  --accent-on: #FFFFFF;
+}
+
+.theme-indigo {
+  --accent-50: #EDF0FF; --accent-100: #D8DFFF; --accent-300: #93A5FF;
+  --accent-500: #4059F0; --accent-600: #2E42CC; --accent-700: #1F2E96;
+  --accent-on: #FFFFFF;
+}
+
+.theme-lime {
+  --accent-50: #F7FBE8; --accent-100: #EAF5C2; --accent-300: #D8EC7E;
+  --accent-500: #C3DE4A; --accent-600: #A3BE2C; --accent-700: #758A1A;
+  --accent-on: #14181F;
 }
 
 /* ==========================================================================

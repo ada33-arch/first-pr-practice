@@ -16,22 +16,36 @@ corners, oversized section numerals, and soft geometric ornament.
 ```
 design-system/
 ├── DESIGN-BRIEF.md        ← hand this to any designer or AI tool
+├── FAVORITES.md           ← the web-landing reference set + its extra rules
 ├── tokens/
 │   ├── tokens.json        ← platform-agnostic tokens (Figma, Style Dictionary, builds)
-│   └── tokens.css         ← CSS custom properties + the six accent themes
+│   └── tokens.css         ← CSS custom properties + the nine accent themes
 ├── css/
 │   ├── base.css           ← reset + typographic primitives
 │   ├── components.css     ← cards, stats, steps, timelines, SWOT, buttons, media
-│   └── slides.css         ← 16:9 slide surfaces and slide archetypes
+│   ├── slides.css         ← 16:9 slide surfaces and slide archetypes
+│   └── web.css            ← gradient heroes, device mockups, rails, pricing, FAQ
 ├── powerpoint/
 │   └── SPEC.md            ← pt sizes and inch positions for a 13.333" × 7.5" slide
 └── examples/
-    ├── index.html         ← web landing page built from the system
-    └── deck.html          ← 14-slide deck built from the system
+    ├── index.html         ← corporate web page (deck layer)
+    ├── deck.html          ← 14-slide deck
+    └── landing.html       ← SaaS landing page (web layer)
 ```
 
-Open either example file directly in a browser — no build step, no dependencies,
+Open any example file directly in a browser — no build step, no dependencies,
 no network requests.
+
+### Two layers, one set of tokens
+
+| Deliverable | Import | Default accent |
+|---|---|---|
+| Presentation, PPT template, report | `+ css/slides.css` | **amber** |
+| Landing page, SaaS site, portfolio | `+ css/web.css` | **violet** |
+
+Both share `tokens.css`, so a deck and a site for the same client stay in family.
+See [`FAVORITES.md`](FAVORITES.md) for what the web layer adds and the three
+rules that differ (gradients, product-UI heroes, dark pages).
 
 ---
 
@@ -72,15 +86,16 @@ Then compose from the existing classes:
 
 ### Re-theming
 
-Six accent families ship with the system. Swap the class on `<html>` — or on any
+Nine accent families ship with the system. Swap the class on `<html>` — or on any
 container for a scoped change — and everything downstream follows, including
-charts, buttons, icon chips and section panels.
+gradients, charts, buttons, icon chips and section panels.
 
 ```html
-<html class="theme-electric">   <!-- amber · electric · navy · teal · green · coral -->
+<!-- amber · violet · electric · indigo · navy · teal · green · lime · coral -->
+<html class="theme-violet">
 ```
 
-Both example files include a live theme switcher so you can see this happen.
+Every example file includes a live theme switcher so you can see this happen.
 
 ### Dark blocks
 
