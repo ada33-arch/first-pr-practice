@@ -1612,8 +1612,9 @@ input[type="color"], input[type="text"], textarea {
   .fields { display: grid; gap: var(--space-4); }
   @media (min-width: 700px) { .fields--2 { grid-template-columns: 1fr 1fr; } }
 
-  .summary { position: sticky; bottom: var(--space-4); z-index: 5; }
-  .summary > .card { max-height: 46vh; overflow: auto; }
+  /* Sits at the end of the flow rather than following the page down — it is a
+     recap to read once you've answered, not a heads-up display. */
+  .summary { margin-top: var(--space-8); }
   .sum-row { display: flex; gap: var(--space-3); align-items: baseline; padding-block: var(--space-2);
              border-bottom: 1px solid var(--ink-100); font-size: var(--fs-small); }
   .sum-row:last-child { border-bottom: 0; }
@@ -1621,6 +1622,9 @@ input[type="color"], input[type="text"], textarea {
   .sum-row dd { margin: 0; color: var(--fg-strong); font-weight: var(--fw-medium); }
   .bar { display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center; }
   .logo-prev { max-height: 46px; width: auto; }
+  /* Checkbox and its wording stay on one row; only the wording wraps. */
+  .approve-row { display: flex; gap: var(--space-3); align-items: flex-start; cursor: pointer; }
+  .approve-row input { width: 20px; height: 20px; margin-top: 2px; flex: none; accent-color: var(--accent-500); }
 
 </style>
 </head>
@@ -1785,55 +1789,6 @@ input[type="color"], input[type="text"], textarea {
     </div>
   </section>
 
-  <!-- 5. APPROVE -->
-  <section class="card qs stack stack-4" id="approve" hidden>
-    <div>
-      <div class="qs__head"><span class="qs__n">5</span><h2 class="h3">Happy with it?</h2></div>
-      <p class="qs__hint">Look at your page first, then approve it here to get the finished files.</p>
-    </div>
-
-    <div class="split">
-      <div class="stack stack-4">
-        <span class="eyebrow">What you get</span>
-        <ul class="checklist small">
-          <li><strong>Your finished page</strong> — ready to put online, opens in any browser</li>
-          <li><strong>Your words</strong> as a separate document, so you can edit them any time</li>
-          <li><strong>The code</strong>, yours to keep — no subscription, no licence to renew</li>
-          <li><strong>A short guide</strong> on how to put it online and what to change</li>
-        </ul>
-        <p class="small text-muted">
-          Everything is a plain file on your computer. Nothing depends on us
-          staying around.
-        </p>
-      </div>
-
-      <div class="stack stack-4">
-        <div class="card card--flat stack stack-3">
-          <span class="eyebrow">Your order</span>
-          <div class="bar" style="justify-content:space-between">
-            <span class="small" id="ordItem">—</span>
-            <span class="h3" id="ordPrice">—</span>
-          </div>
-          <p class="caption" id="ordNote"></p>
-        </div>
-
-        <label class="bar" style="gap:var(--space-3);align-items:flex-start;cursor:pointer">
-          <input type="checkbox" id="agree" style="width:20px;height:20px;margin-top:2px;accent-color:var(--accent-500)">
-          <span class="small">
-            I've seen my page and I'm happy with it. I understand the wording is a
-            starting point I can change.
-          </span>
-        </label>
-
-        <div class="bar">
-          <button class="btn btn--primary" type="button" id="pay" disabled>Approve and continue</button>
-          <button class="btn btn--outline" type="button" id="pack" disabled>Download my files</button>
-        </div>
-        <p class="caption" id="payNote"></p>
-      </div>
-    </div>
-  </section>
-
   <!-- SUMMARY -->
   <div class="summary">
     <div class="card card--raised stack stack-4">
@@ -1853,6 +1808,55 @@ input[type="color"], input[type="text"], textarea {
       <p class="caption" id="note"></p>
     </div>
   </div>
+
+  <!-- 5. APPROVE -->
+  <section class="card qs stack stack-4" id="approve" hidden>
+    <div>
+      <div class="qs__head"><span class="qs__n">5</span><h2 class="h3">Happy with it?</h2></div>
+      <p class="qs__hint">Look at your page first, then approve it here to get the finished files.</p>
+    </div>
+
+    <div class="split">
+      <div class="stack stack-4">
+        <span class="eyebrow">What you get</span>
+        <ul class="checklist small">
+          <li><span><strong>Your finished page</strong> — ready to put online, opens in any browser</span></li>
+          <li><span><strong>Your words</strong> as a separate document, so you can edit them any time</span></li>
+          <li><span><strong>The code</strong>, yours to keep — no subscription, no licence to renew</span></li>
+          <li><span><strong>A short guide</strong> on how to put it online and what to change</span></li>
+        </ul>
+        <p class="small text-muted">
+          Everything is a plain file on your computer. Nothing depends on us
+          staying around.
+        </p>
+      </div>
+
+      <div class="stack stack-4">
+        <div class="card card--flat stack stack-3">
+          <span class="eyebrow">Your order</span>
+          <div class="bar" style="justify-content:space-between">
+            <span class="small" id="ordItem">—</span>
+            <span class="h3" id="ordPrice">—</span>
+          </div>
+          <p class="caption" id="ordNote"></p>
+        </div>
+
+        <label class="approve-row">
+          <input type="checkbox" id="agree">
+          <span class="small">
+            I've seen my page and I'm happy with it. I understand the wording is a
+            starting point I can change.
+          </span>
+        </label>
+
+        <div class="bar">
+          <button class="btn btn--primary" type="button" id="pay" disabled>Approve and continue</button>
+          <button class="btn btn--outline" type="button" id="pack" disabled>Download my files</button>
+        </div>
+        <p class="caption" id="payNote"></p>
+      </div>
+    </div>
+  </section>
 
 </div>
 
