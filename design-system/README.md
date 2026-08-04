@@ -16,6 +16,8 @@ corners, oversized section numerals, and soft geometric ornament.
 ```
 design-system/
 ├── index.html             ← the site's front door — routes three audiences
+├── brief.html             ← CLIENT-facing intake: four plain questions, no code
+├── brief-standalone.html  ← the same, as one file you can email
 ├── SHARING.md             ← how anyone else uses this (link / file / repo)
 ├── INTAKE.md              ← START HERE — six questions asked before any design
 ├── DESIGN-BRIEF.md        ← hand this to any designer or AI tool
@@ -54,7 +56,7 @@ Three routes, differing only in what the other person has to install — see
 | Route | They need | Best for |
 |---|---|---|
 | **A link** — `index.html` as a site | A browser | Clients, one-off collaborators |
-| **A file** — `examples/intake-standalone.html` | A browser | Email, offline, no internet |
+| **A file** — `brief-standalone.html` | A browser | Email, offline, no internet |
 | **The repo** | git | Designers building with it repeatedly |
 
 A GitHub Pages workflow ships in `.github/workflows/pages.yml`. It needs one
@@ -65,6 +67,17 @@ The intake's **Download starter file** button is what makes this useful to
 someone without the repo: instead of a scope telling them to import files they
 don't have, they get a single self-contained HTML file with the CSS inlined,
 their accent baked in, and a scaffold of their chosen sections.
+
+### Two front doors
+
+`brief.html` is for **clients**: four plain questions, a row of looks to choose
+from, and no file names, class names or CSS anywhere on the page. It copes with
+having no logo (describe it instead) and no copy (answer six questions and it
+drafts the page from your own words), and it reads a `.docx` in the browser
+without uploading it.
+
+`examples/picker.html` is the same job for **designers and AI tools** — layers,
+accent hex, class names, the scope block.
 
 ## Starting a new design
 

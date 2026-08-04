@@ -41,13 +41,35 @@ Cloudflare Pages, S3, or any web server. Nothing to configure.
 
 ---
 
+### Two front doors, on purpose
+
+| Page | Who it's for | What it shows |
+|---|---|---|
+| **`brief.html`** | Clients and anyone commissioning | Four plain questions, a row of looks to pick from, and somewhere to add a logo and words. **No file names, no class names, no CSS.** |
+| **`examples/picker.html`** | Designers, developers, AI tools | The same job in technical terms — layer, accent hex, classes, the scope block. |
+
+They produce the same thing. Send a client the technical one and you'll get
+silence; send them `brief.html` and you'll get a brief back.
+
+`brief.html` also handles the two cases that stall most projects:
+
+- **No logo?** They describe what they want instead — name, rough style, a
+  sentence about the feel.
+- **No copy written?** They answer six short questions about the business and it
+  drafts the page from their own words. Labelled as a first draft everywhere it
+  appears, because that is what it is.
+- **Got a Word file?** It reads `.docx` in the browser — the zip is unpacked and
+  inflated with the browser's own decompression, so nothing is uploaded.
+
 ## 2. A file — the standalone intake
 
 `examples/intake-standalone.html` is the entire intake in **one file**, every
 stylesheet inlined, no network requests. Email it, put it on a shared drive, open
 it from a USB stick. It works.
 
-Regenerate it after changing any CSS:
+`brief-standalone.html` is the same for the client-facing version.
+
+Regenerate both after changing any CSS:
 
 ```bash
 node tools/build-standalone.js
@@ -94,8 +116,9 @@ a side effect of one page.
 ## What to send whom
 
 **A client, or someone commissioning work**
-Send the link to `index.html`, or the standalone intake file. They answer six
-questions and send you back a spec. That's the whole ask.
+Send `brief.html` — or `brief-standalone.html` as an attachment. Four questions,
+no jargon, and a way through even if they have no logo and nothing written. They
+send back a page with the brief embedded in it.
 
 **A designer or agency**
 Send `DESIGN-BRIEF.md` plus the filled-in spec. Add `powerpoint/SPEC.md` if the

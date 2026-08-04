@@ -1,0 +1,743 @@
+<!doctype html>
+<html lang="en" class="theme-violet">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tell us about your project</title>
+<link rel="stylesheet" href="tokens/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/web.css">
+<style>
+  body { background: var(--surface-muted); }
+  .wrap { max-width: 980px; margin-inline: auto; padding: var(--space-9) var(--space-5) var(--space-12); }
+  .qs { margin-bottom: var(--space-6); }
+  .qs__head { display: flex; gap: var(--space-4); align-items: baseline; margin-bottom: var(--space-2); }
+  .qs__n {
+    font-family: var(--font-display); font-weight: var(--fw-black); font-size: 1.4rem;
+    color: var(--accent-500); font-variant-numeric: tabular-nums; flex: none;
+  }
+  .qs__hint { color: var(--fg-muted); font-size: var(--fs-small); margin-bottom: var(--space-5); }
+
+  .opts { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .opt {
+    padding: 0.7rem 1.2rem; border: 1.5px solid var(--ink-200); border-radius: var(--radius-pill);
+    background: var(--surface-page); font: inherit; font-size: var(--fs-small);
+    font-weight: var(--fw-medium); color: var(--fg-body); cursor: pointer;
+    transition: all var(--duration-fast) var(--ease-standard);
+  }
+  .opt:hover { border-color: var(--accent-300); color: var(--fg-strong); }
+  .opt[aria-pressed="true"] {
+    background: var(--accent-500); border-color: var(--accent-500);
+    color: var(--accent-on); font-weight: var(--fw-semibold);
+  }
+
+  /* Palette cards — the customer picks a look, not a hex value. */
+  .palettes { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
+  .pal {
+    border: 2px solid var(--ink-200); border-radius: var(--radius-lg); padding: 0;
+    background: none; cursor: pointer; overflow: hidden; text-align: left;
+    transition: transform var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard);
+    font: inherit;
+  }
+  .pal:hover { transform: translateY(-3px); }
+  .pal[aria-pressed="true"] { border-color: var(--ink-900); box-shadow: var(--shadow-lg); }
+  .pal__demo { padding: var(--space-5) var(--space-4) var(--space-4); }
+  .pal__title { font-family: var(--font-display); font-weight: var(--fw-black); font-size: 1.05rem; line-height: 1.15; }
+  .pal__sub { font-size: 0.7rem; letter-spacing: .1em; text-transform: uppercase; font-weight: 600; margin-bottom: 6px; }
+  .pal__btn { display: inline-block; margin-top: 10px; padding: .34rem .8rem; border-radius: 999px; font-size: .72rem; font-weight: 700; }
+  .pal__strip { display: flex; height: 10px; }
+  .pal__strip span { flex: 1; }
+  .pal__name { padding: var(--space-3) var(--space-4); background: var(--surface-page);
+               font-size: var(--fs-small); font-weight: var(--fw-semibold); color: var(--fg-strong);
+               display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); }
+  .pal__tag { font-size: .68rem; font-weight: 600; color: var(--fg-muted); letter-spacing: .06em; text-transform: uppercase; }
+
+  .drop {
+    display: grid; place-items: center; text-align: center; gap: var(--space-2);
+    padding: var(--space-7); border: 2px dashed var(--ink-200); border-radius: var(--radius-lg);
+    background: var(--surface-muted); cursor: pointer;
+  }
+  .field { display: grid; gap: var(--space-2); }
+  .field label { font-size: var(--fs-small); font-weight: var(--fw-semibold); color: var(--fg-strong); }
+  .field input, .field textarea {
+    font: inherit; font-size: var(--fs-small); padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--ink-200); border-radius: var(--radius-md);
+    background: var(--surface-page); color: var(--fg-strong); width: 100%;
+  }
+  .field textarea { resize: vertical; }
+  .field input:focus, .field textarea:focus { outline: none; border-color: var(--accent-500); }
+  .fields { display: grid; gap: var(--space-4); }
+  @media (min-width: 700px) { .fields--2 { grid-template-columns: 1fr 1fr; } }
+
+  .summary { position: sticky; bottom: var(--space-4); z-index: 5; }
+  .summary > .card { max-height: 46vh; overflow: auto; }
+  .sum-row { display: flex; gap: var(--space-3); align-items: baseline; padding-block: var(--space-2);
+             border-bottom: 1px solid var(--ink-100); font-size: var(--fs-small); }
+  .sum-row:last-child { border-bottom: 0; }
+  .sum-row dt { flex: none; width: 108px; color: var(--fg-muted); }
+  .sum-row dd { margin: 0; color: var(--fg-strong); font-weight: var(--fw-medium); }
+  .bar { display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center; }
+  .logo-prev { max-height: 46px; width: auto; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="stack stack-3" style="margin-bottom: var(--space-8);">
+    <span class="eyebrow">Project brief</span>
+    <h1 class="h1">Tell us about your project</h1>
+    <p class="body measure">
+      Four questions. There's a way through every one of them even if you don't
+      have a logo or your words written yet — just say so and we'll handle it.
+      Nothing you add here is uploaded anywhere; it stays on your computer.
+    </p>
+  </header>
+
+  <!-- 1. WHAT -->
+  <section class="card qs stack stack-4">
+    <div>
+      <div class="qs__head"><span class="qs__n">1</span><h2 class="h3">What do you need?</h2></div>
+      <p class="qs__hint">Pick the closest one. We can adjust later.</p>
+    </div>
+    <div class="opts" id="qKind">
+      <button class="opt" type="button" data-v="website" aria-pressed="false">A website</button>
+      <button class="opt" type="button" data-v="landing" aria-pressed="false">A single page to sell something</button>
+      <button class="opt" type="button" data-v="deck" aria-pressed="false">A presentation</button>
+      <button class="opt" type="button" data-v="portfolio" aria-pressed="false">A portfolio</button>
+    </div>
+  </section>
+
+  <!-- 2. LOOK -->
+  <section class="card qs stack stack-4">
+    <div>
+      <div class="qs__head"><span class="qs__n">2</span><h2 class="h3">Which look do you like?</h2></div>
+      <p class="qs__hint">
+        Pick whichever feels right — there's no wrong answer, and every one of
+        these is checked so your text stays easy to read.
+      </p>
+    </div>
+    <div class="palettes" id="qPal"></div>
+  </section>
+
+  <!-- 3. LOGO -->
+  <section class="card qs stack stack-4">
+    <div>
+      <div class="qs__head"><span class="qs__n">3</span><h2 class="h3">Your logo</h2></div>
+      <p class="qs__hint">Have one? Add it. Don't? Describe what you'd like and we'll take it from there.</p>
+    </div>
+    <div class="opts" id="qLogoMode">
+      <button class="opt" type="button" data-v="have" aria-pressed="false">I have a logo</button>
+      <button class="opt" type="button" data-v="describe" aria-pressed="false">I'll describe what I want</button>
+      <button class="opt" type="button" data-v="none" aria-pressed="false">Just use my name for now</button>
+    </div>
+
+    <div id="logoHave" hidden class="stack stack-4">
+      <label class="drop" id="dropLogo">
+        <span class="icon-chip" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 16V4m0 0L7 9m5-5 5 5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>
+          </svg>
+        </span>
+        <span class="h4">Drop your logo here, or click to choose</span>
+        <span class="caption">A PNG or SVG works best</span>
+        <input type="file" id="fileLogo" accept="image/*,.svg" hidden>
+      </label>
+      <div id="logoOut" hidden class="stack stack-3">
+        <div class="grid grid--3">
+          <div class="stack stack-2"><div class="card" style="padding:var(--space-4)"><img id="lgLight" class="logo-prev" alt="Your logo on a light background"></div><span class="caption">On light</span></div>
+          <div class="stack stack-2"><div class="card card--dark" style="padding:var(--space-4)"><img id="lgDark" class="logo-prev" alt="Your logo on a dark background"></div><span class="caption">On dark</span></div>
+          <div class="stack stack-2"><div class="card card--accent" style="padding:var(--space-4)"><img id="lgAcc" class="logo-prev" alt="Your logo on your chosen colour"></div><span class="caption">On your colour</span></div>
+        </div>
+        <p class="small" id="logoNote"></p>
+      </div>
+    </div>
+
+    <div id="logoDescribe" hidden class="fields">
+      <div class="field">
+        <label for="brandName">What's the name?</label>
+        <input id="brandName" type="text" placeholder="e.g. Northbrook, Kestrel Studio">
+      </div>
+      <div class="field">
+        <label for="logoWords">Describe the logo you have in mind</label>
+        <textarea id="logoWords" rows="3" placeholder="e.g. Something simple and modern — just the name in a strong typeface, maybe a small mark. Nothing fussy."></textarea>
+      </div>
+      <div class="field">
+        <label>Roughly what kind?</label>
+        <div class="opts" id="qLogoStyle">
+          <button class="opt" type="button" data-v="Wordmark — the name, styled" aria-pressed="false">Just the name</button>
+          <button class="opt" type="button" data-v="Symbol plus the name" aria-pressed="false">A symbol + name</button>
+          <button class="opt" type="button" data-v="Initials or monogram" aria-pressed="false">Initials</button>
+          <button class="opt" type="button" data-v="Not sure — open to suggestions" aria-pressed="false">Not sure yet</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. CONTENT -->
+  <section class="card qs stack stack-4">
+    <div>
+      <div class="qs__head"><span class="qs__n">4</span><h2 class="h3">Your words</h2></div>
+      <p class="qs__hint">Send us what you've written, or answer a few questions and we'll write a first draft for you.</p>
+    </div>
+    <div class="opts" id="qCopyMode">
+      <button class="opt" type="button" data-v="file" aria-pressed="false">I have a document</button>
+      <button class="opt" type="button" data-v="answer" aria-pressed="false">Ask me questions instead</button>
+      <button class="opt" type="button" data-v="none" aria-pressed="false">Nothing written yet</button>
+    </div>
+
+    <div id="copyFile" hidden class="stack stack-3">
+      <label class="drop" id="dropCopy">
+        <span class="h4">Drop your document here, or click to choose</span>
+        <span class="caption">Word (.docx), plain text or Markdown</span>
+        <input type="file" id="fileCopy" accept=".docx,.txt,.md,text/*" hidden>
+      </label>
+      <p class="small" id="copyNote"></p>
+      <div class="field" id="copyPreviewWrap" hidden>
+        <label for="copyPreview">What we read from it — edit anything that came out wrong</label>
+        <textarea id="copyPreview" rows="7"></textarea>
+      </div>
+    </div>
+
+    <div id="copyAnswer" hidden class="fields">
+      <div class="fields fields--2">
+        <div class="field">
+          <label for="cName">Business or project name</label>
+          <input id="cName" type="text" placeholder="Northbrook">
+        </div>
+        <div class="field">
+          <label for="cWhat">In one line, what do you do?</label>
+          <input id="cWhat" type="text" placeholder="We help teams plan their quarter">
+        </div>
+      </div>
+      <div class="fields fields--2">
+        <div class="field">
+          <label for="cWho">Who is it for?</label>
+          <input id="cWho" type="text" placeholder="Operations leads at mid-size companies">
+        </div>
+        <div class="field">
+          <label for="cWhy">Why choose you over anyone else?</label>
+          <input id="cWhy" type="text" placeholder="We stay through delivery, not just the plan">
+        </div>
+      </div>
+      <div class="field">
+        <label for="cOffer">Three things you offer — one per line</label>
+        <textarea id="cOffer" rows="3" placeholder="Planning&#10;Analytics&#10;Delivery"></textarea>
+      </div>
+      <div class="fields fields--2">
+        <div class="field">
+          <label for="cAction">What should people do?</label>
+          <input id="cAction" type="text" placeholder="Book a call">
+        </div>
+        <div class="field">
+          <label for="cContact">How do they reach you?</label>
+          <input id="cContact" type="text" placeholder="hello@northbrook.com">
+        </div>
+      </div>
+      <p class="small text-muted">
+        We'll turn these into a first draft of the page — headline, sections, the
+        lot. It's a starting point you can change, not the finished wording.
+      </p>
+    </div>
+  </section>
+
+  <!-- SUMMARY -->
+  <div class="summary">
+    <div class="card card--raised stack stack-4">
+      <div class="bar">
+        <span class="eyebrow">Your brief</span>
+        <div style="flex:1;min-width:140px"><div class="meter"><div class="meter__fill" id="prog" style="width:0%"></div></div></div>
+        <span class="caption" id="count">0 of 4</span>
+      </div>
+      <dl id="sum" style="margin:0">
+        <p class="small text-muted" id="sumEmpty">Answer the questions above and your brief appears here.</p>
+      </dl>
+      <div class="bar">
+        <button class="btn btn--primary" type="button" id="see">See my page</button>
+        <button class="btn btn--ink" type="button" id="send">Save my brief</button>
+        <button class="btn btn--ghost" type="button" id="reset">Start again</button>
+      </div>
+      <p class="caption" id="note"></p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================================
+   Client-facing brief. Deliberately shows no file paths, class names or CSS —
+   the customer answers questions and gets a page. The technical scope is still
+   produced, but it travels inside the generated file as a comment for whoever
+   builds from it.
+   ========================================================================== */
+
+const PALETTES = [
+  { id:'warm',      theme:'amber',    name:'Warm and confident', tag:'Most popular', ground:'#FFFFFF', dark:false, mood:'Approachable, energetic, human' },
+  { id:'trusted',   theme:'navy',     name:'Calm and trusted',   tag:'Classic',      ground:'#FFFFFF', dark:false, mood:'Established, safe, serious' },
+  { id:'modern',    theme:'violet',   name:'Modern and sharp',   tag:'Tech',         ground:'#FFFFFF', dark:false, mood:'Current, technical, premium' },
+  { id:'natural',   theme:'green',    name:'Fresh and natural',  tag:'',             ground:'#F7F8FA', dark:false, mood:'Healthy, sustainable, calm' },
+  { id:'bold',      theme:'coral',    name:'Bold and lively',    tag:'',             ground:'#FAF6EC', dark:false, mood:'Creative, warm, unmissable' },
+  { id:'clean',     theme:'teal',     name:'Clean and clear',    tag:'',             ground:'#FFFFFF', dark:false, mood:'Precise, clinical, open' },
+  { id:'money',     theme:'indigo',   name:'Sharp and precise',  tag:'Finance',      ground:'#FFFFFF', dark:false, mood:'Exact, dependable, quiet' },
+  { id:'darkprem',  theme:'violet',   name:'Dark and premium',   tag:'Dark',         ground:'#14181F', dark:true,  mood:'Striking, high-end, confident' },
+  { id:'darkgold',  theme:'amber',    name:'Dark and warm',      tag:'Dark',         ground:'#14181F', dark:true,  mood:'Rich, considered, editorial' },
+];
+
+const A = { kind:null, pal:null, logoMode:null, copyMode:null,
+            logo:null, logoStyle:null, copyText:'', fields:{} };
+
+/* ---- Palette cards ------------------------------------------------------ */
+function ramp(theme) {
+  const probe = document.createElement('div');
+  probe.className = 'theme-' + theme;
+  document.body.appendChild(probe);
+  const cs = getComputedStyle(probe);
+  const v = k => cs.getPropertyValue(k).trim();
+  const out = { 100:v('--accent-100'), 300:v('--accent-300'), 500:v('--accent-500'),
+                600:v('--accent-600'), on:v('--accent-on') };
+  probe.remove();
+  return out;
+}
+
+const palBox = document.getElementById('qPal');
+PALETTES.forEach(p => {
+  const r = ramp(p.theme);
+  const ink = p.dark ? '#FFFFFF' : '#14181F';
+  const body = p.dark ? 'rgba(255,255,255,.62)' : '#5C6880';
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'pal'; b.setAttribute('aria-pressed','false');
+  b.dataset.id = p.id;
+  b.setAttribute('aria-label', `${p.name} — ${p.mood}`);
+  b.innerHTML =
+    `<div class="pal__demo" style="background:${p.ground}">
+       <div class="pal__sub" style="color:${p.dark ? r[300] : r[600]}">Your heading</div>
+       <div class="pal__title" style="color:${ink}">A line of your<br>text, like this</div>
+       <div class="pal__sub" style="color:${body};text-transform:none;letter-spacing:0;font-weight:400;font-size:.72rem;margin-top:6px">
+         And a sentence underneath it.
+       </div>
+       <span class="pal__btn" style="background:${r[500]};color:${r.on}">Your button</span>
+     </div>
+     <div class="pal__strip">
+       <span style="background:${r[600]}"></span><span style="background:${r[500]}"></span>
+       <span style="background:${r[300]}"></span><span style="background:${r[100]}"></span>
+     </div>
+     <div class="pal__name"><span>${p.name}</span>${p.tag ? `<span class="pal__tag">${p.tag}</span>` : ''}</div>`;
+  b.onclick = () => {
+    palBox.querySelectorAll('.pal').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    A.pal = p;
+    document.documentElement.className = 'theme-' + p.theme;
+    render();
+  };
+  palBox.appendChild(b);
+});
+
+/* ---- Simple option groups ----------------------------------------------- */
+function group(id, key, after) {
+  const box = document.getElementById(id);
+  box.onclick = e => {
+    const b = e.target.closest('.opt'); if (!b) return;
+    box.querySelectorAll('.opt').forEach(o => o.setAttribute('aria-pressed', String(o === b)));
+    A[key] = b.dataset.v;
+    if (after) after(b.dataset.v);
+    render();
+  };
+}
+group('qKind', 'kind');
+group('qLogoStyle', 'logoStyle');
+group('qLogoMode', 'logoMode', v => {
+  document.getElementById('logoHave').hidden = v !== 'have';
+  document.getElementById('logoDescribe').hidden = v !== 'describe';
+});
+group('qCopyMode', 'copyMode', v => {
+  document.getElementById('copyFile').hidden = v !== 'file';
+  document.getElementById('copyAnswer').hidden = v !== 'answer';
+});
+
+/* ---- Logo --------------------------------------------------------------- */
+function readLogo(f) {
+  if (!f) return;
+  const isJpg = /jpe?g/.test(f.type);
+  const isSvg = /svg/.test(f.type) || /\.svg$/i.test(f.name);
+  const r = new FileReader();
+  r.onload = e => {
+    ['lgLight','lgDark','lgAcc'].forEach(id => document.getElementById(id).src = e.target.result);
+    document.getElementById('logoOut').hidden = false;
+    const notes = [];
+    if (isJpg) notes.push('Heads up — this is a JPG, so it will show a white box on the darker sections. If you have a PNG or SVG version, that one will look better.');
+    else if (isSvg) notes.push('Perfect — this will stay sharp at any size, including printed and projected.');
+    else notes.push('Looks good. Check the three previews above — if the background isn\'t see-through you\'ll notice it on the dark one.');
+    notes.push('If your logo disappears against the dark or coloured panel, send us the light version too — most logos have one.');
+    document.getElementById('logoNote').textContent = notes.join(' ');
+    A.logo = { name:f.name, svg:isSvg, jpg:isJpg, src:e.target.result };
+    render();
+  };
+  r.readAsDataURL(f);
+}
+document.getElementById('fileLogo').onchange = e => readLogo(e.target.files[0]);
+
+/* ---- Reading a .docx in the browser -------------------------------------
+   A .docx is a zip. Walk its central directory, pull word/document.xml, and
+   inflate it with the browser's own DecompressionStream — no library, no
+   upload, nothing leaves the machine. ------------------------------------- */
+async function readDocx(buf) {
+  const dv = new DataView(buf), u8 = new Uint8Array(buf);
+  // End of central directory: scan backwards for the signature.
+  let eocd = -1;
+  for (let i = u8.length - 22; i >= Math.max(0, u8.length - 66000); i--) {
+    if (dv.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+  }
+  if (eocd < 0) throw new Error('not a zip');
+  const count = dv.getUint16(eocd + 10, true);
+  let p = dv.getUint32(eocd + 16, true);
+
+  for (let i = 0; i < count; i++) {
+    if (dv.getUint32(p, true) !== 0x02014b50) break;
+    const method = dv.getUint16(p + 10, true);
+    const compSize = dv.getUint32(p + 20, true);
+    const nameLen = dv.getUint16(p + 28, true);
+    const extraLen = dv.getUint16(p + 30, true);
+    const cmtLen = dv.getUint16(p + 32, true);
+    const local = dv.getUint32(p + 42, true);
+    const name = new TextDecoder().decode(u8.subarray(p + 46, p + 46 + nameLen));
+
+    if (name === 'word/document.xml') {
+      const lNameLen = dv.getUint16(local + 26, true);
+      const lExtraLen = dv.getUint16(local + 28, true);
+      const start = local + 30 + lNameLen + lExtraLen;
+      const raw = u8.subarray(start, start + compSize);
+      let xmlBytes;
+      if (method === 0) xmlBytes = raw;
+      else {
+        const ds = new DecompressionStream('deflate-raw');
+        const stream = new Blob([raw]).stream().pipeThrough(ds);
+        xmlBytes = new Uint8Array(await new Response(stream).arrayBuffer());
+      }
+      return new TextDecoder().decode(xmlBytes);
+    }
+    p += 46 + nameLen + extraLen + cmtLen;
+  }
+  throw new Error('no document.xml');
+}
+
+function xmlToText(xml) {
+  return xml
+    .replace(/<w:tab[^>]*\/>/g, ' ')
+    .replace(/<\/w:p>/g, '\n')
+    .replace(/<w:br[^>]*\/>/g, '\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&')
+    .replace(/&quot;/g,'"').replace(/&#39;/g,"'")
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+async function readCopyFile(f) {
+  if (!f) return;
+  const note = document.getElementById('copyNote');
+  note.textContent = 'Reading…';
+  try {
+    let text;
+    if (/\.docx$/i.test(f.name)) text = xmlToText(await readDocx(await f.arrayBuffer()));
+    else text = await f.text();
+    A.copyText = text;
+    document.getElementById('copyPreviewWrap').hidden = false;
+    document.getElementById('copyPreview').value = text;
+    const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+    note.textContent = words
+      ? `Read ${words} words from ${f.name}. Have a quick look below in case anything came out oddly.`
+      : `We opened ${f.name} but couldn't find any text in it.`;
+  } catch (err) {
+    note.textContent = /\.docx$/i.test(f.name)
+      ? `We couldn't open ${f.name}. If it's an older .doc file, save it as .docx or paste the text into the box instead.`
+      : `We couldn't read ${f.name}. Plain text, Markdown or Word (.docx) work best.`;
+    document.getElementById('copyPreviewWrap').hidden = false;
+    document.getElementById('copyPreview').value = '';
+  }
+  render();
+}
+document.getElementById('fileCopy').onchange = e => readCopyFile(e.target.files[0]);
+document.getElementById('copyPreview').oninput = e => { A.copyText = e.target.value; render(); };
+
+// drag and drop for both zones
+[['dropLogo', f => readLogo(f)], ['dropCopy', f => readCopyFile(f)]].forEach(([id, fn]) => {
+  const z = document.getElementById(id);
+  ['dragenter','dragover'].forEach(ev => z.addEventListener(ev, e => { e.preventDefault(); z.style.borderColor='var(--accent-500)'; }));
+  ['dragleave','drop'].forEach(ev => z.addEventListener(ev, e => { e.preventDefault(); z.style.borderColor='var(--ink-200)'; }));
+  z.addEventListener('drop', e => fn(e.dataTransfer.files[0]));
+});
+
+/* ---- Field capture ------------------------------------------------------ */
+['brandName','logoWords','cName','cWhat','cWho','cWhy','cOffer','cAction','cContact']
+  .forEach(id => document.getElementById(id).oninput = e => { A.fields[id] = e.target.value; render(); });
+
+/* ---- Summary ------------------------------------------------------------ */
+const KIND_LABEL = { website:'A website', landing:'A page to sell something',
+                     deck:'A presentation', portfolio:'A portfolio' };
+
+function logoSummary() {
+  if (A.logoMode === 'have')  return A.logo ? `Supplied — ${A.logo.name}` : 'Ready to upload';
+  if (A.logoMode === 'describe') {
+    const bits = [A.fields.brandName, A.logoStyle].filter(Boolean);
+    return bits.length ? bits.join(' · ') : 'To be described';
+  }
+  if (A.logoMode === 'none') return A.fields.cName || A.fields.brandName || 'Name only, for now';
+  return null;
+}
+function copySummary() {
+  if (A.copyMode === 'file') {
+    const w = A.copyText.trim() ? A.copyText.trim().split(/\s+/).length : 0;
+    return w ? `Your document — ${w} words` : 'Ready to upload';
+  }
+  if (A.copyMode === 'answer') {
+    const filled = ['cName','cWhat','cWho','cWhy','cOffer','cAction'].filter(k => (A.fields[k]||'').trim()).length;
+    return `We'll draft it — ${filled} of 6 answered`;
+  }
+  if (A.copyMode === 'none') return 'We\'ll draft it from scratch';
+  return null;
+}
+
+function render() {
+  const answered = ['kind','pal','logoMode','copyMode'].filter(k => A[k]).length;
+  document.getElementById('prog').style.width = (answered/4*100) + '%';
+  document.getElementById('count').textContent = `${answered} of 4`;
+
+  const rows = [
+    ['You need',  A.kind ? KIND_LABEL[A.kind] : null],
+    ['The look',  A.pal ? `${A.pal.name} — ${A.pal.mood.toLowerCase()}` : null],
+    ['Logo',      logoSummary()],
+    ['Words',     copySummary()],
+  ].filter(([,v]) => v);
+
+  const sum = document.getElementById('sum');
+  sum.innerHTML = rows.length
+    ? rows.map(([k,v]) => `<div class="sum-row"><dt>${k}</dt><dd>${v}</dd></div>`).join('')
+    : `<p class="small text-muted">Answer the questions above and your brief appears here.</p>`;
+}
+
+/* ---- Turning answers into real copy -------------------------------------
+   No model runs here, so this composes a first draft from the customer's own
+   words rather than inventing prose. It is labelled as a draft everywhere it
+   appears, because that is what it is. ------------------------------------ */
+function draftCopy() {
+  const f = A.fields;
+  const name = (f.cName || f.brandName || 'Your name here').trim();
+  const what = (f.cWhat || '').trim();
+  const who  = (f.cWho  || '').trim();
+  const why  = (f.cWhy  || '').trim();
+  const act  = (f.cAction || 'Get in touch').trim();
+  const contact = (f.cContact || '').trim();
+  const offers = (f.cOffer || '').split('\n').map(s => s.trim()).filter(Boolean).slice(0,3);
+
+  // If they gave us a document, lead with its first strong line.
+  let headline = '', sub = '';
+  if (A.copyMode === 'file' && A.copyText.trim()) {
+    const lines = A.copyText.trim().split('\n').map(s => s.trim()).filter(Boolean);
+    headline = lines[0] || what || name;
+    sub = lines.slice(1).join(' ').slice(0, 220) || '';
+  } else {
+    headline = why || what || `${name}`;
+    sub = [what && why ? what : '', who ? `Made for ${who.toLowerCase()}.` : '']
+          .filter(Boolean).join(' ') || 'A line about what you do and who it helps.';
+  }
+  return { name, headline, sub, offers, act, contact, who, what, why };
+}
+
+/* ---- Build the page ----------------------------------------------------- */
+async function buildPage() {
+  const styles = [...document.querySelectorAll('style')].map(s => s.textContent).filter(t => /--accent-500\s*:/.test(t)).join('\n');
+  let css = styles;
+  if (!css) {
+    if (location.protocol === 'file:') return null;
+    const links = [...document.querySelectorAll('link[rel="stylesheet"]')].map(l => l.href);
+    css = (await Promise.all(links.map(h => fetch(h).then(r => r.text())))).join('\n');
+  }
+
+  const d = draftCopy();
+  const p = A.pal || PALETTES[0];
+  const dark = p.dark;
+  const logoImg = A.logo ? `<img src="${A.logo.src}" alt="${d.name}" style="max-height:34px;width:auto">` : `<span>${d.name}</span>`;
+
+  const offers = d.offers.length ? d.offers : ['Something you offer','Something else','A third thing'];
+  const tint = dark ? '' : ' tint-1';
+
+  const darkVars = dark ? `
+:root {
+  --surface-page:#14181F; --surface-muted:#1B2333; --surface-sunken:#10141A; --surface-cream:#1B2333;
+  --fg-strong:#FFFFFF; --fg-body:rgba(255,255,255,.76); --fg-muted:rgba(255,255,255,.52);
+  --ink-100:rgba(255,255,255,.10); --ink-200:rgba(255,255,255,.17); --ink-300:rgba(255,255,255,.30); --ink-400:rgba(255,255,255,.48);
+}
+body { background: var(--surface-page); }` : `
+:root { --surface-page:${p.ground}; }
+body { background: var(--surface-page); }`;
+
+  const brief = [
+    `You need   : ${KIND_LABEL[A.kind] || '—'}`,
+    `The look   : ${p.name} (${p.mood})`,
+    `Logo       : ${logoSummary() || '—'}`,
+    A.logoMode === 'describe' && A.fields.logoWords ? `Logo notes : ${A.fields.logoWords}` : '',
+    `Words      : ${copySummary() || '—'}`,
+  ].filter(Boolean).join('\n  ');
+
+  const body = A.kind === 'deck' ? `
+<div class="deck deck--wide">
+  <div class="deck__slide">
+    <div class="slide">
+      <div class="slide-cover">
+        <div class="slide-cover__type">
+          <span class="eyebrow">${d.who || 'Presentation'}</span>
+          <h1 class="display">${d.headline}</h1>
+          <hr class="rule">
+          <p class="small text-muted">${d.name}${d.contact ? ' · ' + d.contact : ''}</p>
+        </div>
+        <div class="slide-cover__media" style="background:var(--accent-50)"></div>
+      </div>
+    </div>
+    <p class="deck__caption">Cover</p>
+  </div>
+  <div class="deck__slide">
+    <div class="slide slide--chromed">
+      <div class="slide__logo">${d.name}</div><div class="slide__pagenum">02</div>
+      <div class="slide__inner"><div class="stack stack-5">
+        <div class="stack stack-2"><span class="eyebrow">What we do</span><h2 class="h2">${d.what || 'What we do'}</h2></div>
+        <div class="grid grid--3">
+          ${offers.map(o => `<article class="card stack stack-3"><span class="icon-chip"></span><h3 class="card__title">${o}</h3><p class="card__body">A sentence about this.</p></article>`).join('')}
+        </div>
+      </div></div>
+    </div>
+    <p class="deck__caption">What we do</p>
+  </div>
+  <div class="deck__slide">
+    <div class="slide slide--accent">
+      <div class="slide-close">
+        <h2 class="display">${d.act}</h2>
+        <p class="small">${d.contact || 'your@email.com'}</p>
+      </div>
+    </div>
+    <p class="deck__caption">Closing</p>
+  </div>
+</div>` : `
+<header class="container">
+  <nav class="navbar">
+    <span class="navbar__brand">${logoImg}</span>
+    <a class="btn btn--primary" href="#contact">${d.act}</a>
+  </nav>
+</header>
+
+<section class="hero-gradient">
+  <div class="container" style="padding-block:var(--space-11) var(--space-9)">
+    <div class="split" style="align-items:center">
+      <div class="stack stack-5">
+        ${d.who ? `<span class="badge-pill">For ${d.who}</span>` : ''}
+        <h1 class="h1">${d.headline}</h1>
+        <p class="body-lg measure" style="color:rgba(255,255,255,.85)">${d.sub}</p>
+        <div><a class="btn btn--ink btn--lg" href="#contact">${d.act}</a></div>
+      </div>
+      <div style="position:relative;display:grid;place-items:center;isolation:isolate">
+        <div class="orb" style="width:340px;height:340px;top:-40px;right:-30px" aria-hidden="true"></div>
+        <div class="device device--browser" style="width:100%;max-width:500px">
+          <div class="device__screen" style="aspect-ratio:16/10;background:var(--surface-muted)"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="wave" aria-hidden="true"><svg viewBox="0 0 1440 90" preserveAspectRatio="none"><path d="M0,45 C240,95 480,0 720,25 C960,50 1200,90 1440,55 L1440,90 L0,90 Z"/></svg></div>
+</section>
+
+<section class="section section--muted">
+  <div class="container stack stack-6">
+    <div class="stack stack-3" style="max-width:52ch">
+      <span class="eyebrow">What we offer</span>
+      <h2 class="h2">${d.what || 'What we do'}</h2>
+      <hr class="rule">
+    </div>
+    <div class="grid grid--3">
+      ${offers.map(o => `<article class="card${tint} stack stack-3"><span class="icon-chip"></span><h3 class="card__title">${o}</h3><p class="card__body">A sentence about this. Replace it with the real thing when you're ready.</p></article>`).join('')}
+    </div>
+  </div>
+</section>
+
+${d.why ? `<section class="section">
+  <div class="container split">
+    <div class="stack stack-4">
+      <span class="eyebrow">Why us</span>
+      <h2 class="h2">${d.why}</h2>
+      <hr class="rule">
+    </div>
+    <p class="body measure">${d.sub}</p>
+  </div>
+</section>` : ''}
+
+<section class="section" id="contact">
+  <div class="container">
+    <div class="cta-band cta-band--gradient">
+      <div class="stack stack-2">
+        <h3 class="h3">${d.act}</h3>
+        ${d.contact ? `<p class="small" style="color:rgba(255,255,255,.85)">${d.contact}</p>` : ''}
+      </div>
+      <a class="btn btn--ink btn--lg" href="#">${d.act}</a>
+    </div>
+  </div>
+</section>
+
+<footer class="section section--dark on-dark" style="padding-block:var(--space-8)">
+  <div class="container stack stack-2">
+    <span class="navbar__brand" style="color:#fff">${d.name}</span>
+    ${d.contact ? `<p class="small">${d.contact}</p>` : ''}
+  </div>
+</footer>`;
+
+  return `<!doctype html>
+<html lang="en" class="theme-${p.theme}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${d.name}</title>
+<!--
+  Your brief
+  ${brief}
+
+  The wording below is a first draft built from your answers.
+  Change anything you like — it is a starting point, not the final copy.
+-->
+<style>
+${css}
+${darkVars}
+<\/style>
+<\/head>
+<body>
+${body}
+<\/body>
+<\/html>`;
+}
+
+/* ---- Actions ------------------------------------------------------------ */
+document.getElementById('see').onclick = async () => {
+  const note = document.getElementById('note');
+  if (!A.kind || !A.pal) { note.textContent = 'Pick what you need and a look first, then we can show you something.'; return; }
+  const doc = await buildPage();
+  if (!doc) { note.textContent = 'To preview here, open this page from a web address rather than straight off your computer.'; return; }
+  const w = window.open('', '_blank');
+  if (!w) { note.textContent = 'Your browser blocked the preview window — allow pop-ups for this page and try again.'; return; }
+  w.document.write(doc); w.document.close();
+  note.textContent = 'Opened in a new tab. Not right? Change an answer and press it again.';
+};
+
+document.getElementById('send').onclick = async () => {
+  const note = document.getElementById('note');
+  if (!A.kind || !A.pal) { note.textContent = 'Pick what you need and a look first.'; return; }
+  const doc = await buildPage();
+  if (!doc) { note.textContent = 'To save your page, open this from a web address rather than straight off your computer.'; return; }
+  const url = URL.createObjectURL(new Blob([doc], { type:'text/html' }));
+  const a = document.createElement('a');
+  a.href = url; a.download = `${(A.fields.cName || A.fields.brandName || 'my-project').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}.html`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+  note.textContent = 'Saved. Open the file in any browser — your brief is included inside it, so whoever builds this has everything they need.';
+};
+
+document.getElementById('reset').onclick = () => location.reload();
+
+render();
+</script>
+</body>
+</html>

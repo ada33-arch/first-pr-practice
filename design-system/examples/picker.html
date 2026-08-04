@@ -941,9 +941,10 @@ document.getElementById('fileRef').onchange = e => {
    their answers chose. No clone, no build, no network. -------------------- */
 
 async function collectCSS() {
-  // Standalone/hosted build: the CSS is already inline.
+  // Match the token *definition*, not a var() usage — this page's own <style>
+  // block references --accent-500 and would otherwise pass as the whole system.
   const inline = [...document.querySelectorAll('style')]
-    .map(s => s.textContent).filter(t => t.includes('--accent-500')).join('\n');
+    .map(s => s.textContent).filter(t => /--accent-500\s*:/.test(t)).join('\n');
   if (inline) return inline;
   // Served over http(s): fetch the linked sheets.
   const links = [...document.querySelectorAll('link[rel="stylesheet"]')].map(l => l.href);
