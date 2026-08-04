@@ -19,6 +19,8 @@ design-system/
 ├── brief.html             ← CLIENT-facing intake: four plain questions, no code
 ├── brief-standalone.html  ← the same, as one file you can email
 ├── SHARING.md             ← how anyone else uses this (link / file / repo)
+├── SELLING.md             ← approval → payment → delivery, and its real limits
+├── ROADMAP.md             ← ⏳ the systems marketplace, once we have 10+ systems
 ├── INTAKE.md              ← START HERE — six questions asked before any design
 ├── DESIGN-BRIEF.md        ← hand this to any designer or AI tool
 ├── FAVORITES.md           ← the web-landing reference set + its extra rules
@@ -78,6 +80,19 @@ without uploading it.
 
 `examples/picker.html` is the same job for **designers and AI tools** — layers,
 accent hex, class names, the scope block.
+
+### Approving and paying
+
+The client sees their page, approves it, and gets a `.zip` with the page, their
+words as a separate document, the brief and a short guide — written in the
+browser with no server involved.
+
+Checkout hands off to a payment provider. **There is no card form, deliberately:**
+a static page can't verify a payment or hold card details safely. Leave the
+provider unset and the button emails you the brief instead of pretending a
+checkout exists. [`SELLING.md`](SELLING.md) covers the setup and the one real
+limitation — a static page cannot gate a download behind a payment, so the
+provider should deliver the file.
 
 ## Starting a new design
 

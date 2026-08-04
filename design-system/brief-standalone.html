@@ -1785,6 +1785,55 @@ input[type="color"], input[type="text"], textarea {
     </div>
   </section>
 
+  <!-- 5. APPROVE -->
+  <section class="card qs stack stack-4" id="approve" hidden>
+    <div>
+      <div class="qs__head"><span class="qs__n">5</span><h2 class="h3">Happy with it?</h2></div>
+      <p class="qs__hint">Look at your page first, then approve it here to get the finished files.</p>
+    </div>
+
+    <div class="split">
+      <div class="stack stack-4">
+        <span class="eyebrow">What you get</span>
+        <ul class="checklist small">
+          <li><strong>Your finished page</strong> — ready to put online, opens in any browser</li>
+          <li><strong>Your words</strong> as a separate document, so you can edit them any time</li>
+          <li><strong>The code</strong>, yours to keep — no subscription, no licence to renew</li>
+          <li><strong>A short guide</strong> on how to put it online and what to change</li>
+        </ul>
+        <p class="small text-muted">
+          Everything is a plain file on your computer. Nothing depends on us
+          staying around.
+        </p>
+      </div>
+
+      <div class="stack stack-4">
+        <div class="card card--flat stack stack-3">
+          <span class="eyebrow">Your order</span>
+          <div class="bar" style="justify-content:space-between">
+            <span class="small" id="ordItem">—</span>
+            <span class="h3" id="ordPrice">—</span>
+          </div>
+          <p class="caption" id="ordNote"></p>
+        </div>
+
+        <label class="bar" style="gap:var(--space-3);align-items:flex-start;cursor:pointer">
+          <input type="checkbox" id="agree" style="width:20px;height:20px;margin-top:2px;accent-color:var(--accent-500)">
+          <span class="small">
+            I've seen my page and I'm happy with it. I understand the wording is a
+            starting point I can change.
+          </span>
+        </label>
+
+        <div class="bar">
+          <button class="btn btn--primary" type="button" id="pay" disabled>Approve and continue</button>
+          <button class="btn btn--outline" type="button" id="pack" disabled>Download my files</button>
+        </div>
+        <p class="caption" id="payNote"></p>
+      </div>
+    </div>
+  </section>
+
   <!-- SUMMARY -->
   <div class="summary">
     <div class="card card--raised stack stack-4">
@@ -2041,6 +2090,7 @@ function copySummary() {
 }
 
 function render() {
+  if (typeof renderApprove === 'function') renderApprove();
   const answered = ['kind','pal','logoMode','copyMode'].filter(k => A[k]).length;
   document.getElementById('prog').style.width = (answered/4*100) + '%';
   document.getElementById('count').textContent = `${answered} of 4`;
@@ -2253,6 +2303,226 @@ ${body}
 <\/body>
 <\/html>`;
 }
+
+/* ---- Pricing and checkout ------------------------------------------------
+   Set these to your own values. CHECKOUT is a payment link from whichever
+   provider you use (Stripe Payment Links, Gumroad, Lemon Squeezy, Paddle…).
+   Leave it empty and the button asks for an email instead of pretending a
+   checkout exists.
+
+   Deliberately NOT a card form. A page like this has no server, so it cannot
+   verify a payment or take card details safely — that has to be the provider's
+   job. See SELLING.md. ---------------------------------------------------- */
+const SHOP = {
+  currency: '£',
+  prices: { website: 450, landing: 350, deck: 250, portfolio: 400 },
+  CHECKOUT: '',                      // e.g. 'https://buy.stripe.com/xxxxxxxx'
+  CONTACT: 'hello@example.com',
+};
+
+/* ---- Building the .zip ---------------------------------------------------
+   Written by hand so the page stays dependency-free: CRC-32, per-file headers,
+   a central directory and an end record. Entries are deflated with the
+   platform's own CompressionStream, and fall back to stored if that isn't
+   available or doesn't actually help. -------------------------------------- */
+const CRC_T = (() => {
+  const t = new Uint32Array(256);
+  for (let n = 0; n < 256; n++) {
+    let c = n;
+    for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+    t[n] = c >>> 0;
+  }
+  return t;
+})();
+function crc32(u8) {
+  let c = 0xFFFFFFFF;
+  for (let i = 0; i < u8.length; i++) c = CRC_T[(c ^ u8[i]) & 0xFF] ^ (c >>> 8);
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+async function deflateRaw(u8) {
+  if (typeof CompressionStream === 'undefined') return null;
+  try {
+    const s = new Blob([u8]).stream().pipeThrough(new CompressionStream('deflate-raw'));
+    return new Uint8Array(await new Response(s).arrayBuffer());
+  } catch { return null; }
+}
+async function makeZip(files) {
+  const enc = new TextEncoder();
+  const parts = [], central = [];
+  let offset = 0;
+  for (const f of files) {
+    const data = enc.encode(f.text);
+    const crc = crc32(data);
+    let comp = await deflateRaw(data), method = 8;
+    if (!comp || comp.length >= data.length) { comp = data; method = 0; }
+    const name = enc.encode(f.name);
+
+    const lh = new Uint8Array(30 + name.length);
+    const dv = new DataView(lh.buffer);
+    dv.setUint32(0, 0x04034b50, true); dv.setUint16(4, 20, true); dv.setUint16(6, 0, true);
+    dv.setUint16(8, method, true); dv.setUint16(10, 0, true); dv.setUint16(12, 0x21, true);
+    dv.setUint32(14, crc, true); dv.setUint32(18, comp.length, true); dv.setUint32(22, data.length, true);
+    dv.setUint16(26, name.length, true); dv.setUint16(28, 0, true);
+    lh.set(name, 30);
+    parts.push(lh, comp);
+
+    const cd = new Uint8Array(46 + name.length);
+    const cv = new DataView(cd.buffer);
+    cv.setUint32(0, 0x02014b50, true); cv.setUint16(4, 20, true); cv.setUint16(6, 20, true);
+    cv.setUint16(8, 0, true); cv.setUint16(10, method, true);
+    cv.setUint16(12, 0, true); cv.setUint16(14, 0x21, true);
+    cv.setUint32(16, crc, true); cv.setUint32(20, comp.length, true); cv.setUint32(24, data.length, true);
+    cv.setUint16(28, name.length, true);
+    cv.setUint32(38, 0, true); cv.setUint32(42, offset, true);
+    cd.set(name, 46);
+    central.push(cd);
+    offset += lh.length + comp.length;
+  }
+  const cdSize = central.reduce((n, c) => n + c.length, 0);
+  const eocd = new Uint8Array(22);
+  const ev = new DataView(eocd.buffer);
+  ev.setUint32(0, 0x06054b50, true);
+  ev.setUint16(8, files.length, true); ev.setUint16(10, files.length, true);
+  ev.setUint32(12, cdSize, true); ev.setUint32(16, offset, true);
+  return new Blob([...parts, ...central, eocd], { type: 'application/zip' });
+}
+
+/* ---- The package -------------------------------------------------------- */
+function priceOf() { return SHOP.prices[A.kind] ?? 0; }
+
+function packageFiles(pageHtml) {
+  const d = draftCopy();
+  const p = A.pal || PALETTES[0];
+  const offers = d.offers.length ? d.offers : ['—','—','—'];
+
+  const copyMd = A.copyMode === 'file' && A.copyText.trim()
+    ? `# Your words\n\nThis is what we read from your document. Edit freely.\n\n---\n\n${A.copyText.trim()}\n`
+    : `# Your words
+
+A first draft, written from your answers. Change anything.
+
+## Headline
+${d.headline}
+
+## Underneath it
+${d.sub}
+
+## What you offer
+${offers.map(o => '- ' + o).join('\n')}
+
+## What you want people to do
+${d.act}
+
+## Contact
+${d.contact || '(add your contact details)'}
+`;
+
+  const briefMd = `# Your brief
+
+| | |
+|---|---|
+| You needed | ${KIND_LABEL[A.kind] || '—'} |
+| The look | ${p.name} — ${p.mood.toLowerCase()} |
+| Logo | ${logoSummary() || '—'} |
+| Words | ${copySummary() || '—'} |
+${A.logoMode === 'describe' && A.fields.logoWords ? `\n**Logo notes:** ${A.fields.logoWords}\n` : ''}
+${A.logoStyle ? `**Logo type:** ${A.logoStyle}\n` : ''}
+Approved on ${new Date().toLocaleDateString()}.
+`;
+
+  const readme = `# ${d.name}
+
+Everything here is yours to keep.
+
+## The files
+
+| File | What it is |
+|---|---|
+| \`index.html\` | Your page. Double-click it to open in any browser. |
+| \`copy.md\` | Your words on their own, so you can edit them without touching the page. |
+| \`BRIEF.md\` | What you chose, for your records. |
+
+## Changing the words
+
+Open \`index.html\` in any text editor and edit the text between the tags. The
+wording in it is a first draft — replace it with your own.
+
+## Putting it online
+
+The page is a single file with nothing else to install, so almost anywhere works:
+
+- **Netlify Drop** — drag the folder onto netlify.com/drop
+- **GitHub Pages** — put \`index.html\` in a repository and turn Pages on
+- **Your own host** — upload \`index.html\` by FTP
+
+## Making changes later
+
+Nothing here expires and nothing phones home. If you'd rather we made the
+changes, get in touch: ${SHOP.CONTACT}
+`;
+
+  return [
+    { name: 'index.html', text: pageHtml },
+    { name: 'copy.md', text: copyMd },
+    { name: 'BRIEF.md', text: briefMd },
+    { name: 'README.md', text: readme },
+  ];
+}
+
+function renderApprove() {
+  const ready = A.kind && A.pal;
+  document.getElementById('approve').hidden = !ready;
+  if (!ready) return;
+  const price = priceOf();
+  document.getElementById('ordItem').textContent = KIND_LABEL[A.kind];
+  document.getElementById('ordPrice').textContent = price ? `${SHOP.currency}${price}` : '—';
+  document.getElementById('ordNote').textContent =
+    'One payment. The files are yours — no subscription and nothing to renew.';
+  const agreed = document.getElementById('agree').checked;
+  document.getElementById('pay').disabled = !agreed;
+  document.getElementById('pack').disabled = !agreed;
+}
+document.getElementById('agree').onchange = renderApprove;
+
+document.getElementById('pay').onclick = () => {
+  const note = document.getElementById('payNote');
+  if (SHOP.CHECKOUT) {
+    window.open(SHOP.CHECKOUT, '_blank', 'noopener');
+    note.textContent = 'Opened checkout in a new tab. Your files arrive by email once the payment goes through.';
+  } else {
+    // No pretend checkout. Say what actually happens.
+    const subject = encodeURIComponent(`Approved: ${KIND_LABEL[A.kind]}`);
+    const body = encodeURIComponent(
+      `I'd like to go ahead.\n\n` +
+      `What: ${KIND_LABEL[A.kind]}\n` +
+      `Look: ${A.pal.name}\n` +
+      `Logo: ${logoSummary() || '—'}\n` +
+      `Words: ${copySummary() || '—'}\n`);
+    location.href = `mailto:${SHOP.CONTACT}?subject=${subject}&body=${body}`;
+    note.textContent = `Payment isn't set up on this page yet, so this starts an email to ${SHOP.CONTACT} with your brief in it. We'll reply with an invoice.`;
+  }
+};
+
+document.getElementById('pack').onclick = async () => {
+  const note = document.getElementById('payNote');
+  const btn = document.getElementById('pack');
+  btn.textContent = 'Packing…';
+  const page = await buildPage();
+  if (!page) {
+    btn.textContent = 'Download my files';
+    note.textContent = 'To build your files, open this page from a web address rather than straight off your computer.';
+    return;
+  }
+  const zip = await makeZip(packageFiles(page));
+  const url = URL.createObjectURL(zip);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${(A.fields.cName || A.fields.brandName || 'my-project').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}-files.zip`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+  btn.textContent = 'Download my files';
+  note.textContent = `Saved — ${(zip.size/1024).toFixed(0)}KB. Unzip it and open index.html to see your page.`;
+};
 
 /* ---- Actions ------------------------------------------------------------ */
 document.getElementById('see').onclick = async () => {
