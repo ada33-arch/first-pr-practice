@@ -70,7 +70,9 @@ async function route(request, env, url, pathname) {
 
   if (pathname === '/api/briefs' && method === 'GET') {
     const { results } = await listBriefs(env.DB, user.id);
-    return json({ briefs: results || [] });
+    // Through publicBrief like every other brief response, so callers see one
+    // field naming everywhere rather than raw column names from this route.
+    return json({ briefs: (results || []).map(publicBrief) });
   }
 
   if (pathname === '/api/briefs' && post) {
@@ -212,13 +214,12 @@ function withSecurityHeaders(res, { api = false } = {}) {
 async function serveStatic(request, env, url) {
   if (!env.ASSETS) return new Response('Not found', { status: 404 });
 
-  // Pretty routes for the pages people are actually sent links to.
-  const rewrites = { '/': '/index.html', '/start': '/brief.html', '/signin': '/signin.html', '/projects': '/projects.html' };
-  const path = rewrites[url.pathname];
-  if (path) {
-    const rewritten = new URL(url);
-    rewritten.pathname = path;
-    return env.ASSETS.fetch(new Request(rewritten, request));
+  /* The assets layer already strips .html and canonicalises, so /brief and
+   * /signin resolve on their own. This only covers the friendlier alias we
+   * hand out in links, and it redirects rather than rewriting so the address
+   * bar ends up showing the one canonical URL. */
+  if (url.pathname === '/start') {
+    return new Response(null, { status: 302, headers: { Location: '/brief' } });
   }
   return env.ASSETS.fetch(request);
 }

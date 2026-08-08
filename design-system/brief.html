@@ -83,10 +83,22 @@
   /* Checkbox and its wording stay on one row; only the wording wraps. */
   .approve-row { display: flex; gap: var(--space-3); align-items: flex-start; cursor: pointer; }
   .approve-row input { width: 20px; height: 20px; margin-top: 2px; flex: none; accent-color: var(--accent-500); }
+  .acct { padding: var(--space-3) var(--space-4); border-radius: var(--radius-md);
+          background: var(--surface-page); border: 1px solid var(--ink-100);
+          margin-bottom: var(--space-5); }
+  .btn--sm { padding: .4rem .9rem; font-size: var(--fs-caption); }
 </style>
 </head>
 <body>
 <div class="wrap">
+
+  <div class="acct bar" id="acct" hidden>
+    <span class="small" id="acctWho"></span>
+    <span class="caption" id="acctUse"></span>
+    <span style="flex:1"></span>
+    <a class="btn btn--ghost btn--sm" href="/projects" id="acctProjects">My projects</a>
+    <button class="btn btn--ghost btn--sm" type="button" id="acctOut">Sign out</button>
+  </div>
 
   <header class="stack stack-3" style="margin-bottom: var(--space-8);">
     <span class="eyebrow">Project brief</span>
@@ -541,6 +553,72 @@ function render() {
 }
 
 
+
+/* ---- The account layer ----------------------------------------------------
+   This page has two lives. Served by the Worker it belongs to a signed-in
+   person: briefs are saved to their account and the download comes from the
+   server. Opened as the standalone file there is no server at all, and it
+   falls back to building everything locally. `ONLINE` is what decides, and it
+   is answered by asking the server rather than by guessing from the URL. ---- */
+const ONLINE = { ready: false, signedIn: false, user: null, usage: null, briefId: null };
+
+async function api(path, options = {}) {
+  const res = await fetch(path, {
+    credentials: 'same-origin',
+    headers: options.body ? { 'Content-Type': 'application/json' } : {},
+    ...options,
+  });
+  const data = await res.json().catch(() => ({}));
+  return { ok: res.ok, status: res.status, data };
+}
+
+async function detectAccount() {
+  if (location.protocol === 'file:') return;
+  try {
+    const { ok, data } = await api('/api/me');
+    if (!ok) return;
+    ONLINE.ready = true;
+    ONLINE.signedIn = Boolean(data.signedIn);
+    ONLINE.user = data.user || null;
+    ONLINE.usage = data.usage || null;
+  } catch { /* no server behind this page; stay in local mode */ }
+  paintAccount();
+}
+
+function paintAccount() {
+  const bar = document.getElementById('acct');
+  if (!ONLINE.ready || !ONLINE.signedIn) { bar.hidden = true; return; }
+  bar.hidden = false;
+  document.getElementById('acctWho').textContent = ONLINE.user.email;
+
+  const u = ONLINE.usage || {};
+  document.getElementById('acctUse').textContent = !u.paywall
+    ? `${u.used || 0} downloaded`
+    : u.plan ? 'Subscribed'
+    : `${u.remaining} of ${u.free} free left`;
+}
+
+/* Saving is what turns a page full of answers into something that survives
+   closing the tab — and it is what the server later builds the files from. */
+async function saveToAccount() {
+  if (!ONLINE.ready || !ONLINE.signedIn) return null;
+  const { ok, data, status } = await api('/api/briefs', {
+    method: 'POST',
+    body: JSON.stringify({ id: ONLINE.briefId, title: brandOf(answersOf()) || null, answers: answersOf() }),
+  });
+  if (status === 401) { ONLINE.signedIn = false; paintAccount(); return null; }
+  if (!ok) return null;
+  ONLINE.briefId = data.brief.id;
+  return data.brief;
+}
+
+document.getElementById('acctOut').onclick = async () => {
+  await api('/auth/signout', { method: 'POST' });
+  location.reload();
+};
+
+const signInHref = () => `/signin?returnTo=${encodeURIComponent(location.pathname)}`;
+
 /* ---- Handing the answers to the generator --------------------------------
    The page keeps `A` in whatever shape the form finds convenient; the module
    takes one fixed shape. Converting here means the form can change without
@@ -632,24 +710,67 @@ document.getElementById('pack').onclick = async () => {
   const note = document.getElementById('payNote');
   const btn = document.getElementById('pack');
   btn.textContent = 'Packing…';
-  const page = await buildPage();
-  if (!page) {
+  note.textContent = '';
+
+  try {
+    /* Online, the server builds and hands over the package — that is the only
+       way the count, and later the payment, can mean anything. Offline, the
+       page builds it itself, which is exactly what the standalone file is for. */
+    if (ONLINE.ready) {
+      if (!ONLINE.signedIn) {
+        note.innerHTML = `Almost there — <a href="${signInHref()}">sign in</a> and your files download straight away. Your first two are free.`;
+        return;
+      }
+      const brief = await saveToAccount();
+      if (!brief) { note.textContent = 'We could not save your project. Try again in a moment.'; return; }
+
+      const res = await fetch(`/api/briefs/${brief.id}/download`, { method: 'POST', credentials: 'same-origin' });
+
+      if (res.status === 402) {
+        const d = await res.json().catch(() => ({}));
+        note.textContent = d.message || 'Your free downloads are used up.';
+        return;
+      }
+      if (res.status === 409) {
+        const d = await res.json().catch(() => ({}));
+        note.textContent = d.message || "We're checking your files over.";
+        return;
+      }
+      if (!res.ok) { note.textContent = 'That did not work. Try again in a moment.'; return; }
+
+      const blob = await res.blob();
+      const name = (res.headers.get('Content-Disposition') || '').match(/filename="([^"]+)"/)?.[1]
+        || packageName(answersOf());
+      saveBlob(blob, name);
+      note.textContent = `Saved — ${(blob.size / 1024).toFixed(0)}KB. Unzip it and open index.html to see your page.`;
+
+      const me = await api('/api/me');
+      if (me.ok) { ONLINE.usage = me.data.usage; paintAccount(); }
+      return;
+    }
+
+    const page = await buildPage();
+    if (!page) {
+      note.textContent = 'To build your files, open this page from a web address rather than straight off your computer.';
+      return;
+    }
+    const bytes = await makeZip(packageFiles(answersOf(), page, { contact: SHOP.CONTACT }));
+    const blob = new Blob([bytes], { type: 'application/zip' });
+    saveBlob(blob, packageName(answersOf()));
+    note.textContent = `Saved — ${(blob.size / 1024).toFixed(0)}KB. Unzip it and open index.html to see your page.`;
+  } finally {
     btn.textContent = 'Download my files';
-    note.textContent = 'To build your files, open this page from a web address rather than straight off your computer.';
-    return;
   }
-  // makeZip returns bytes; the Worker streams them, the browser wraps them.
-  const bytes = await makeZip(packageFiles(answersOf(), page, { contact: SHOP.CONTACT }));
-  const blob = new Blob([bytes], { type: 'application/zip' });
+};
+
+function saveBlob(blob, filename) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = packageName(answersOf());
+  link.download = filename;
   link.click();
   setTimeout(() => URL.revokeObjectURL(url), 5000);
-  btn.textContent = 'Download my files';
-  note.textContent = `Saved — ${(blob.size/1024).toFixed(0)}KB. Unzip it and open index.html to see your page.`;
-};
+}
 
 /* ---- Actions ------------------------------------------------------------ */
 document.getElementById('see').onclick = async () => {
@@ -677,6 +798,8 @@ document.getElementById('send').onclick = async () => {
 };
 
 document.getElementById('reset').onclick = () => location.reload();
+
+detectAccount();
 
 render();
 </script>
