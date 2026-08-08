@@ -104,7 +104,27 @@ if (bodyStart < 6 || bodyEnd < 0) {
   console.error('Could not locate <body> in', src);
   process.exit(1);
 }
-const body = html.slice(bodyStart, bodyEnd);
+let body = html.slice(bodyStart, bodyEnd);
+
+/* An ES module import needs a server; this file has to work from a USB stick.
+ * Inline the module source and strip its export keywords, so the page script
+ * finds the same names in its own scope that it would have imported. */
+body = body.replace(
+  /^\s*import\s*\{([^}]*)\}\s*from\s*['"](\.\/lib\/[\w.-]+\.js)['"];?/m,
+  (_, specifiers, rel) => {
+    let mod = fs.readFileSync(path.join(ROOT, rel.replace('./', '')), 'utf8')
+      .replace(/^export\s+(?=(async\s+)?function|const|let|class)/gm, '');
+
+    /* `import { buildPage as buildPageFrom }` means the page has its own
+     * buildPage. Inlining without honouring the alias declares the name twice
+     * and the whole script fails to parse — so apply the rename to the module
+     * source, which is the only place the original name is used. */
+    for (const spec of specifiers.split(',')) {
+      const [from, to] = spec.trim().split(/\s+as\s+/).map(t => t.trim());
+      if (to && from !== to) mod = mod.replace(new RegExp(`\\b${from}\\b`, 'g'), to);
+    }
+    return `/* ===== inlined ${rel} ===== */\n${mod}\n/* ===== end ${rel} ===== */`;
+  });
 
 const out = `<!doctype html>
 <html lang="en" class="${theme}">
@@ -128,6 +148,11 @@ ${body}
 fs.writeFileSync(OUT, out);
 
 // Guard the one property that makes this file worth having.
+if (/^\s*import\s.+from\s/m.test(out) || /^export\s/m.test(out)) {
+  console.error('Module syntax survived bundling — the standalone build would not run:', OUT);
+  process.exit(1);
+}
+
 const external = out.match(/(?:src|href)="https?:\/\/[^"]+"/g) || [];
 if (external.length) {
   console.error('External asset references found — the build is not self-contained:');
