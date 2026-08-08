@@ -120,6 +120,13 @@ export function copySummary(a) {
 /* Enough answered to be worth generating anything. */
 export const isReady = a => Boolean(a.kind && a.palId);
 
+/* Close a clause typed as a fragment, so joined answers don't run together.
+   Leaves existing terminal punctuation — including a question mark — alone. */
+function endSentence(text) {
+  const t = String(text).trim();
+  return /[.!?…]$/.test(t) ? t : `${t}.`;
+}
+
 /* ---- Turning answers into real copy ---------------------------------------
    No model runs here, so this composes a first draft from the customer's own
    words rather than inventing prose. It is labelled as a draft everywhere it
@@ -135,16 +142,35 @@ export function draftCopy(a) {
   const offers = (f.cOffer || '').split('\n').map(s => s.trim()).filter(Boolean).slice(0, 3);
 
   let headline = '', sub = '';
+  let whatSpent = false;
   if (a.copyMode === 'file' && a.copyText.trim()) {
     const lines = a.copyText.trim().split('\n').map(s => s.trim()).filter(Boolean);
     headline = lines[0] || what || name;
     sub = lines.slice(1).join(' ').slice(0, 220) || '';
+    whatSpent = what === headline;
   } else {
     headline = why || what || name;
-    sub = [what && why ? what : '', who ? `Made for ${who.toLowerCase()}.` : '']
-      .filter(Boolean).join(' ') || 'A line about what you do and who it helps.';
+    whatSpent = what !== '' && what === headline;
+    /* People type answers, not sentences — "we plan quarters" has no full stop.
+       Two of those joined with a space read as one run-on line, so each clause
+       is closed before the next begins. */
+    if (who) {
+      sub = `Made for ${who.toLowerCase()}.`;
+    } else if (what && what !== headline) {
+      sub = endSentence(what);
+      whatSpent = true;
+    } else {
+      sub = 'A line about what you do and who it helps.';
+    }
   }
-  return { name, headline, sub, offers, act, contact, who, what, why };
+
+  /* Each answer earns one place on the page. Repeating the same sentence as a
+     headline and again as the section title below it is the tell of generated
+     copy, so whichever slot has already used it releases the others. */
+  const offersHeading = what && !whatSpent ? what : 'What we offer';
+  const whyHeading = why && why !== headline ? why : null;
+
+  return { name, headline, sub, offers, act, contact, who, what, why, offersHeading, whyHeading };
 }
 
 /* ---- Build the page -------------------------------------------------------
@@ -255,7 +281,7 @@ body { background: var(--surface-page); }`;
   <div class="container stack stack-6">
     <div class="stack stack-3" style="max-width:52ch">
       <span class="eyebrow">What we offer</span>
-      <h2 class="h2">${esc(d.what || 'What we do')}</h2>
+      <h2 class="h2">${esc(d.offersHeading)}</h2>
       <hr class="rule">
     </div>
     <div class="grid grid--3">
@@ -264,11 +290,11 @@ body { background: var(--surface-page); }`;
   </div>
 </section>
 
-${d.why ? `<section class="section">
+${d.whyHeading ? `<section class="section">
   <div class="container split">
     <div class="stack stack-4">
       <span class="eyebrow">Why us</span>
-      <h2 class="h2">${esc(d.why)}</h2>
+      <h2 class="h2">${esc(d.whyHeading)}</h2>
       <hr class="rule">
     </div>
     <p class="body measure">${esc(d.sub)}</p>
