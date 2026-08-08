@@ -1,0 +1,1280 @@
+<!doctype html>
+<html lang="en" class="theme-violet">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design Intake — Corporate Deck Design System</title>
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/components.css">
+<link rel="stylesheet" href="../css/web.css">
+<style>
+  body { background: var(--surface-muted); }
+  /* Bottom padding keeps the last question scrollable clear of the sticky
+     spec panel — without it the panel overlays the options and eats clicks. */
+  .wrap { max-width: 940px; margin-inline: auto; padding: var(--space-9) var(--space-5) 56vh; }
+  .q { margin-bottom: var(--space-6); }
+  .q__head { display: flex; gap: var(--space-4); align-items: baseline; margin-bottom: var(--space-4); }
+  .q__n { font-family: var(--font-display); font-weight: var(--fw-black); font-size: 1.5rem;
+          color: var(--accent-500); font-variant-numeric: tabular-nums; }
+  .opts { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .opt {
+    padding: 0.6rem 1.1rem; border: 1.5px solid var(--ink-200); border-radius: var(--radius-pill);
+    background: var(--surface-page); font: inherit; font-size: var(--fs-small);
+    font-weight: var(--fw-medium); color: var(--fg-body); cursor: pointer;
+    transition: all var(--duration-fast) var(--ease-standard);
+  }
+  .opt:hover { border-color: var(--accent-300); color: var(--fg-strong); }
+  .opt[aria-pressed="true"] {
+    background: var(--accent-500); border-color: var(--accent-500);
+    color: var(--accent-on); font-weight: var(--fw-semibold);
+  }
+  .out { position: sticky; bottom: var(--space-4); z-index: 5; }
+  .out > .card { max-height: 48vh; overflow: auto; }
+  .spec { font-family: var(--font-mono); font-size: 0.8125rem; line-height: 1.7;
+          white-space: pre-wrap; word-break: break-word; }
+  .spec b { font-weight: 700; color: var(--accent-600); }
+  .swatch { width: 20px; height: 20px; border-radius: var(--radius-pill);
+            display: inline-block; vertical-align: -4px; margin-right: 6px; }
+  .bar { display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center; }
+  .progress { flex: 1; min-width: 140px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="stack stack-3" style="margin-bottom: var(--space-8);">
+    <span class="eyebrow">Before we design anything</span>
+    <h1 class="h1">Six questions</h1>
+    <p class="body measure">
+      Every answer changes a concrete setting. Answer these and you get a spec you
+      can hand to any designer — or paste into an AI tool — and get back something
+      that looks like it belongs to the rest of your work.
+    </p>
+  </header>
+
+  <form id="form" class="stack stack-5"></form>
+
+  <!-- Colour module. Appears once you say you have brand colours. -->
+  <section id="colour" class="card q stack stack-5" hidden style="border:1px solid var(--ink-100);">
+    <div class="q__head">
+      <span class="q__n">03<span style="font-size:.6em">a</span></span>
+      <h2 class="h3" style="padding:0;">Your colours</h2>
+    </div>
+
+    <p class="small measure">
+      Pick your accent and the whole system re-themes from it — the ramp, the
+      gradient, buttons, charts, icon chips and section panels all derive from
+      this one value. Changes apply to this page live so you can see them.
+    </p>
+
+    <div class="grid grid--2">
+      <div class="stack stack-4">
+        <div class="stack stack-2">
+          <span class="eyebrow">Accent</span>
+          <div class="bar">
+            <input type="color" id="cAccent" value="#4059F0"
+                   style="width:52px;height:44px;border:1px solid var(--ink-200);border-radius:var(--radius-md);background:none;cursor:pointer;padding:2px;">
+            <input type="text" id="cHex" value="#4059F0" spellcheck="false" aria-label="Accent hex"
+                   style="font-family:var(--font-mono);font-size:var(--fs-small);padding:.65rem .9rem;
+                          border:1px solid var(--ink-200);border-radius:var(--radius-md);width:120px;">
+            <span class="tag" id="cContrast">—</span>
+          </div>
+          <p class="caption" id="cContrastNote"></p>
+        </div>
+
+        <div class="stack stack-2">
+          <span class="eyebrow">Generated ramp</span>
+          <div class="bar" id="cRamp" style="gap:0;border-radius:var(--radius-md);overflow:hidden;"></div>
+          <p class="caption">50 · 100 · 300 · 500 · 600 · 700 — derived from your accent.</p>
+        </div>
+
+        <div class="stack stack-2">
+          <span class="eyebrow">Ground</span>
+          <div class="opts" id="cGround">
+            <button class="opt" type="button" data-g="#FFFFFF" aria-pressed="true">White</button>
+            <button class="opt" type="button" data-g="#F7F8FA" aria-pressed="false">Off-white</button>
+            <button class="opt" type="button" data-g="#FAF6EC" aria-pressed="false">Cream</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="stack stack-4">
+        <div class="stack stack-2">
+          <span class="eyebrow">Gradient</span>
+          <div class="bar">
+            <input type="color" id="cG1" value="#2E42CC" aria-label="Gradient start"
+                   style="width:52px;height:44px;border:1px solid var(--ink-200);border-radius:var(--radius-md);background:none;cursor:pointer;padding:2px;">
+            <input type="color" id="cG2" value="#93A5FF" aria-label="Gradient end"
+                   style="width:52px;height:44px;border:1px solid var(--ink-200);border-radius:var(--radius-md);background:none;cursor:pointer;padding:2px;">
+            <button class="btn btn--ghost" type="button" id="cGReset">Reset to ramp</button>
+          </div>
+          <div id="cGPreview" style="height:64px;border-radius:var(--radius-md);"></div>
+          <p class="caption">Heroes and CTA bands only. Keep both stops inside one hue — two hues reads as two brands.</p>
+        </div>
+
+        <div class="stack stack-2">
+          <span class="eyebrow">In context</span>
+          <div class="card card--flat stack stack-3" id="cPreview">
+            <span class="eyebrow">Section label</span>
+            <h3 class="h3">A headline with <em>emphasis</em></h3>
+            <div class="bar">
+              <span class="btn btn--primary">Primary</span>
+              <span class="btn btn--outline">Outline</span>
+              <span class="tag tag--solid">Tag</span>
+            </div>
+            <div class="meter"><div class="meter__fill" style="width:72%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stack stack-2">
+      <span class="eyebrow">CSS to keep</span>
+      <div class="card card--flat"><code class="spec" id="cCss" style="font-size:.8125rem;"></code></div>
+      <div class="bar">
+        <button class="btn btn--primary" type="button" id="cCopy">Copy CSS</button>
+        <button class="btn btn--ghost" type="button" id="cRevert">Revert to preset</button>
+      </div>
+      <p class="caption">Paste into your project's stylesheet, after <code>tokens.css</code>. Do not edit <code>tokens.css</code> itself.</p>
+    </div>
+  </section>
+
+  <!-- Photo module. Appears only when the imagery answer needs one. -->
+  <section id="photo" class="card q stack stack-5" hidden style="border:1px solid var(--ink-100);">
+
+    <div class="q__head">
+      <span class="q__n">05<span style="font-size:.6em">a</span></span>
+      <h2 class="h3" id="photoTitle" style="padding:0;">Your photo</h2>
+    </div>
+
+    <!-- UPLOAD MODE -->
+    <div id="modeUpload" hidden class="stack stack-5">
+      <p class="small measure">
+        Drop an image in and see it in the house treatments straight away. Nothing
+        is uploaded anywhere — the file is read in your browser and never leaves it.
+      </p>
+
+      <label id="drop" class="stack stack-2" style="display:grid;place-items:center;text-align:center;
+             padding:var(--space-8);border:2px dashed var(--ink-200);border-radius:var(--radius-lg);
+             background:var(--surface-muted);cursor:pointer;">
+        <span class="icon-chip" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 16V4m0 0L7 9m5-5 5 5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>
+          </svg>
+        </span>
+        <span class="h4">Drop a photo, or click to choose</span>
+        <span class="caption">JPG, PNG or WebP · landscape works best for heroes</span>
+        <input type="file" id="file" accept="image/*" hidden>
+      </label>
+
+      <div id="previews" hidden class="stack stack-4">
+        <div class="bar">
+          <span class="eyebrow">In your treatments</span>
+          <span class="caption" id="dims"></span>
+        </div>
+        <div class="grid grid--4">
+          <div class="stack stack-2">
+            <div class="media media--notched" style="aspect-ratio:4/3;"><img id="p1" alt="Preview, notched mask"></div>
+            <span class="caption">.media--notched</span>
+          </div>
+          <div class="stack stack-2">
+            <div class="media media--circle"><img id="p2" alt="Preview, circular mask"></div>
+            <span class="caption">.media--circle</span>
+          </div>
+          <div class="stack stack-2">
+            <div class="media media--xl media--wash" style="aspect-ratio:4/3;"><img id="p3" alt="Preview, accent wash"></div>
+            <span class="caption">.media--wash</span>
+          </div>
+          <div class="stack stack-2">
+            <div class="media media--xl media--dim" style="aspect-ratio:4/3;position:relative;">
+              <img id="p4" alt="Preview, dark scrim">
+              <span style="position:absolute;left:8%;bottom:10%;z-index:2;color:#fff;font-family:var(--font-display);font-weight:800;font-size:1.1rem;">Headline here</span>
+            </div>
+            <span class="caption">.media--dim + type</span>
+          </div>
+        </div>
+        <p class="small" id="advice"></p>
+      </div>
+    </div>
+
+    <!-- SEARCH MODE -->
+    <div id="modeSearch" hidden class="stack stack-5">
+      <p class="small measure">
+        Here is the search brief your other answers produce. Paste it into a
+        free-licence library — the three below all permit commercial use — then
+        drop the result back into the upload box above to see it in treatment.
+      </p>
+
+      <div class="stack stack-2">
+        <span class="eyebrow">Search query</span>
+        <div class="card card--flat"><code class="spec" id="query" style="font-size:.875rem;"></code></div>
+        <div class="bar">
+          <button class="btn btn--primary" type="button" id="copyQ">Copy query</button>
+          <a class="btn btn--outline" id="lUnsplash" target="_blank" rel="noopener">Unsplash</a>
+          <a class="btn btn--outline" id="lPexels"   target="_blank" rel="noopener">Pexels</a>
+          <a class="btn btn--outline" id="lPixabay"  target="_blank" rel="noopener">Pixabay</a>
+        </div>
+      </div>
+
+      <div class="card card--flat stack stack-3">
+        <span class="eyebrow">Before you use it</span>
+        <ul class="checklist small">
+          <li>Use only these free-licence libraries, or stock you have actually bought. Do not pull images off a search engine, a competitor's site, or a social feed — those are someone's copyright, and a takedown lands on the client.</li>
+          <li>Check the licence on the individual photo, not the site. A few are editorial-only and cannot be used commercially.</li>
+          <li>Recognisable faces and private property need a model or property release for advertising use.</li>
+          <li>Record the source URL, photographer and licence next to the asset. <code>PHOTOS.md</code> has the line to keep.</li>
+          <li>Never use an AI-upscaled or watermark-removed version of a paid preview.</li>
+        </ul>
+      </div>
+    </div>
+
+    <button class="btn btn--ghost" type="button" id="skipPhoto">Skip — I'll sort imagery later</button>
+  </section>
+
+  <!-- Assets module. Logo, copy and reference files — kept separate on purpose. -->
+  <section id="assets" class="card q stack stack-5" hidden style="border:1px solid var(--ink-100);">
+    <div class="q__head">
+      <span class="q__n">06<span style="font-size:.6em">a</span></span>
+      <h2 class="h3" style="padding:0;">What else do you have?</h2>
+    </div>
+    <p class="small measure">
+      Optional, and each kind is kept in its own place — a logo has different
+      rules from a photo, and copy has different rules again. Everything is read
+      in your browser; nothing is uploaded.
+    </p>
+
+    <!-- LOGO -->
+    <div class="stack stack-4">
+      <span class="eyebrow">Logo</span>
+      <label id="dropLogo" class="stack stack-2" style="display:grid;place-items:center;text-align:center;
+             padding:var(--space-6);border:2px dashed var(--ink-200);border-radius:var(--radius-lg);
+             background:var(--surface-muted);cursor:pointer;">
+        <span class="h4">Drop your logo, or click to choose</span>
+        <span class="caption">SVG best · PNG with transparency fine · JPG will show a white box</span>
+        <input type="file" id="fileLogo" accept="image/*,.svg" hidden>
+      </label>
+
+      <div id="logoOut" hidden class="stack stack-4">
+        <div class="grid grid--3">
+          <div class="stack stack-2">
+            <div class="card" style="padding:var(--space-4);"><img id="logoLight" alt="Logo on white" style="max-height:44px;width:auto;"></div>
+            <span class="caption">On white — navbar / slide furniture</span>
+          </div>
+          <div class="stack stack-2">
+            <div class="card card--dark" style="padding:var(--space-4);"><img id="logoDark" alt="Logo on ink" style="max-height:44px;width:auto;"></div>
+            <span class="caption">On ink — footer / dark slide</span>
+          </div>
+          <div class="stack stack-2">
+            <div class="card card--accent" style="padding:var(--space-4);"><img id="logoAccent" alt="Logo on accent" style="max-height:44px;width:auto;"></div>
+            <span class="caption">On accent — CTA band / section panel</span>
+          </div>
+        </div>
+        <div class="card card--flat stack stack-2">
+          <span class="eyebrow">Checks</span>
+          <p class="small" id="logoNotes"></p>
+        </div>
+      </div>
+    </div>
+
+    <hr class="rule--long">
+
+    <!-- CONTENT -->
+    <div class="stack stack-4">
+      <span class="eyebrow">Copy / content</span>
+      <p class="small measure">
+        Paste the real words, or drop a <code>.txt</code> / <code>.md</code> file.
+        Designing against real copy instead of lorem ipsum is the single cheapest
+        quality win available — placeholder text hides every length problem.
+      </p>
+      <label id="dropCopy" style="display:block;">
+        <textarea id="copyText" rows="6" placeholder="Paste headlines, body copy, section titles…"
+          style="width:100%;font:inherit;font-size:var(--fs-small);padding:var(--space-4);
+                 border:1px solid var(--ink-200);border-radius:var(--radius-md);resize:vertical;"></textarea>
+        <input type="file" id="fileCopy" accept=".txt,.md,text/*" hidden>
+      </label>
+      <div class="bar">
+        <button class="btn btn--outline" type="button" id="pickCopy">Or drop a .txt / .md file</button>
+        <span class="caption" id="copyStats"></span>
+      </div>
+      <p class="small" id="copyNotes"></p>
+    </div>
+
+    <hr class="rule--long">
+
+    <!-- REFERENCE -->
+    <div class="stack stack-3">
+      <span class="eyebrow">Existing material</span>
+      <p class="small measure">
+        Current site, old deck, brand guidelines — anything the new work should
+        stay consistent with, or deliberately move away from. Listed here so it
+        lands in the project folder rather than in a chat thread.
+      </p>
+      <label id="dropRef" class="stack stack-2" style="display:grid;place-items:center;text-align:center;
+             padding:var(--space-5);border:2px dashed var(--ink-200);border-radius:var(--radius-lg);
+             background:var(--surface-muted);cursor:pointer;">
+        <span class="h4">Drop files to list them</span>
+        <span class="caption">Nothing is read or uploaded — filenames only</span>
+        <input type="file" id="fileRef" multiple hidden>
+      </label>
+      <ul id="refList" class="checklist small"></ul>
+    </div>
+
+    <div class="stack stack-2">
+      <span class="eyebrow">Where these go</span>
+      <div class="card card--flat"><code class="spec" id="assetTree" style="font-size:.8125rem;"></code></div>
+    </div>
+  </section>
+
+  <div class="out">
+    <div class="card card--raised stack stack-4" style="margin-top: var(--space-8);">
+      <div class="bar">
+        <span class="eyebrow">Your spec</span>
+        <div class="progress">
+          <div class="meter"><div class="meter__fill" id="prog" style="width:0%"></div></div>
+        </div>
+        <span class="caption" id="count">0 of 6</span>
+      </div>
+      <div class="spec" id="spec">Answer the questions above and your spec appears here.</div>
+      <div class="bar">
+        <button class="btn btn--primary" type="button" id="copy">Copy spec</button>
+        <button class="btn btn--ink" type="button" id="starter">Download starter file</button>
+        <button class="btn btn--ghost" type="button" id="reset">Start over</button>
+      </div>
+      <p class="caption" id="starterNote">One self-contained HTML file — your theme baked in, no repo or build needed.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const Q = [
+  { id:'kind', q:'What are you making?',
+    opts:[
+      ['Presentation / deck', {layer:'slides', sections:'the 14-step deck sequence',
+        cls:'.slide .slide__inner .slide--chromed .slide__logo .slide__kicker .slide__pagenum .slide-cover .slide-section .agenda .steps .stat-row .timeline .swot .quote .slide-close',
+        ref:'DESIGN-BRIEF.md §8 (deck sequence), README §Building slides'}],
+      ['Pitch deck', {layer:'slides', sections:'cover, problem, solution, market, model, traction, team, ask',
+        cls:'.slide .slide-cover .slide-section .split .card .stat-row .timeline .grid--3 .slide-close',
+        ref:'DESIGN-BRIEF.md §8'}],
+      ['Report / whitepaper', {layer:'slides', sections:'cover, contents, sections, charts, closing',
+        cls:'.slide .slide-cover .agenda .slide-section .split .table .stat-row .slide-close',
+        ref:'DESIGN-BRIEF.md §7 (charts), §8'}],
+      ['Landing page', {layer:'web', sections:'hero, trust bar, features, how-it-works, stats, pricing, FAQ, CTA',
+        cls:'.hero-gradient .orb .wave .badge-pill .trustbar .tint-grid/.tint-card .rail/.rail__num .stat-row .price-grid/.price-card .faq .cta-band',
+        ref:'FAVORITES.md §Rules specific to this set'}],
+      ['Product site', {layer:'web', sections:'hero with device mockup, features, integrations, pricing, FAQ, CTA',
+        cls:'.hero-gradient .device--browser/.device--phone .float-card .trustbar .tint-grid .price-grid .faq .cta-band',
+        ref:'FAVORITES.md §Rules specific to this set'}],
+      ['Portfolio', {layer:'web', sections:'hero with portrait, selected work, services, process, testimonials, contact',
+        cls:'.hero-gradient .pin .media--blob .grid--4 .feature .rail .quote .cta-band .field-group',
+        ref:'FAVORITES.md (ref 5, 6, 7)'}],
+    ]},
+  { id:'feel', q:'What should the audience feel in the first five seconds?',
+    opts:[
+      ['Trusted, established',   {accent:'navy',     ground:'white'}],
+      ['Serious about money',    {accent:'indigo',   ground:'white'}],
+      ['Energised, warm',        {accent:'amber',    ground:'white'}],
+      ['Modern, technical',      {accent:'violet',   ground:'white'}],
+      ['Calm, sustainable',      {accent:'green',    ground:'off-white'}],
+      ['Bold, unmissable',       {accent:'coral',    ground:'cream'}],
+    ]},
+  { id:'brand', q:'Do you already have brand colours, a logo, or fonts?',
+    opts:[
+      ['Yes, locked',       {brand:'locked —  map the brand colour onto the nearest ramp and override --accent-*'}],
+      ['Yes, but flexible', {brand:'flexible — use the recommended accent, keep the brand colour as an alternate'}],
+      ['No, choose for me', {brand:'none — the recommended accent decides'}],
+    ]},
+  { id:'action', q:'What is the one thing you want the reader to do?',
+    opts:[
+      ['Book a call',      {cta:'primary CTA in the hero, CTA band before the footer'}],
+      ['Buy / sign up',    {cta:'hero CTA + pricing grid with a featured tier + closing CTA band'}],
+      ['Approve the plan', {cta:'no CTA band; the closing states the decision and the date needed'}],
+      ['Just understand',  {cta:'no CTA; ends on a summary or contact section'}],
+    ]},
+  { id:'media', q:'What imagery do you actually have?',
+    opts:[
+      ['Photography',         {media:'masked photos (.media--notched / .media--circle), accent wash on section covers'}],
+      ['Upload my own',       {media:'your own photo, masked to the house treatments', photo:'upload'}],
+      ['Find one for me',     {media:'licensed stock sourced to brief, masked to the house treatments', photo:'search'}],
+      ['Product screenshots', {media:'device frames (.device--phone / .device--browser) with floating stat cards'}],
+      ['Illustration',        {media:'flat vector on tinted card grounds; no photo masks'}],
+      ['Logos only',          {media:'trust bar, big type, geometric ornament carrying the visual load'}],
+      ['Nothing yet',         {media:'type-led layout and geometry — no placeholder-driven design'}],
+    ]},
+  { id:'mode', q:'Light or dark, and where does this live?',
+    opts:[
+      ['Light, on screen', {mode:'light ground, screen'}],
+      ['Dark, on screen',  {mode:'dark ground (.on-dark) — web only'}],
+      ['Printed',          {mode:'light ground, CMYK-safe accent, hairlines ≥ 0.75pt'}],
+      ['Projected',        {mode:'light ground, raised contrast, no body text under 15pt'}],
+    ]},
+];
+
+const A = {};
+const form = document.getElementById('form');
+
+Q.forEach((item, i) => {
+  const fs = document.createElement('fieldset');
+  fs.className = 'card q';
+  fs.style.border = '1px solid var(--ink-100)';
+  fs.innerHTML = `<div class="q__head"><span class="q__n">0${i+1}</span>
+      <legend class="h3" style="padding:0;">${item.q}</legend></div>`;
+  const row = document.createElement('div');
+  row.className = 'opts';
+  item.opts.forEach(([label, data]) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'opt'; b.textContent = label;
+    b.setAttribute('aria-pressed', 'false');
+    b.onclick = () => {
+      row.querySelectorAll('.opt').forEach(o => o.setAttribute('aria-pressed', 'false'));
+      b.setAttribute('aria-pressed', 'true');
+      A[item.id] = { label, ...data };
+      // A new feeling answer reseeds the colour picker, unless the user has
+      // already dialled in a custom accent — theirs wins.
+      if (item.id === 'feel' && !C.custom) setAccentFromTheme(data.accent);
+      render();
+    };
+    row.appendChild(b);
+  });
+  fs.appendChild(row);
+  form.appendChild(fs);
+});
+
+function render() {
+  const n = Object.keys(A).length;
+  document.getElementById('prog').style.width = (n / Q.length * 100) + '%';
+  document.getElementById('count').textContent = `${n} of ${Q.length}`;
+
+  // Dark is web-only; a deck answer overrides it.
+  let mode = A.mode?.mode || '';
+  let note = '';
+  if (A.kind?.layer === 'slides' && mode.startsWith('dark')) {
+    mode = 'light ground (dark is web-only — decks stay light)';
+    note = '\n\n⚠︎  You chose dark for a deck. Decks stay light-ground in this system;\n    the spec has been corrected. Use a dark section slide for contrast instead.';
+  }
+
+  // Accent: a hex dialled into the colour module is the real answer and
+  // supersedes the family the feeling question suggested.
+  let accent = A.feel?.accent || '';
+  if (C.custom) {
+    accent = `${C.accent} (custom — text on it: ${C.on === '#FFFFFF' ? 'white' : 'near-black'})`;
+  } else if (A.brand?.label === 'Yes, locked' && accent) {
+    accent += ' (nearest ramp — override with the real brand values)';
+  }
+
+  const groundName = C.custom
+    ? ({ '#FFFFFF': 'white', '#F7F8FA': 'off-white', '#FAF6EC': 'cream' }[C.ground] || C.ground)
+    : (A.feel?.ground || '—');
+
+  if (accent) document.documentElement.className = 'theme-' + (A.feel.accent);
+
+  renderColour();
+  renderPhoto();
+  renderAssets();
+
+  if (n === 0) return;
+
+  const css = A.kind?.layer === 'web'
+    ? 'tokens/tokens.css, css/base.css, css/components.css, css/web.css'
+    : A.kind?.layer === 'slides'
+      ? 'tokens/tokens.css, css/base.css, css/components.css, css/slides.css'
+      : '—';
+
+  const sw = A.feel ? `<span class="swatch" style="background:var(--accent-500)"></span>` : '';
+
+  // Media answer adds only the classes it actually needs.
+  const mediaCls = {
+    'Photography':         '.media--notched .media--circle .media--wash .avatar',
+    'Upload my own':       '.media--notched .media--circle .media--wash .media--dim',
+    'Find one for me':     '.media--notched .media--circle .media--wash .media--dim',
+    'Product screenshots': '.device--browser .device--phone .device__screen .float-card',
+    'Illustration':        '.tint-card .media--xl',
+    'Logos only':          '.trustbar .deco-circle .deco-dots',
+    'Nothing yet':         '.deco-circle .deco-dots .offset-block',
+  }[A.media?.label] || '';
+
+  const photoLine = A.media?.photo === 'search'
+    ? `\n<b>Sourcing:</b> free-licence stock only (Unsplash / Pexels / Pixabay) or\n  bought stock. Record source, photographer and licence — see PHOTOS.md.`
+    : A.media?.photo === 'upload'
+      ? `\n<b>Sourcing:</b> client-supplied. Confirm they hold the rights and that any\n  recognisable person has signed a release before it goes live.`
+      : '';
+
+  document.getElementById('spec').innerHTML =
+`<b>Deliverable:</b> ${A.kind?.label || '—'}
+<b>Layer:</b> ${A.kind?.layer === 'web' ? 'web' : A.kind?.layer === 'slides' ? 'deck / slides' : '—'}
+<b>Accent:</b> ${sw}${accent || '—'}
+<b>Brand:</b> ${A.brand?.brand || '—'}
+<b>Ground:</b> ${groundName}
+<b>Primary action:</b> ${A.action?.cta || '—'}
+<b>Imagery:</b> ${A.media?.media || '—'}${photoLine}
+<b>Mode:</b> ${mode || '—'}
+<b>Sections:</b> ${A.kind?.sections || '—'}
+
+<b>━━ SCOPE — touch only what is listed ━━</b>
+
+<b>Import (already written, do not modify):</b>
+  ${css.split(', ').join('\n  ')}
+
+<b>Write exactly one new file:</b> your page or deck markup.
+<b>Do not</b> re-read, regenerate or restate the tokens, the components,
+or the rest of the system. They exist and they work.
+
+<b>Classes to compose from:</b>
+  ${(A.kind?.cls || '—').split(' ').join('\n  ')}
+${mediaCls ? '  ' + mediaCls.split(' ').join('\n  ') : ''}
+
+<b>Theme:</b> &lt;html class="theme-${A.feel?.accent || '<choose>'}"&gt;${mode.startsWith('dark') && A.kind?.layer === 'web' ? '  + .on-dark on dark sections' : ''}${C.custom ? '\n  + the custom :root override from question 03a' : ''}
+${AS.logo || AS.copy.trim() || AS.refs.length ? `
+<b>Assets supplied:</b>
+${AS.logo ? `  logo/${AS.logo.filename}${AS.logo.svg ? ' (SVG)' : ` (${AS.logo.w}×${AS.logo.h})`} — needs a light variant if it vanishes on ink\n` : ''}${AS.copy.trim() ? `  content/copy.md — ${AS.copy.trim().split(/\s+/).length} words. Design against this, not lorem ipsum.\n` : ''}${AS.refs.length ? `  reference/ — ${AS.refs.length} file(s) for consistency, not for copying\n` : ''}` : ''}
+
+<b>Read only:</b> ${A.kind?.ref || '—'}
+  Skip the rest of the docs — this line is the whole brief you need.
+
+<b>Rules that still apply:</b> one accent hue; eyebrow label above each
+headline; one two-tone headline at the top; 20px card radius; charts use
+the accent as series 1 and greys after.${note}`;
+}
+
+/* ---------- Colour module ------------------------------------------------
+   One accent hex generates the whole ramp. Lightness steps are anchored to
+   fixed targets rather than offsets from the input, so a very dark or very
+   light accent still yields a usable 50 and 700. -------------------------- */
+
+const hex2rgb = h => {
+  h = h.replace('#','');
+  if (h.length === 3) h = h.split('').map(c => c + c).join('');
+  return [0,2,4].map(i => parseInt(h.slice(i, i+2), 16));
+};
+const rgb2hex = ([r,g,b]) =>
+  '#' + [r,g,b].map(v => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2,'0')).join('').toUpperCase();
+
+function rgb2hsl([r,g,b]) {
+  r/=255; g/=255; b/=255;
+  const mx = Math.max(r,g,b), mn = Math.min(r,g,b), d = mx-mn;
+  let h = 0;
+  if (d) {
+    if (mx === r) h = ((g-b)/d) % 6;
+    else if (mx === g) h = (b-r)/d + 2;
+    else h = (r-g)/d + 4;
+  }
+  h = (h*60 + 360) % 360;
+  const l = (mx+mn)/2;
+  const s = d ? d / (1 - Math.abs(2*l - 1)) : 0;
+  return [h, s, l];
+}
+function hsl2rgb([h,s,l]) {
+  const c = (1 - Math.abs(2*l - 1)) * s, x = c * (1 - Math.abs((h/60) % 2 - 1)), m = l - c/2;
+  const t = h < 60 ? [c,x,0] : h < 120 ? [x,c,0] : h < 180 ? [0,c,x]
+          : h < 240 ? [0,x,c] : h < 300 ? [x,0,c] : [c,0,x];
+  return t.map(v => (v + m) * 255);
+}
+
+function buildRamp(hex) {
+  const [h, s] = rgb2hsl(hex2rgb(hex));
+  const mk = (sat, li) => rgb2hex(hsl2rgb([h, Math.max(0, Math.min(1, sat)), li]));
+  return {
+    50:  mk(Math.min(s, 0.85), 0.96),
+    100: mk(Math.min(s, 0.85), 0.89),
+    300: mk(s * 0.92, 0.72),
+    500: hex.toUpperCase(),
+    600: mk(Math.min(s * 1.05, 1), 0.42),
+    700: mk(Math.min(s * 1.05, 1), 0.30),
+  };
+}
+
+// WCAG relative luminance and contrast ratio.
+const lum = hex => {
+  const [r,g,b] = hex2rgb(hex).map(v => {
+    v /= 255;
+    return v <= 0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4);
+  });
+  return 0.2126*r + 0.7152*g + 0.0722*b;
+};
+const ratio = (a, b) => {
+  const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p);
+  return (x + 0.05) / (y + 0.05);
+};
+
+const C = { accent: '#4059F0', ground: '#FFFFFF', g1: null, g2: null, on: '#FFFFFF', custom: false };
+
+function renderColour() {
+  const show = A.brand && A.brand.label !== 'No, choose for me';
+  document.getElementById('colour').hidden = !show;
+  if (!show) return;
+
+  const r = buildRamp(C.accent);
+  const rDark = ratio(C.accent, '#14181F'), rLight = ratio(C.accent, '#FFFFFF');
+  C.on = rDark >= rLight ? '#14181F' : '#FFFFFF';
+  const best = Math.max(rDark, rLight);
+
+  // Swatches
+  document.getElementById('cRamp').innerHTML = Object.entries(r)
+    .map(([k, v]) => `<span title="${k} — ${v}" style="flex:1;height:44px;background:${v}"></span>`).join('');
+
+  // Contrast badge — this is the one thing a custom accent commonly breaks.
+  const tag = document.getElementById('cContrast');
+  const pass = best >= 4.5;
+  tag.textContent = `${best.toFixed(2)}:1 ${pass ? 'AA' : 'fails AA'}`;
+  tag.style.background = pass ? 'var(--positive)' : 'var(--negative)';
+  tag.style.color = '#fff';
+  document.getElementById('cContrastNote').textContent = pass
+    ? `Text on your accent will be ${C.on === '#FFFFFF' ? 'white' : 'near-black'}.`
+    : `No text colour clears 4.5:1 on this accent. Use it for fills and ornament only, and put labels beside it rather than on it — or darken it until this passes.`;
+
+  const g1 = C.g1 || r[600], g2 = C.g2 || r[300];
+  document.getElementById('cGPreview').style.background =
+    `linear-gradient(135deg, ${g1} 0%, ${C.accent} 55%, ${g2} 100%)`;
+  if (!C.g1) document.getElementById('cG1').value = g1;
+  if (!C.g2) document.getElementById('cG2').value = g2;
+
+  // Apply live to this page
+  const root = document.documentElement;
+  if (C.custom) {
+    root.style.setProperty('--accent-50',  r[50]);
+    root.style.setProperty('--accent-100', r[100]);
+    root.style.setProperty('--accent-300', r[300]);
+    root.style.setProperty('--accent-500', r[500]);
+    root.style.setProperty('--accent-600', r[600]);
+    root.style.setProperty('--accent-700', r[700]);
+    root.style.setProperty('--accent-on',  C.on);
+    root.style.setProperty('--gradient-hero', `linear-gradient(135deg, ${g1} 0%, ${r[500]} 55%, ${g2} 100%)`);
+  }
+
+  // Ground is a setting for *your* page, not for this one. Applying it to
+  // :root would override the picker's own light/dark theme and leave light
+  // text on a white card. It previews scoped to the sample block instead.
+  const prev = document.getElementById('cPreview');
+  if (prev) {
+    prev.style.setProperty('--surface-page', C.ground);
+    prev.style.setProperty('--surface-muted', C.ground);
+    prev.style.background = C.ground;
+    prev.style.setProperty('--fg-strong', '#14181F');
+    prev.style.setProperty('--fg-body', '#3A4761');
+    prev.style.setProperty('--fg-muted', '#8993A6');
+    prev.style.setProperty('--ink-100', '#ECEFF3');
+    prev.style.setProperty('--ink-200', '#D8DDE5');
+  }
+
+  document.getElementById('cCss').textContent =
+`:root {
+  --accent-50:  ${r[50]};
+  --accent-100: ${r[100]};
+  --accent-300: ${r[300]};
+  --accent-500: ${r[500]};
+  --accent-600: ${r[600]};
+  --accent-700: ${r[700]};
+  --accent-on:  ${C.on};
+  --gradient-hero: linear-gradient(135deg, ${g1} 0%, ${r[500]} 55%, ${g2} 100%);
+  --surface-page: ${C.ground};
+}`;
+}
+
+function setAccent(hex) {
+  if (!/^#?[0-9a-f]{3}([0-9a-f]{3})?$/i.test(hex)) return;
+  C.accent = (hex[0] === '#' ? hex : '#' + hex).toUpperCase();
+  C.custom = true;
+  document.getElementById('cAccent').value = C.accent.length === 7 ? C.accent : '#4059F0';
+  document.getElementById('cHex').value = C.accent;
+  render();
+}
+
+document.getElementById('cAccent').oninput = e => setAccent(e.target.value);
+document.getElementById('cHex').oninput   = e => setAccent(e.target.value.trim());
+document.getElementById('cG1').oninput = e => { C.g1 = e.target.value.toUpperCase(); C.custom = true; render(); };
+document.getElementById('cG2').oninput = e => { C.g2 = e.target.value.toUpperCase(); C.custom = true; render(); };
+document.getElementById('cGReset').onclick = () => { C.g1 = C.g2 = null; render(); };
+
+document.getElementById('cGround').onclick = e => {
+  const b = e.target.closest('[data-g]'); if (!b) return;
+  document.querySelectorAll('#cGround .opt').forEach(o => o.setAttribute('aria-pressed', String(o === b)));
+  C.ground = b.dataset.g; C.custom = true; render();
+};
+
+document.getElementById('cCopy').onclick = () => {
+  navigator.clipboard?.writeText(document.getElementById('cCss').textContent);
+  const b = document.getElementById('cCopy');
+  b.textContent = 'Copied'; setTimeout(() => b.textContent = 'Copy CSS', 1400);
+};
+document.getElementById('cRevert').onclick = () => {
+  C.custom = false; C.g1 = C.g2 = null;
+  ['--accent-50','--accent-100','--accent-300','--accent-500','--accent-600','--accent-700',
+   '--accent-on','--gradient-hero'].forEach(v => document.documentElement.style.removeProperty(v));
+  if (A.feel?.accent) setAccentFromTheme(A.feel.accent);
+  C.custom = false;
+  render();
+};
+
+// Seed the picker from whichever preset theme the feeling answer chose.
+function setAccentFromTheme(name) {
+  const probe = document.createElement('div');
+  probe.className = 'theme-' + name;
+  document.body.appendChild(probe);
+  const v = getComputedStyle(probe).getPropertyValue('--accent-500').trim();
+  probe.remove();
+  if (v) {
+    C.accent = v.toUpperCase();
+    document.getElementById('cAccent').value = v;
+    document.getElementById('cHex').value = v.toUpperCase();
+  }
+}
+
+/* ---------- Photo module ------------------------------------------------- */
+
+const SUBJECT = {
+  'Presentation / deck': 'business team meeting, boardroom, people working',
+  'Pitch deck':          'founders working, startup team, whiteboard session',
+  'Report / whitepaper': 'city skyline, office architecture, analyst at desk',
+  'Landing page':        'team at laptops, modern workspace, product in use',
+  'Product site':        'person using phone, clean desk setup, product in hand',
+  'Portfolio':           'creative professional at work, studio desk, portrait',
+};
+const MOOD = {
+  'Trusted, established': 'natural light, neutral muted tones, calm, unposed',
+  'Serious about money':  'cool tones, minimal, clean lines, low clutter',
+  'Energised, warm':      'warm golden light, candid, movement, optimistic',
+  'Modern, technical':    'cool high-key light, minimal, lots of white',
+  'Calm, sustainable':    'soft daylight, greenery, airy, muted greens',
+  'Bold, unmissable':     'high contrast, saturated, graphic, strong shapes',
+};
+
+function buildQuery() {
+  const subj = SUBJECT[A.kind?.label] || 'people at work';
+  const mood = MOOD[A.feel?.label] || 'natural light, neutral tones';
+  const side = A.kind?.layer === 'web' ? 'right' : 'left';
+  return `${subj} — ${mood}, landscape 16:9, negative space on the ${side} for a headline, no text or logos in frame, no heavy filter`;
+}
+
+const photoEl = document.getElementById('photo');
+
+function renderPhoto() {
+  const mode = A.media?.photo;
+  photoEl.hidden = !mode;
+  if (!mode) return;
+  document.getElementById('modeUpload').hidden = mode !== 'upload';
+  document.getElementById('modeSearch').hidden = mode !== 'search';
+  document.getElementById('photoTitle').textContent =
+    mode === 'upload' ? 'Your photo' : 'Finding the right photo';
+
+  if (mode === 'search') {
+    const q = buildQuery();
+    document.getElementById('query').textContent = q;
+    // Stock search engines return far better results for a short lead phrase
+    // than for the full comma-separated brief — keep the brief for the human,
+    // send only the first clause to the URL.
+    const bare = encodeURIComponent(q.split('—')[0].split(',')[0].trim());
+    document.getElementById('lUnsplash').href = `https://unsplash.com/s/photos/${bare}`;
+    document.getElementById('lPexels').href   = `https://www.pexels.com/search/${bare}/`;
+    document.getElementById('lPixabay').href  = `https://pixabay.com/images/search/${bare}/`;
+  }
+}
+
+function showImage(src, w, h) {
+  ['p1','p2','p3','p4'].forEach(id => { document.getElementById(id).src = src; });
+  document.getElementById('previews').hidden = false;
+  document.getElementById('dims').textContent = `${w} × ${h}px`;
+
+  const notes = [];
+  if (w < 1600) notes.push(`At ${w}px wide this will soften on a full-bleed hero — 1600px+ is the floor, 2400px for a projected slide.`);
+  if (h > w)    notes.push('Portrait crop: use it in .media--circle or a side panel, not as a 16:9 hero.');
+  if (w / h > 2.2) notes.push('Very wide crop: good for a band, too letterboxed for a card.');
+  notes.push('Sitting type over it? Use .media--dim so the scrim carries the contrast — never lighten the type instead.');
+  document.getElementById('advice').textContent = notes.join(' ');
+}
+
+const drop = document.getElementById('drop');
+const fileInput = document.getElementById('file');
+
+function readFile(f) {
+  if (!f || !f.type.startsWith('image/')) return;
+  const r = new FileReader();
+  r.onload = e => {
+    const img = new Image();
+    img.onload = () => showImage(e.target.result, img.naturalWidth, img.naturalHeight);
+    img.src = e.target.result;
+  };
+  r.readAsDataURL(f);                    // stays in the browser; nothing is sent anywhere
+}
+
+fileInput.onchange = e => readFile(e.target.files[0]);
+['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, e => {
+  e.preventDefault(); drop.style.borderColor = 'var(--accent-500)';
+}));
+['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => {
+  e.preventDefault(); drop.style.borderColor = 'var(--ink-200)';
+}));
+drop.addEventListener('drop', e => readFile(e.dataTransfer.files[0]));
+
+document.getElementById('copyQ').onclick = () => {
+  navigator.clipboard?.writeText(document.getElementById('query').textContent);
+  const b = document.getElementById('copyQ');
+  b.textContent = 'Copied'; setTimeout(() => b.textContent = 'Copy query', 1400);
+};
+document.getElementById('skipPhoto').onclick = () => { photoEl.hidden = true; };
+
+/* ---------- Assets module: logo, copy, reference -------------------------
+   Deliberately three separate slots. A logo has constraints a photo does not
+   (transparency, a light variant for dark surfaces, clear space), and copy has
+   constraints neither has. One combined "upload your stuff" box loses all of
+   that. ---------------------------------------------------------------------- */
+
+const AS = { logo: null, copy: '', refs: [] };
+
+function slug(s) {
+  return (s || 'project').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 28);
+}
+
+function renderAssets() {
+  document.getElementById('assets').hidden = !A.kind;
+  if (!A.kind) return;
+
+  const n = String(1).padStart(3, '0');
+  const name = `${n}-${slug(A.kind.label)}`;
+  const lines = [`projects/${name}/`, `  SPEC.md`, `  index.html`];
+  const sub = [];
+  if (AS.logo)        sub.push(`    logo/${AS.logo.filename}`);
+  if (A.media?.photo) sub.push(`    photos/`);
+  if (AS.copy.trim()) sub.push(`    content/copy.md`);
+  if (AS.refs.length) sub.push(`    reference/  (${AS.refs.length} file${AS.refs.length > 1 ? 's' : ''})`);
+  if (sub.length) { lines.push(`  assets/`); lines.push(...sub); }
+  document.getElementById('assetTree').textContent = lines.join('\n');
+}
+
+/* --- Logo --- */
+const logoIn = document.getElementById('fileLogo');
+function readLogo(f) {
+  if (!f) return;
+  const isSvg = /svg/.test(f.type) || /\.svg$/i.test(f.name);
+  const isJpg = /jpe?g/.test(f.type);
+  const r = new FileReader();
+  r.onload = e => {
+    const src = e.target.result;
+    ['logoLight','logoDark','logoAccent'].forEach(id => { document.getElementById(id).src = src; });
+    document.getElementById('logoOut').hidden = false;
+
+    const img = new Image();
+    img.onload = () => {
+      const notes = [];
+      if (isJpg) notes.push('JPG has no transparency, so this will sit in a white box on the ink footer and the accent band. Get an SVG, or a PNG with an alpha channel.');
+      else if (isSvg) notes.push('SVG — scales to any size and stays crisp when projected. Best case.');
+      else notes.push('PNG — check the three previews above; if the background is not transparent you will see it on the dark and accent panels.');
+
+      const ar = img.naturalWidth / (img.naturalHeight || 1);
+      if (ar > 2.5)      notes.push(`Wide wordmark (${ar.toFixed(1)}:1). Good in the navbar and slide furniture; too wide for a square avatar slot — you will want a separate mark.`);
+      else if (ar < 1.3) notes.push(`Squarish mark (${ar.toFixed(1)}:1). Works as an icon chip and favicon; pair it with a wordmark for the navbar.`);
+
+      if (!isSvg && img.naturalWidth < 400) notes.push(`Only ${img.naturalWidth}px wide — it will blur on retina and badly on a projector. 800px+ for raster, or switch to SVG.`);
+      notes.push('Check the ink and accent previews: if the logo disappears into either, you need a light (knockout) variant. Most brands have one.');
+      document.getElementById('logoNotes').textContent = notes.join(' ');
+
+      AS.logo = { filename: f.name, w: img.naturalWidth, h: img.naturalHeight, svg: isSvg };
+      renderAssets(); render();
+    };
+    img.onerror = () => {                       // SVG without intrinsic size
+      document.getElementById('logoNotes').textContent =
+        'SVG loaded. It scales cleanly — just confirm it has no hard-coded white background by checking the ink and accent previews above.';
+      AS.logo = { filename: f.name, svg: true };
+      renderAssets(); render();
+    };
+    img.src = src;
+  };
+  r.readAsDataURL(f);
+}
+logoIn.onchange = e => readLogo(e.target.files[0]);
+
+/* --- Copy --- */
+const copyArea = document.getElementById('copyText');
+function analyseCopy() {
+  const t = AS.copy = copyArea.value;
+  const words = t.trim() ? t.trim().split(/\s+/).length : 0;
+  const lines = t.split('\n').filter(l => l.trim());
+  document.getElementById('copyStats').textContent = words ? `${words} words · ${lines.length} lines` : '';
+
+  const notes = [];
+  const longest = lines.reduce((m, l) => Math.max(m, l.length), 0);
+  if (longest > 70) notes.push(`Your longest line is ${longest} characters. Body copy is capped at 62 characters per line in this system, so that will wrap — check it still reads well broken.`);
+  const heads = lines.filter(l => l.length < 60 && !/[.!?]$/.test(l.trim()));
+  if (heads.length) notes.push(`${heads.length} line${heads.length > 1 ? 's look' : ' looks'} like a heading. Headlines here are tightly tracked and heavy — anything over about 45 characters stops working as a display line.`);
+  if (words > 0 && words < 40) notes.push('Not much copy yet. That is fine, but the layout will be sized to it — add the rest before the design is locked, not after.');
+  document.getElementById('copyNotes').textContent = notes.join(' ');
+  renderAssets(); render();
+}
+copyArea.oninput = analyseCopy;
+document.getElementById('pickCopy').onclick = () => document.getElementById('fileCopy').click();
+document.getElementById('fileCopy').onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = ev => { copyArea.value = ev.target.result; analyseCopy(); };
+  r.readAsText(f);
+};
+
+/* --- Reference files: filenames only, never read --- */
+document.getElementById('fileRef').onchange = e => {
+  AS.refs = [...e.target.files].map(f => `${f.name} · ${(f.size/1024).toFixed(0)} KB`);
+  document.getElementById('refList').innerHTML = AS.refs.map(r => `<li>${r}</li>`).join('');
+  renderAssets(); render();
+};
+
+// Shared drag-and-drop wiring for the three zones.
+[['dropLogo', f => readLogo(f)],
+ ['dropRef',  null],
+ ['dropCopy', f => { const r = new FileReader(); r.onload = ev => { copyArea.value = ev.target.result; analyseCopy(); }; r.readAsText(f); }]
+].forEach(([id, handler]) => {
+  const z = document.getElementById(id);
+  ['dragenter','dragover'].forEach(ev => z.addEventListener(ev, e => { e.preventDefault(); z.style.borderColor = 'var(--accent-500)'; }));
+  ['dragleave','drop'].forEach(ev => z.addEventListener(ev, e => { e.preventDefault(); z.style.borderColor = 'var(--ink-200)'; }));
+  z.addEventListener('drop', e => {
+    const fs = e.dataTransfer.files;
+    if (id === 'dropRef') {
+      AS.refs = [...fs].map(f => `${f.name} · ${(f.size/1024).toFixed(0)} KB`);
+      document.getElementById('refList').innerHTML = AS.refs.map(r => `<li>${r}</li>`).join('');
+      renderAssets(); render();
+    } else if (handler) handler(fs[0]);
+  });
+});
+
+/* ---------- Starter file -------------------------------------------------
+   The scope tells someone what to import — which is useless if they don't
+   have the repo. This hands them a single working file instead: every
+   stylesheet inlined, their accent baked in, and a scaffold of the sections
+   their answers chose. No clone, no build, no network. -------------------- */
+
+async function collectCSS() {
+  // Match the token *definition*, not a var() usage — this page's own <style>
+  // block references --accent-500 and would otherwise pass as the whole system.
+  const inline = [...document.querySelectorAll('style')]
+    .map(s => s.textContent).filter(t => /--accent-500\s*:/.test(t)).join('\n');
+  if (inline) return inline;
+  // Served over http(s): fetch the linked sheets.
+  const links = [...document.querySelectorAll('link[rel="stylesheet"]')].map(l => l.href);
+  if (location.protocol === 'file:') return null;   // fetch is blocked on file://
+  try {
+    const parts = await Promise.all(links.map(h => fetch(h).then(r => r.text())));
+    return parts.join('\n');
+  } catch { return null; }
+}
+
+function starterBody() {
+  const web = A.kind?.layer === 'web';
+  const eyebrow = A.kind?.label || 'Your project';
+  if (!web) {
+    return `<div class="deck deck--wide">
+
+  <!-- Cover -->
+  <div class="deck__slide">
+    <div class="slide">
+      <div class="slide-cover">
+        <div class="slide-cover__type">
+          <span class="eyebrow">${eyebrow}</span>
+          <h1 class="display headline-pair">
+            <span class="headline-pair__light">Your title</span>
+            <span class="headline-pair__heavy text-accent">Here</span>
+          </h1>
+          <hr class="rule">
+          <p class="small text-muted">Presented by <strong class="text-strong">Name</strong><br>Date · Place</p>
+        </div>
+        <div class="slide-cover__media" style="background:var(--accent-50)"></div>
+      </div>
+    </div>
+    <p class="deck__caption">01 — Cover</p>
+  </div>
+
+  <!-- Agenda -->
+  <div class="deck__slide">
+    <div class="slide slide--chromed">
+      <div class="slide__logo">Your logo</div>
+      <div class="slide__kicker">Contents</div>
+      <div class="slide__pagenum">02</div>
+      <div class="slide__inner">
+        <div class="stack stack-5">
+          <div class="stack stack-2">
+            <span class="eyebrow">Table of contents</span>
+            <h2 class="h1">What we'll cover</h2>
+          </div>
+          <div class="agenda">
+            <div class="agenda__item"><span class="agenda__num">01</span><span class="agenda__label">First section</span></div>
+            <div class="agenda__item"><span class="agenda__num">03</span><span class="agenda__label">Third section</span></div>
+            <div class="agenda__item"><span class="agenda__num">02</span><span class="agenda__label">Second section</span></div>
+            <div class="agenda__item"><span class="agenda__num">04</span><span class="agenda__label">Fourth section</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="deck__caption">02 — Agenda</p>
+  </div>
+
+  <!-- Section divider -->
+  <div class="deck__slide">
+    <div class="slide">
+      <div class="slide-section">
+        <div class="slide-section__panel">
+          <span class="numeral">01</span>
+          <h2 class="h1">First section</h2>
+        </div>
+        <div class="slide-cover__media" style="background:var(--accent-50)"></div>
+      </div>
+    </div>
+    <p class="deck__caption">03 — Section divider</p>
+  </div>
+
+  <!-- Three cards -->
+  <div class="deck__slide">
+    <div class="slide slide--muted slide--chromed">
+      <div class="slide__logo">Your logo</div>
+      <div class="slide__kicker">First section</div>
+      <div class="slide__pagenum">04</div>
+      <div class="slide__inner">
+        <div class="stack stack-5">
+          <div class="stack stack-2">
+            <span class="eyebrow">What we do</span>
+            <h2 class="h2">Three points</h2>
+          </div>
+          <div class="grid grid--3">
+            <article class="card stack stack-3"><span class="icon-chip"></span><h3 class="card__title">One</h3><p class="card__body">Replace this with the real point.</p></article>
+            <article class="card card--capped stack stack-3"><span class="icon-chip"></span><h3 class="card__title">Two</h3><p class="card__body">Replace this with the real point.</p></article>
+            <article class="card stack stack-3"><span class="icon-chip"></span><h3 class="card__title">Three</h3><p class="card__body">Replace this with the real point.</p></article>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="deck__caption">04 — Three cards</p>
+  </div>
+
+  <!-- Closing -->
+  <div class="deck__slide">
+    <div class="slide slide--accent">
+      <div class="slide-close">
+        <span class="eyebrow" style="color:color-mix(in srgb, var(--accent-on) 70%, transparent)">For your time</span>
+        <h2 class="display">Thank you</h2>
+        <p class="small">hello@example.com</p>
+      </div>
+    </div>
+    <p class="deck__caption">05 — Closing</p>
+  </div>
+
+</div>`;
+  }
+
+  const wantsPricing = /Buy|sign up/.test(A.action?.label || '');
+  return `<header class="container">
+  <nav class="navbar">
+    <span class="navbar__brand">Your brand</span>
+    <ul class="navbar__links"><li><a href="#features">Features</a></li><li><a href="#how">How it works</a></li></ul>
+    <a class="btn btn--primary" href="#cta">${wantsPricing ? 'Start free trial' : 'Book a call'}</a>
+  </nav>
+</header>
+
+<section class="hero-gradient">
+  <div class="container" style="padding-block:var(--space-11) var(--space-9)">
+    <div class="split" style="align-items:center">
+      <div class="stack stack-5">
+        <span class="badge-pill"><span class="badge-pill__flag">New</span> Your announcement</span>
+        <h1 class="h1">Your headline goes <em>here</em>.</h1>
+        <p class="body-lg measure" style="color:rgba(255,255,255,.82)">
+          One or two sentences saying what this is and who it's for. Replace with
+          the real words before you design around it.
+        </p>
+        <div style="display:flex;gap:var(--space-3);flex-wrap:wrap">
+          <a class="btn btn--ink btn--lg" href="#cta">${wantsPricing ? 'Start free trial' : 'Book a call'}</a>
+          <a class="btn btn--lg" href="#features" style="background:rgba(255,255,255,.16);color:#fff">Learn more</a>
+        </div>
+      </div>
+      <div style="position:relative;display:grid;place-items:center;isolation:isolate">
+        <div class="orb" style="width:340px;height:340px;top:-40px;right:-30px" aria-hidden="true"></div>
+        <div class="device device--browser" style="width:100%;max-width:520px">
+          <div class="device__screen" style="aspect-ratio:16/10;background:var(--surface-muted)"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="wave" aria-hidden="true">
+    <svg viewBox="0 0 1440 90" preserveAspectRatio="none"><path d="M0,45 C240,95 480,0 720,25 C960,50 1200,90 1440,55 L1440,90 L0,90 Z"/></svg>
+  </div>
+</section>
+
+<section class="section" style="padding-block:var(--space-8)">
+  <div class="container trustbar">
+    <span class="trustbar__label">Trusted by</span>
+    <ul class="trustbar__logos"><li>Client</li><li>Client</li><li>Client</li><li>Client</li></ul>
+  </div>
+</section>
+
+<section class="section section--muted" id="features">
+  <div class="container stack stack-6">
+    <div class="stack stack-3" style="max-width:52ch">
+      <span class="eyebrow">Features</span>
+      <h2 class="h2">What it does</h2>
+      <hr class="rule">
+    </div>
+    <div class="tint-grid">
+      <article class="tint-card tint-1"><span class="icon-chip icon-chip--sm"></span><h3 class="tint-card__title">One</h3><p class="tint-card__body">Replace with the real benefit.</p></article>
+      <article class="tint-card tint-2"><span class="icon-chip icon-chip--sm"></span><h3 class="tint-card__title">Two</h3><p class="tint-card__body">Replace with the real benefit.</p></article>
+      <article class="tint-card tint-3"><span class="icon-chip icon-chip--sm"></span><h3 class="tint-card__title">Three</h3><p class="tint-card__body">Replace with the real benefit.</p></article>
+      <article class="tint-card tint-4"><span class="icon-chip icon-chip--sm"></span><h3 class="tint-card__title">Four</h3><p class="tint-card__body">Replace with the real benefit.</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="how">
+  <div class="container stack stack-8">
+    <div class="stack stack-3 text-center">
+      <span class="eyebrow">How it works</span>
+      <h2 class="h2">Three steps</h2>
+      <hr class="rule rule--center">
+    </div>
+    <div class="rail">
+      <div class="rail__row">
+        <div class="rail__copy stack stack-3"><h3 class="h3">First step</h3><p class="small measure-sm">Replace with the real step.</p></div>
+        <div class="rail__num rail__num--label">01</div>
+        <div class="rail__visual"><div class="media media--xl" style="aspect-ratio:4/3;background:var(--accent-50)"></div></div>
+      </div>
+      <div class="rail__row rail__row--flip">
+        <div class="rail__copy stack stack-3"><h3 class="h3">Second step</h3><p class="small measure-sm">Replace with the real step.</p></div>
+        <div class="rail__num rail__num--label">02</div>
+        <div class="rail__visual"><div class="media media--xl" style="aspect-ratio:4/3;background:var(--accent-50)"></div></div>
+      </div>
+      <div class="rail__row">
+        <div class="rail__copy stack stack-3"><h3 class="h3">Third step</h3><p class="small measure-sm">Replace with the real step.</p></div>
+        <div class="rail__num rail__num--label">03</div>
+        <div class="rail__visual"><div class="media media--xl" style="aspect-ratio:4/3;background:var(--accent-50)"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+${wantsPricing ? `
+<section class="section section--muted" id="pricing">
+  <div class="container stack stack-6">
+    <div class="stack stack-3 text-center">
+      <span class="eyebrow">Pricing</span>
+      <h2 class="h2">Simple plans</h2>
+      <hr class="rule rule--center">
+    </div>
+    <div class="price-grid">
+      <article class="price-card stack stack-4">
+        <h3 class="h3">Starter</h3><p class="caption">For small teams</p>
+        <div><span class="price-card__amount">$0</span> <span class="price-card__period">/ month</span></div>
+        <ul class="checklist"><li>Feature one</li><li>Feature two</li></ul>
+        <a class="btn btn--outline" href="#cta">Get started</a>
+      </article>
+      <article class="price-card price-card--featured stack stack-4">
+        <span class="price-card__flag">Most popular</span>
+        <h3 class="h3">Pro</h3><p class="caption">For growing teams</p>
+        <div><span class="price-card__amount">$9</span> <span class="price-card__period">/ user / month</span></div>
+        <ul class="checklist"><li>Everything in Starter</li><li>Feature three</li><li>Feature four</li></ul>
+        <a class="btn btn--primary" href="#cta">Start free trial</a>
+      </article>
+      <article class="price-card stack stack-4">
+        <h3 class="h3">Enterprise</h3><p class="caption">For large organisations</p>
+        <div><span class="price-card__amount">Custom</span></div>
+        <ul class="checklist"><li>Everything in Pro</li><li>Dedicated support</li></ul>
+        <a class="btn btn--outline" href="#cta">Contact sales</a>
+      </article>
+    </div>
+  </div>
+</section>` : ''}
+
+<section class="section" id="cta">
+  <div class="container">
+    <div class="cta-band cta-band--gradient">
+      <div class="stack stack-2">
+        <h3 class="h3">Your closing line</h3>
+        <p class="small" style="color:rgba(255,255,255,.82)">One sentence of reassurance.</p>
+      </div>
+      <a class="btn btn--ink btn--lg" href="#">${wantsPricing ? 'Start free trial' : 'Book a call'}</a>
+    </div>
+  </div>
+</section>
+
+<footer class="section section--dark on-dark" style="padding-block:var(--space-8)">
+  <div class="container stack stack-3">
+    <span class="navbar__brand" style="color:#fff">Your brand</span>
+    <p class="small" style="max-width:36ch">One line about what you do.</p>
+  </div>
+</footer>`;
+}
+
+document.getElementById('starter').onclick = async () => {
+  const btn = document.getElementById('starter');
+  const note = document.getElementById('starterNote');
+  if (!A.kind) { note.textContent = 'Answer question 1 first — the starter depends on what you\'re making.'; return; }
+
+  btn.textContent = 'Building…';
+  const css = await collectCSS();
+  if (!css) {
+    btn.textContent = 'Download starter file';
+    note.textContent = 'Can\'t read the stylesheets from a file:// page. Open examples/intake-standalone.html instead, or serve this folder over http — then the starter builds fine.';
+    return;
+  }
+
+  const r = C.custom ? buildRamp(C.accent) : null;
+  const override = r ? `
+/* Your colours, from question 03a */
+:root {
+  --accent-50:  ${r[50]};
+  --accent-100: ${r[100]};
+  --accent-300: ${r[300]};
+  --accent-500: ${r[500]};
+  --accent-600: ${r[600]};
+  --accent-700: ${r[700]};
+  --accent-on:  ${C.on};
+  --gradient-hero: linear-gradient(135deg, ${C.g1 || r[600]} 0%, ${r[500]} 55%, ${C.g2 || r[300]} 100%);
+  --surface-page: ${C.ground};
+}` : '';
+
+  const theme = A.feel?.accent || 'violet';
+  const kind  = A.kind.label;
+  const file  = `${slug(kind)}-starter.html`;
+
+  const doc = `<!doctype html>
+<html lang="en" class="theme-${theme}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${kind}</title>
+<!--
+  Built from the design system intake.
+  Deliverable : ${kind}
+  Layer       : ${A.kind.layer === 'web' ? 'web' : 'deck / slides'}
+  Accent      : ${C.custom ? C.accent + ' (custom)' : theme}
+  Sections    : ${A.kind.sections}
+
+  Everything is inlined — no build, no dependencies, no network requests.
+  Replace the placeholder copy with the real words before designing around it.
+-->
+<style>
+${css}
+${override}
+<\/style>
+<\/head>
+<body>
+${starterBody()}
+<\/body>
+<\/html>`;
+
+  const url = URL.createObjectURL(new Blob([doc], { type: 'text/html' }));
+  const a = document.createElement('a');
+  a.href = url; a.download = file; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+
+  btn.textContent = 'Downloaded';
+  note.textContent = `${file} — ${(doc.length/1024).toFixed(0)}KB, self-contained. Open it in any browser and start editing.`;
+  setTimeout(() => { btn.textContent = 'Download starter file'; }, 2500);
+};
+
+document.getElementById('copy').onclick = () => {
+  const t = document.getElementById('spec').innerText;
+  navigator.clipboard?.writeText(t);
+  const b = document.getElementById('copy');
+  b.textContent = 'Copied'; setTimeout(() => b.textContent = 'Copy spec', 1400);
+};
+document.getElementById('reset').onclick = () => {
+  for (const k in A) delete A[k];
+  document.querySelectorAll('.opt').forEach(o => o.setAttribute('aria-pressed', 'false'));
+  document.documentElement.className = 'theme-violet';
+  document.getElementById('spec').textContent = 'Answer the questions above and your spec appears here.';
+  render();
+};
+</script>
+</body>
+</html>

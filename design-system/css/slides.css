@@ -1,0 +1,325 @@
+/* ==========================================================================
+   Corporate Deck Design System — Slides
+   16:9 slide surfaces and the standard slide archetypes.
+   Requires: tokens.css, base.css, components.css
+
+   A .slide is a self-contained 16:9 canvas that scales with its container.
+   Everything inside sizes in `cqw` (container query units) so a slide looks
+   identical whether it renders full-screen or as a thumbnail in a grid.
+   ========================================================================== */
+
+.slide {
+  container-type: inline-size;
+  position: relative;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  overflow: hidden;
+  background: var(--surface-page);
+  color: var(--fg-body);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-slide);
+  isolation: isolate;
+}
+
+/* Safe area — nothing meaningful crosses this margin. */
+.slide__inner {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  padding: 7cqw 6.5cqw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.slide__inner--top    { justify-content: flex-start; }
+.slide__inner--bottom { justify-content: flex-end; }
+.slide__inner--flush  { padding: 0; }
+
+/* Slide surface variants */
+.slide--muted   { background: var(--surface-muted); }
+.slide--cream   { background: var(--surface-cream); }
+.slide--accent  { background: var(--accent-500); color: var(--accent-on); }
+.slide--dark    { background: var(--ink-900); }
+.slide--dark .h1, .slide--dark .h2, .slide--dark .h3,
+.slide--dark .display { color: #fff; }
+
+/* --------------------------------------------------------------------------
+   Slide type scale
+   Sized in cqw so type stays proportional at any render size.
+   -------------------------------------------------------------------------- */
+
+.slide .display   { font-size: 7.2cqw; line-height: 1.0;  letter-spacing: -0.03em; }
+.slide .h1        { font-size: 5.4cqw; line-height: 1.05; letter-spacing: -0.025em; }
+.slide .h2        { font-size: 4.0cqw; line-height: 1.1;  letter-spacing: -0.02em; }
+.slide .h3        { font-size: 2.6cqw; line-height: 1.2; }
+.slide .h4        { font-size: 2.0cqw; line-height: 1.3; }
+.slide .body      { font-size: 1.65cqw; line-height: 1.6; }
+.slide .small     { font-size: 1.45cqw; line-height: 1.55; }
+.slide .caption   { font-size: 1.25cqw; }
+.slide .eyebrow   { font-size: 1.3cqw; letter-spacing: 0.16em; }
+.slide .numeral   { font-size: 11cqw; }
+.slide .stat__value { font-size: 5cqw; }
+.slide .stat__label { font-size: 1.2cqw; }
+.slide .btn       { font-size: 1.5cqw; padding: 1.1cqw 2.4cqw; }
+.slide .icon-chip { width: 5.6cqw; height: 5.6cqw; border-radius: 1.2cqw; }
+.slide .rule      { width: 6cqw; height: 0.45cqw; }
+.slide .tag       { font-size: 1.2cqw; padding: 0.5cqw 1.2cqw; }
+.slide .card      { padding: 2.6cqw; border-radius: 1.6cqw; }
+.slide .card__title { font-size: 2cqw; }
+.slide .card__body  { font-size: 1.45cqw; }
+.slide .grid      { gap: 2.2cqw; }
+.slide .split     { gap: 4cqw; }
+.slide .quote     { font-size: 2.4cqw; padding-left: 5cqw; }
+.slide .quote::before { font-size: 7cqw; }
+.slide .avatar    { width: 9cqw; height: 9cqw; border-width: 0.4cqw; }
+.slide .swot > *  { padding: 2.2cqw; border-radius: 1.4cqw; }
+.slide .swot__label { font-size: 1.15cqw; }
+.slide .swot__body  { font-size: 1.4cqw; margin-top: 0.6cqw; }
+.slide .meter     { height: 0.85cqw; }
+.slide .step__title { font-size: 2cqw; }
+.slide .step__body  { font-size: 1.4cqw; margin-top: 0.6cqw; }
+.slide .timeline__date { font-size: 1.9cqw; }
+.slide .timeline__body { font-size: 1.35cqw; margin-top: 0.4cqw; }
+.slide .feature__body  { font-size: 1.4cqw; }
+
+/* --- Spacing inside a slide is proportional, not absolute -----------------
+   The `--space-*` tokens are rem-based, which is correct for a document but
+   wrong on a fixed canvas: at thumbnail size a 24px gap eats a tenth of the
+   slide and pushes content out of the frame. Every rhythm inside .slide is
+   therefore restated in cqw so a slide composes identically at any size. */
+
+.slide .stack   { --flow: 1.8cqw; }
+.slide .stack-2 { --flow: 0.8cqw; }
+.slide .stack-3 { --flow: 1.2cqw; }
+.slide .stack-5 { --flow: 2.6cqw; }
+.slide .stack-6 { --flow: 3.4cqw; }
+
+.slide .steps    { gap: 2.4cqw; padding-top: 0; }
+.slide .step     { padding-top: 3.6cqw; }
+.slide .step::before { font-size: 3.4cqw; }
+.slide .timeline { gap: 2.2cqw; padding-top: 3.4cqw; }
+.slide .timeline__item::before { top: -3cqw; width: 1.5cqw; height: 1.5cqw; box-shadow: 0 0 0 0.45cqw var(--surface-page); }
+.slide .stat-row { gap: 2.6cqw; }
+.slide .stat-row--divided > .stat + .stat { padding-left: 2.6cqw; }
+.slide .swot     { gap: 1.8cqw; }
+.slide .quote__cite { gap: 1.4cqw; margin-top: 2.2cqw; font-size: 1.4cqw; }
+.slide .meter-row { gap: 0.8cqw; }
+.slide .meter-row__head { font-size: 1.4cqw; }
+.slide .agenda__item { padding-bottom: 1.2cqw; }
+
+/* --- A slide is a fixed canvas: it never reflows --------------------------
+   The responsive collapses in components.css are right for a scrolling page
+   and wrong here. Column counts inside a slide are pinned at every width so
+   a 460px thumbnail and a 1920px projection show the same composition. */
+
+.slide .grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.slide .grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.slide .grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.slide .split   { grid-template-columns: minmax(0, var(--split, 5fr)) minmax(0, 7fr); }
+.slide .swot    { grid-template-columns: 1fr 1fr; }
+
+/* auto-fit minimums are px-based and wrap far too early on a slide canvas */
+.slide .steps,
+.slide .stat-row {
+  grid-template-columns: none;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+}
+
+.slide .timeline {
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  padding-left: 0;
+}
+.slide .timeline::before { top: 0.4cqw; bottom: auto; left: 0; right: 0; width: auto; height: 0.2cqw; }
+.slide .stat-row--divided > .stat + .stat { border-left: 1px solid var(--ink-200); }
+.slide.on-dark .stat-row--divided > .stat + .stat { border-left-color: rgba(255,255,255,0.18); }
+
+/* --------------------------------------------------------------------------
+   Slide furniture — the persistent chrome on every non-cover slide
+   -------------------------------------------------------------------------- */
+
+.slide__logo {
+  position: absolute;
+  top: 4cqw;
+  left: 6.5cqw;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 1cqw;
+  font-family: var(--font-display);
+  font-size: 1.6cqw;
+  font-weight: var(--fw-bold);
+  letter-spacing: -0.01em;
+  color: var(--fg-strong);
+}
+
+.slide__kicker {
+  position: absolute;
+  top: 4.4cqw;
+  right: 6.5cqw;
+  z-index: 2;
+  font-family: var(--font-display);
+  font-size: 1.15cqw;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+.slide__pagenum {
+  position: absolute;
+  bottom: 4cqw;
+  right: 6.5cqw;
+  z-index: 2;
+  font-family: var(--font-display);
+  font-size: 1.3cqw;
+  font-weight: var(--fw-bold);
+  color: var(--ink-300);
+  font-variant-numeric: tabular-nums;
+}
+
+.slide--dark .slide__logo,
+.slide--accent .slide__logo { color: currentColor; }
+.slide--dark .slide__kicker { color: rgba(255,255,255,0.55); }
+.slide--dark .slide__pagenum { color: rgba(255,255,255,0.45); }
+
+/* A slide with furniture needs headroom so content clears the logo row. */
+.slide--chromed .slide__inner { padding-top: 11cqw; padding-bottom: 9cqw; }
+
+/* --------------------------------------------------------------------------
+   Archetype: cover
+   Split canvas — type block on one side, full-bleed media on the other.
+   -------------------------------------------------------------------------- */
+
+.slide-cover { display: grid; grid-template-columns: 1.05fr 1fr; height: 100%; }
+
+.slide-cover__type {
+  padding: 7cqw 5cqw 7cqw 6.5cqw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2cqw;
+}
+
+.slide-cover__media { position: relative; overflow: hidden; }
+.slide-cover__media img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Media panel with the signature curved inner edge. */
+.slide-cover__media--curved { border-radius: 18cqw 0 0 18cqw; overflow: hidden; }
+
+.slide-cover--reverse { grid-template-columns: 1fr 1.05fr; }
+.slide-cover--reverse .slide-cover__type { order: 2; padding: 7cqw 6.5cqw 7cqw 5cqw; }
+.slide-cover--reverse .slide-cover__media { order: 1; }
+
+/* Full-bleed cover — image behind, type on top. */
+.slide-cover--bleed { grid-template-columns: 1fr; }
+.slide-cover--bleed .slide-cover__media { position: absolute; inset: 0; }
+.slide-cover--bleed .slide-cover__type { position: relative; z-index: 2; max-width: 62%; }
+
+/* --------------------------------------------------------------------------
+   Archetype: section divider
+   Oversized numeral, short title, optional accent panel.
+   -------------------------------------------------------------------------- */
+
+.slide-section { display: grid; grid-template-columns: 1fr 1fr; height: 100%; align-items: stretch; }
+
+.slide-section__panel {
+  background: var(--accent-500);
+  color: var(--accent-on);
+  padding: 7cqw 5cqw 7cqw 6.5cqw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.5cqw;
+}
+
+.slide-section__panel .numeral { color: color-mix(in srgb, var(--accent-on) 32%, transparent); }
+.slide-section__panel .h1 { color: var(--accent-on); }
+
+.slide-section__aside {
+  padding: 7cqw 6.5cqw 7cqw 5cqw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.5cqw;
+}
+
+/* --------------------------------------------------------------------------
+   Archetype: contents / agenda
+   -------------------------------------------------------------------------- */
+
+.agenda { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4cqw 4cqw; }
+
+.agenda__item {
+  display: flex;
+  align-items: baseline;
+  gap: 1.6cqw;
+  padding-bottom: 1.2cqw;
+  border-bottom: 1px solid var(--ink-100);
+}
+
+.agenda__num {
+  font-family: var(--font-display);
+  font-size: 2.4cqw;
+  font-weight: var(--fw-black);
+  color: var(--accent-500);
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  flex: none;
+}
+
+.agenda__label {
+  font-family: var(--font-display);
+  font-size: 1.9cqw;
+  font-weight: var(--fw-semibold);
+  color: var(--fg-strong);
+}
+
+/* --------------------------------------------------------------------------
+   Archetype: closing
+   -------------------------------------------------------------------------- */
+
+.slide-close { text-align: center; display: grid; place-content: center; gap: 2cqw; height: 100%; padding: 6.5cqw; }
+.slide-close .display { font-size: 8cqw; }
+
+/* --------------------------------------------------------------------------
+   Deck — a scrollable grid of slide thumbnails
+   -------------------------------------------------------------------------- */
+
+/* The track minimum is capped at 100% so a viewport narrower than the minimum
+   collapses to one column instead of forcing the grid wider than the screen. */
+.deck {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
+  gap: var(--space-6);
+}
+
+.deck--single { grid-template-columns: 1fr; }
+.deck--wide   { grid-template-columns: repeat(auto-fill, minmax(min(460px, 100%), 1fr)); }
+
+.deck__slide { display: flex; flex-direction: column; gap: var(--space-2); }
+.deck__caption {
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Print — one slide per page, landscape
+   -------------------------------------------------------------------------- */
+
+@media print {
+  @page { size: landscape; margin: 0; }
+  .deck { display: block; }
+  .deck__caption { display: none; }
+  .slide {
+    break-after: page;
+    border-radius: 0;
+    box-shadow: none;
+    width: 100%;
+  }
+}

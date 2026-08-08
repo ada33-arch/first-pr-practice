@@ -1,0 +1,164 @@
+#!/usr/bin/env node
+/**
+ * Builds examples/intake-standalone.html — the whole intake as one file.
+ *
+ * Inlines every linked stylesheet and adds a token-level dark layer, so the
+ * page can be emailed, opened from a USB stick, or embedded somewhere that
+ * enforces a strict CSP. No dependencies; run it with plain node.
+ *
+ *   node design-system/tools/build-standalone.js
+ *
+ * Re-run after changing anything in css/ or tokens/.
+ */
+
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+// The repo is ESM ("type": "module"), so no __dirname — derive it.
+const HERE = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.join(HERE, '..');
+// Two pages get a one-file build: the technical intake, and the customer brief.
+const TARGETS = [
+  { src: path.join(ROOT, 'examples', 'picker.html'),
+    out: path.join(ROOT, 'examples', 'intake-standalone.html'),
+    theme: 'theme-violet' },
+  { src: path.join(ROOT, 'brief.html'),
+    out: path.join(ROOT, 'brief-standalone.html'),
+    theme: 'theme-violet' },
+];
+
+const SHEETS = [
+  'tokens/tokens.css',
+  'css/base.css',
+  'css/components.css',
+  'css/web.css',
+];
+
+/* The system is light-first by design — decks stay on a light ground — so the
+ * dark layer lives here in the build rather than in tokens.css. Because every
+ * component reads from tokens, redefining surfaces, foregrounds and the ink
+ * steps that act as borders flips the whole page; nothing needs a dark variant. */
+const DARK = `
+  --surface-page:    #12161D;
+  --surface-muted:   #191F2A;
+  --surface-sunken:  #0D1116;
+  --surface-cream:   #191F2A;
+  --surface-inverse: #FFFFFF;
+  --fg-strong: #F4F6F9;
+  --fg-body:   rgba(244,246,249,0.76);
+  --fg-muted:  rgba(244,246,249,0.52);
+  --ink-100: rgba(244,246,249,0.10);
+  --ink-200: rgba(244,246,249,0.17);
+  --ink-300: rgba(244,246,249,0.30);
+  --ink-400: rgba(244,246,249,0.48);
+  --ink-800: #191F2A;
+  --ink-900: #0D1116;
+  --chart-grid: rgba(244,246,249,0.12);
+  --chart-axis: rgba(244,246,249,0.45);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.45);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,0.5);`;
+
+const LIGHT = `
+  --surface-page: #FFFFFF; --surface-muted: #F7F8FA; --surface-sunken: #EFF1F5;
+  --surface-cream: #FAF6EC; --surface-inverse: #14181F;
+  --fg-strong: #14181F; --fg-body: #3A4761; --fg-muted: #8993A6;
+  --ink-100:#ECEFF3; --ink-200:#D8DDE5; --ink-300:#B4BCC9; --ink-400:#8993A6;
+  --ink-800:#1B2333; --ink-900:#14181F;
+  --chart-grid:#ECEFF3; --chart-axis:#8993A6;`;
+
+const themeLayer = `
+/* ===== theme layer (standalone build only) ===== */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {${DARK}
+  }
+}
+:root[data-theme="dark"] {${DARK}
+}
+:root[data-theme="light"] {${LIGHT}
+}
+input[type="color"], input[type="text"], textarea {
+  color: var(--fg-strong); background: var(--surface-page);
+}
+`;
+
+const css = SHEETS
+  .map(f => `/* ===== ${f} ===== */\n${fs.readFileSync(path.join(ROOT, f), 'utf8')}`)
+  .join('\n\n');
+
+for (const T of TARGETS) build(T);
+
+function build({ src, out: OUT, theme }) {
+const html = fs.readFileSync(src, 'utf8');
+
+const ownStyle = (html.match(/<style>([\s\S]*?)<\/style>/) || [, ''])[1];
+const title = (html.match(/<title>(.*?)<\/title>/) || [, 'Design Intake'])[1];
+
+/* Index-based, not split-based: page scripts can legitimately contain the
+ * string '<body>' (the starter-file generator does). Take the first opening
+ * tag and the last closing one. */
+const bodyStart = html.indexOf('<body>') + '<body>'.length;
+const bodyEnd = html.lastIndexOf('</body>');
+if (bodyStart < 6 || bodyEnd < 0) {
+  console.error('Could not locate <body> in', src);
+  process.exit(1);
+}
+let body = html.slice(bodyStart, bodyEnd);
+
+/* An ES module import needs a server; this file has to work from a USB stick.
+ * Inline the module source and strip its export keywords, so the page script
+ * finds the same names in its own scope that it would have imported. */
+body = body.replace(
+  /^\s*import\s*\{([^}]*)\}\s*from\s*['"](\.\/lib\/[\w.-]+\.js)['"];?/m,
+  (_, specifiers, rel) => {
+    let mod = fs.readFileSync(path.join(ROOT, rel.replace('./', '')), 'utf8')
+      .replace(/^export\s+(?=(async\s+)?function|const|let|class)/gm, '');
+
+    /* `import { buildPage as buildPageFrom }` means the page has its own
+     * buildPage. Inlining without honouring the alias declares the name twice
+     * and the whole script fails to parse — so apply the rename to the module
+     * source, which is the only place the original name is used. */
+    for (const spec of specifiers.split(',')) {
+      const [from, to] = spec.trim().split(/\s+as\s+/).map(t => t.trim());
+      if (to && from !== to) mod = mod.replace(new RegExp(`\\b${from}\\b`, 'g'), to);
+    }
+    return `/* ===== inlined ${rel} ===== */\n${mod}\n/* ===== end ${rel} ===== */`;
+  });
+
+const out = `<!doctype html>
+<html lang="en" class="${theme}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${title}</title>
+<!-- Generated by tools/build-standalone.js — edit the source page, not this file. -->
+<style>
+${css}
+${themeLayer}
+${ownStyle}
+</style>
+</head>
+<body>
+${body}
+</body>
+</html>
+`;
+
+fs.writeFileSync(OUT, out);
+
+// Guard the one property that makes this file worth having.
+if (/^\s*import\s.+from\s/m.test(out) || /^export\s/m.test(out)) {
+  console.error('Module syntax survived bundling — the standalone build would not run:', OUT);
+  process.exit(1);
+}
+
+const external = out.match(/(?:src|href)="https?:\/\/[^"]+"/g) || [];
+if (external.length) {
+  console.error('External asset references found — the build is not self-contained:');
+  external.forEach(e => console.error('  ' + e));
+  process.exit(1);
+}
+
+console.log(`Wrote ${path.relative(process.cwd(), OUT)} — ${(out.length / 1024).toFixed(0)}KB, self-contained.`);
+}

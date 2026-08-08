@@ -1,0 +1,807 @@
+<!doctype html>
+<html lang="en" class="theme-violet">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tell us about your project</title>
+<link rel="stylesheet" href="tokens/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/web.css">
+<style>
+  body { background: var(--surface-muted); }
+  .wrap { max-width: 980px; margin-inline: auto; padding: var(--space-9) var(--space-5) var(--space-12); }
+  .qs { margin-bottom: var(--space-6); }
+  .qs__head { display: flex; gap: var(--space-4); align-items: baseline; margin-bottom: var(--space-2); }
+  .qs__n {
+    font-family: var(--font-display); font-weight: var(--fw-black); font-size: 1.4rem;
+    color: var(--accent-500); font-variant-numeric: tabular-nums; flex: none;
+  }
+  .qs__hint { color: var(--fg-muted); font-size: var(--fs-small); margin-bottom: var(--space-5); }
+
+  .opts { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .opt {
+    padding: 0.7rem 1.2rem; border: 1.5px solid var(--ink-200); border-radius: var(--radius-pill);
+    background: var(--surface-page); font: inherit; font-size: var(--fs-small);
+    font-weight: var(--fw-medium); color: var(--fg-body); cursor: pointer;
+    transition: all var(--duration-fast) var(--ease-standard);
+  }
+  .opt:hover { border-color: var(--accent-300); color: var(--fg-strong); }
+  .opt[aria-pressed="true"] {
+    background: var(--accent-500); border-color: var(--accent-500);
+    color: var(--accent-on); font-weight: var(--fw-semibold);
+  }
+
+  /* Palette cards — the customer picks a look, not a hex value. */
+  .palettes { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
+  .pal {
+    border: 2px solid var(--ink-200); border-radius: var(--radius-lg); padding: 0;
+    background: none; cursor: pointer; overflow: hidden; text-align: left;
+    transition: transform var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard);
+    font: inherit;
+  }
+  .pal:hover { transform: translateY(-3px); }
+  .pal[aria-pressed="true"] { border-color: var(--ink-900); box-shadow: var(--shadow-lg); }
+  .pal__demo { padding: var(--space-5) var(--space-4) var(--space-4); }
+  .pal__title { font-family: var(--font-display); font-weight: var(--fw-black); font-size: 1.05rem; line-height: 1.15; }
+  .pal__sub { font-size: 0.7rem; letter-spacing: .1em; text-transform: uppercase; font-weight: 600; margin-bottom: 6px; }
+  .pal__btn { display: inline-block; margin-top: 10px; padding: .34rem .8rem; border-radius: 999px; font-size: .72rem; font-weight: 700; }
+  .pal__strip { display: flex; height: 10px; }
+  .pal__strip span { flex: 1; }
+  .pal__name { padding: var(--space-3) var(--space-4); background: var(--surface-page);
+               font-size: var(--fs-small); font-weight: var(--fw-semibold); color: var(--fg-strong);
+               display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); }
+  .pal__tag { font-size: .68rem; font-weight: 600; color: var(--fg-muted); letter-spacing: .06em; text-transform: uppercase; }
+
+  .drop {
+    display: grid; place-items: center; text-align: center; gap: var(--space-2);
+    padding: var(--space-7); border: 2px dashed var(--ink-200); border-radius: var(--radius-lg);
+    background: var(--surface-muted); cursor: pointer;
+  }
+  .field { display: grid; gap: var(--space-2); }
+  .field label { font-size: var(--fs-small); font-weight: var(--fw-semibold); color: var(--fg-strong); }
+  .field input, .field textarea {
+    font: inherit; font-size: var(--fs-small); padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--ink-200); border-radius: var(--radius-md);
+    background: var(--surface-page); color: var(--fg-strong); width: 100%;
+  }
+  .field textarea { resize: vertical; }
+  .field input:focus, .field textarea:focus { outline: none; border-color: var(--accent-500); }
+  .fields { display: grid; gap: var(--space-4); }
+  @media (min-width: 700px) { .fields--2 { grid-template-columns: 1fr 1fr; } }
+
+  /* Sits at the end of the flow rather than following the page down — it is a
+     recap to read once you've answered, not a heads-up display. */
+  .summary { margin-top: var(--space-8); }
+  .sum-row { display: flex; gap: var(--space-3); align-items: baseline; padding-block: var(--space-2);
+             border-bottom: 1px solid var(--ink-100); font-size: var(--fs-small); }
+  .sum-row:last-child { border-bottom: 0; }
+  .sum-row dt { flex: none; width: 108px; color: var(--fg-muted); }
+  .sum-row dd { margin: 0; color: var(--fg-strong); font-weight: var(--fw-medium); }
+  .bar { display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center; }
+  .logo-prev { max-height: 46px; width: auto; }
+  /* Checkbox and its wording stay on one row; only the wording wraps. */
+  .approve-row { display: flex; gap: var(--space-3); align-items: flex-start; cursor: pointer; }
+  .approve-row input { width: 20px; height: 20px; margin-top: 2px; flex: none; accent-color: var(--accent-500); }
+  .acct { padding: var(--space-3) var(--space-4); border-radius: var(--radius-md);
+          background: var(--surface-page); border: 1px solid var(--ink-100);
+          margin-bottom: var(--space-5); }
+  .btn--sm { padding: .4rem .9rem; font-size: var(--fs-caption); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="acct bar" id="acct" hidden>
+    <span class="small" id="acctWho"></span>
+    <span class="caption" id="acctUse"></span>
+    <span style="flex:1"></span>
+    <a class="btn btn--ghost btn--sm" href="/projects" id="acctProjects">My projects</a>
+    <button class="btn btn--ghost btn--sm" type="button" id="acctOut">Sign out</button>
+  </div>
+
+  <header class="stack stack-3" style="margin-bottom: var(--space-8);">
+    <span class="eyebrow">Project brief</span>
+    <h1 class="h1">Tell us about your project</h1>
+    <p class="body measure">
+      Four questions. There's a way through every one of them even if you don't
+      have a logo or your words written yet — just say so and we'll handle it.
+      Nothing you add here is uploaded anywhere; it stays on your computer.
+    </p>
+  </header>
+
+  <!-- 1. WHAT -->
+  <section class="card qs stack stack-4">
+    <div>
+      <div class="qs__head"><span class="qs__n">1</span><h2 class="h3">What do you need?</h2></div>
+      <p class="qs__hint">Pick the closest one. We can adjust later.</p>
+    </div>
+    <div class="opts" id="qKind">
+      <button class="opt" type="button" data-v="website" aria-pressed="false">A website</button>
+      <button class="opt" type="button" data-v="landing" aria-pressed="false">A single page to sell something</button>
+      <button class="opt" type="button" data-v="deck" aria-pressed="false">A presentation</button>
+      <button class="opt" type="button" data-v="portfolio" aria-pressed="false">A portfolio</button>
+    </div>
+  </section>
+
+  <!-- 2. LOOK -->
+  <section class="card qs stack stack-4">
+    <div>
+      <div class="qs__head"><span class="qs__n">2</span><h2 class="h3">Which look do you like?</h2></div>
+      <p class="qs__hint">
+        Pick whichever feels right — there's no wrong answer, and every one of
+        these is checked so your text stays easy to read.
+      </p>
+    </div>
+    <div class="palettes" id="qPal"></div>
+  </section>
+
+  <!-- 3. LOGO -->
+  <section class="card qs stack stack-4">
+    <div>
+      <div class="qs__head"><span class="qs__n">3</span><h2 class="h3">Your logo</h2></div>
+      <p class="qs__hint">Have one? Add it. Don't? Describe what you'd like and we'll take it from there.</p>
+    </div>
+    <div class="opts" id="qLogoMode">
+      <button class="opt" type="button" data-v="have" aria-pressed="false">I have a logo</button>
+      <button class="opt" type="button" data-v="describe" aria-pressed="false">I'll describe what I want</button>
+      <button class="opt" type="button" data-v="none" aria-pressed="false">Just use my name for now</button>
+    </div>
+
+    <div id="logoHave" hidden class="stack stack-4">
+      <label class="drop" id="dropLogo">
+        <span class="icon-chip" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 16V4m0 0L7 9m5-5 5 5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>
+          </svg>
+        </span>
+        <span class="h4">Drop your logo here, or click to choose</span>
+        <span class="caption">A PNG or SVG works best</span>
+        <input type="file" id="fileLogo" accept="image/*,.svg" hidden>
+      </label>
+      <div id="logoOut" hidden class="stack stack-3">
+        <div class="grid grid--3">
+          <div class="stack stack-2"><div class="card" style="padding:var(--space-4)"><img id="lgLight" class="logo-prev" alt="Your logo on a light background"></div><span class="caption">On light</span></div>
+          <div class="stack stack-2"><div class="card card--dark" style="padding:var(--space-4)"><img id="lgDark" class="logo-prev" alt="Your logo on a dark background"></div><span class="caption">On dark</span></div>
+          <div class="stack stack-2"><div class="card card--accent" style="padding:var(--space-4)"><img id="lgAcc" class="logo-prev" alt="Your logo on your chosen colour"></div><span class="caption">On your colour</span></div>
+        </div>
+        <p class="small" id="logoNote"></p>
+      </div>
+    </div>
+
+    <div id="logoDescribe" hidden class="fields">
+      <div class="field">
+        <label for="brandName">What's the name?</label>
+        <input id="brandName" type="text" placeholder="e.g. Northbrook, Kestrel Studio">
+      </div>
+      <div class="field">
+        <label for="logoWords">Describe the logo you have in mind</label>
+        <textarea id="logoWords" rows="3" placeholder="e.g. Something simple and modern — just the name in a strong typeface, maybe a small mark. Nothing fussy."></textarea>
+      </div>
+      <div class="field">
+        <label>Roughly what kind?</label>
+        <div class="opts" id="qLogoStyle">
+          <button class="opt" type="button" data-v="Wordmark — the name, styled" aria-pressed="false">Just the name</button>
+          <button class="opt" type="button" data-v="Symbol plus the name" aria-pressed="false">A symbol + name</button>
+          <button class="opt" type="button" data-v="Initials or monogram" aria-pressed="false">Initials</button>
+          <button class="opt" type="button" data-v="Not sure — open to suggestions" aria-pressed="false">Not sure yet</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. CONTENT -->
+  <section class="card qs stack stack-4">
+    <div>
+      <div class="qs__head"><span class="qs__n">4</span><h2 class="h3">Your words</h2></div>
+      <p class="qs__hint">Send us what you've written, or answer a few questions and we'll write a first draft for you.</p>
+    </div>
+    <div class="opts" id="qCopyMode">
+      <button class="opt" type="button" data-v="file" aria-pressed="false">I have a document</button>
+      <button class="opt" type="button" data-v="answer" aria-pressed="false">Ask me questions instead</button>
+      <button class="opt" type="button" data-v="none" aria-pressed="false">Nothing written yet</button>
+    </div>
+
+    <div id="copyFile" hidden class="stack stack-3">
+      <label class="drop" id="dropCopy">
+        <span class="h4">Drop your document here, or click to choose</span>
+        <span class="caption">Word (.docx), plain text or Markdown</span>
+        <input type="file" id="fileCopy" accept=".docx,.txt,.md,text/*" hidden>
+      </label>
+      <p class="small" id="copyNote"></p>
+      <div class="field" id="copyPreviewWrap" hidden>
+        <label for="copyPreview">What we read from it — edit anything that came out wrong</label>
+        <textarea id="copyPreview" rows="7"></textarea>
+      </div>
+    </div>
+
+    <div id="copyAnswer" hidden class="fields">
+      <div class="fields fields--2">
+        <div class="field">
+          <label for="cName">Business or project name</label>
+          <input id="cName" type="text" placeholder="Northbrook">
+        </div>
+        <div class="field">
+          <label for="cWhat">In one line, what do you do?</label>
+          <input id="cWhat" type="text" placeholder="We help teams plan their quarter">
+        </div>
+      </div>
+      <div class="fields fields--2">
+        <div class="field">
+          <label for="cWho">Who is it for?</label>
+          <input id="cWho" type="text" placeholder="Operations leads at mid-size companies">
+        </div>
+        <div class="field">
+          <label for="cWhy">Why choose you over anyone else?</label>
+          <input id="cWhy" type="text" placeholder="We stay through delivery, not just the plan">
+        </div>
+      </div>
+      <div class="field">
+        <label for="cOffer">Three things you offer — one per line</label>
+        <textarea id="cOffer" rows="3" placeholder="Planning&#10;Analytics&#10;Delivery"></textarea>
+      </div>
+      <div class="fields fields--2">
+        <div class="field">
+          <label for="cAction">What should people do?</label>
+          <input id="cAction" type="text" placeholder="Book a call">
+        </div>
+        <div class="field">
+          <label for="cContact">How do they reach you?</label>
+          <input id="cContact" type="text" placeholder="hello@northbrook.com">
+        </div>
+      </div>
+      <p class="small text-muted">
+        We'll turn these into a first draft of the page — headline, sections, the
+        lot. It's a starting point you can change, not the finished wording.
+      </p>
+    </div>
+  </section>
+
+  <!-- SUMMARY -->
+  <div class="summary">
+    <div class="card card--raised stack stack-4">
+      <div class="bar">
+        <span class="eyebrow">Your brief</span>
+        <div style="flex:1;min-width:140px"><div class="meter"><div class="meter__fill" id="prog" style="width:0%"></div></div></div>
+        <span class="caption" id="count">0 of 4</span>
+      </div>
+      <dl id="sum" style="margin:0">
+        <p class="small text-muted" id="sumEmpty">Answer the questions above and your brief appears here.</p>
+      </dl>
+      <div class="bar">
+        <button class="btn btn--primary" type="button" id="see">See my page</button>
+        <button class="btn btn--ink" type="button" id="send">Save my brief</button>
+        <button class="btn btn--ghost" type="button" id="reset">Start again</button>
+      </div>
+      <p class="caption" id="note"></p>
+    </div>
+  </div>
+
+  <!-- 5. APPROVE -->
+  <section class="card qs stack stack-4" id="approve" hidden>
+    <div>
+      <div class="qs__head"><span class="qs__n">5</span><h2 class="h3">Happy with it?</h2></div>
+      <p class="qs__hint">Look at your page first, then approve it here to get the finished files.</p>
+    </div>
+
+    <div class="split">
+      <div class="stack stack-4">
+        <span class="eyebrow">What you get</span>
+        <ul class="checklist small">
+          <li><span><strong>Your finished page</strong> — ready to put online, opens in any browser</span></li>
+          <li><span><strong>Your words</strong> as a separate document, so you can edit them any time</span></li>
+          <li><span><strong>The code</strong>, yours to keep — no subscription, no licence to renew</span></li>
+          <li><span><strong>A short guide</strong> on how to put it online and what to change</span></li>
+        </ul>
+        <p class="small text-muted">
+          Everything is a plain file on your computer. Nothing depends on us
+          staying around.
+        </p>
+      </div>
+
+      <div class="stack stack-4">
+        <div class="card card--flat stack stack-3">
+          <span class="eyebrow">Your order</span>
+          <div class="bar" style="justify-content:space-between">
+            <span class="small" id="ordItem">—</span>
+            <span class="h3" id="ordPrice">—</span>
+          </div>
+          <p class="caption" id="ordNote"></p>
+        </div>
+
+        <label class="approve-row">
+          <input type="checkbox" id="agree">
+          <span class="small">
+            I've seen my page and I'm happy with it. I understand the wording is a
+            starting point I can change.
+          </span>
+        </label>
+
+        <div class="bar">
+          <button class="btn btn--primary" type="button" id="pay" disabled>Approve and continue</button>
+          <button class="btn btn--outline" type="button" id="pack" disabled>Download my files</button>
+        </div>
+        <p class="caption" id="payNote"></p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script type="module">
+/* The generator lives in lib/package.js because the Worker runs the very same
+   code to build what it delivers. Two copies would drift, and the copy that
+   drifted would be the one customers actually receive. */
+import {
+  PALETTES, KIND_LABEL, paletteById, brandOf, logoSummary, copySummary,
+  draftCopy, buildPage as buildPageFrom, packageFiles, makeZip, packageName, esc,
+} from './lib/package.js';
+
+/* ============================================================================
+   Client-facing brief. Deliberately shows no file paths, class names or CSS —
+   the customer answers questions and gets a page. The technical scope is still
+   produced, but it travels inside the generated file as a comment for whoever
+   builds from it.
+   ========================================================================== */
+
+const A = { kind:null, pal:null, logoMode:null, copyMode:null,
+            logo:null, logoStyle:null, copyText:'', fields:{} };
+
+/* ---- Palette cards ------------------------------------------------------ */
+function ramp(theme) {
+  const probe = document.createElement('div');
+  probe.className = 'theme-' + theme;
+  document.body.appendChild(probe);
+  const cs = getComputedStyle(probe);
+  const v = k => cs.getPropertyValue(k).trim();
+  const out = { 100:v('--accent-100'), 300:v('--accent-300'), 500:v('--accent-500'),
+                600:v('--accent-600'), on:v('--accent-on') };
+  probe.remove();
+  return out;
+}
+
+const palBox = document.getElementById('qPal');
+PALETTES.forEach(p => {
+  const r = ramp(p.theme);
+  const ink = p.dark ? '#FFFFFF' : '#14181F';
+  const body = p.dark ? 'rgba(255,255,255,.62)' : '#5C6880';
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'pal'; b.setAttribute('aria-pressed','false');
+  b.dataset.id = p.id;
+  b.setAttribute('aria-label', `${p.name} — ${p.mood}`);
+  b.innerHTML =
+    `<div class="pal__demo" style="background:${p.ground}">
+       <div class="pal__sub" style="color:${p.dark ? r[300] : r[600]}">Your heading</div>
+       <div class="pal__title" style="color:${ink}">A line of your<br>text, like this</div>
+       <div class="pal__sub" style="color:${body};text-transform:none;letter-spacing:0;font-weight:400;font-size:.72rem;margin-top:6px">
+         And a sentence underneath it.
+       </div>
+       <span class="pal__btn" style="background:${r[500]};color:${r.on}">Your button</span>
+     </div>
+     <div class="pal__strip">
+       <span style="background:${r[600]}"></span><span style="background:${r[500]}"></span>
+       <span style="background:${r[300]}"></span><span style="background:${r[100]}"></span>
+     </div>
+     <div class="pal__name"><span>${p.name}</span>${p.tag ? `<span class="pal__tag">${p.tag}</span>` : ''}</div>`;
+  b.onclick = () => {
+    palBox.querySelectorAll('.pal').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    A.pal = p;
+    document.documentElement.className = 'theme-' + p.theme;
+    render();
+  };
+  palBox.appendChild(b);
+});
+
+/* ---- Simple option groups ----------------------------------------------- */
+function group(id, key, after) {
+  const box = document.getElementById(id);
+  box.onclick = e => {
+    const b = e.target.closest('.opt'); if (!b) return;
+    box.querySelectorAll('.opt').forEach(o => o.setAttribute('aria-pressed', String(o === b)));
+    A[key] = b.dataset.v;
+    if (after) after(b.dataset.v);
+    render();
+  };
+}
+group('qKind', 'kind');
+group('qLogoStyle', 'logoStyle');
+group('qLogoMode', 'logoMode', v => {
+  document.getElementById('logoHave').hidden = v !== 'have';
+  document.getElementById('logoDescribe').hidden = v !== 'describe';
+});
+group('qCopyMode', 'copyMode', v => {
+  document.getElementById('copyFile').hidden = v !== 'file';
+  document.getElementById('copyAnswer').hidden = v !== 'answer';
+});
+
+/* ---- Logo --------------------------------------------------------------- */
+function readLogo(f) {
+  if (!f) return;
+  const isJpg = /jpe?g/.test(f.type);
+  const isSvg = /svg/.test(f.type) || /\.svg$/i.test(f.name);
+  const r = new FileReader();
+  r.onload = e => {
+    ['lgLight','lgDark','lgAcc'].forEach(id => document.getElementById(id).src = e.target.result);
+    document.getElementById('logoOut').hidden = false;
+    const notes = [];
+    if (isJpg) notes.push('Heads up — this is a JPG, so it will show a white box on the darker sections. If you have a PNG or SVG version, that one will look better.');
+    else if (isSvg) notes.push('Perfect — this will stay sharp at any size, including printed and projected.');
+    else notes.push('Looks good. Check the three previews above — if the background isn\'t see-through you\'ll notice it on the dark one.');
+    notes.push('If your logo disappears against the dark or coloured panel, send us the light version too — most logos have one.');
+    document.getElementById('logoNote').textContent = notes.join(' ');
+    A.logo = { name:f.name, svg:isSvg, jpg:isJpg, src:e.target.result };
+    render();
+  };
+  r.readAsDataURL(f);
+}
+document.getElementById('fileLogo').onchange = e => readLogo(e.target.files[0]);
+
+/* ---- Reading a .docx in the browser -------------------------------------
+   A .docx is a zip. Walk its central directory, pull word/document.xml, and
+   inflate it with the browser's own DecompressionStream — no library, no
+   upload, nothing leaves the machine. ------------------------------------- */
+async function readDocx(buf) {
+  const dv = new DataView(buf), u8 = new Uint8Array(buf);
+  // End of central directory: scan backwards for the signature.
+  let eocd = -1;
+  for (let i = u8.length - 22; i >= Math.max(0, u8.length - 66000); i--) {
+    if (dv.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+  }
+  if (eocd < 0) throw new Error('not a zip');
+  const count = dv.getUint16(eocd + 10, true);
+  let p = dv.getUint32(eocd + 16, true);
+
+  for (let i = 0; i < count; i++) {
+    if (dv.getUint32(p, true) !== 0x02014b50) break;
+    const method = dv.getUint16(p + 10, true);
+    const compSize = dv.getUint32(p + 20, true);
+    const nameLen = dv.getUint16(p + 28, true);
+    const extraLen = dv.getUint16(p + 30, true);
+    const cmtLen = dv.getUint16(p + 32, true);
+    const local = dv.getUint32(p + 42, true);
+    const name = new TextDecoder().decode(u8.subarray(p + 46, p + 46 + nameLen));
+
+    if (name === 'word/document.xml') {
+      const lNameLen = dv.getUint16(local + 26, true);
+      const lExtraLen = dv.getUint16(local + 28, true);
+      const start = local + 30 + lNameLen + lExtraLen;
+      const raw = u8.subarray(start, start + compSize);
+      let xmlBytes;
+      if (method === 0) xmlBytes = raw;
+      else {
+        const ds = new DecompressionStream('deflate-raw');
+        const stream = new Blob([raw]).stream().pipeThrough(ds);
+        xmlBytes = new Uint8Array(await new Response(stream).arrayBuffer());
+      }
+      return new TextDecoder().decode(xmlBytes);
+    }
+    p += 46 + nameLen + extraLen + cmtLen;
+  }
+  throw new Error('no document.xml');
+}
+
+function xmlToText(xml) {
+  return xml
+    .replace(/<w:tab[^>]*\/>/g, ' ')
+    .replace(/<\/w:p>/g, '\n')
+    .replace(/<w:br[^>]*\/>/g, '\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&')
+    .replace(/&quot;/g,'"').replace(/&#39;/g,"'")
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+async function readCopyFile(f) {
+  if (!f) return;
+  const note = document.getElementById('copyNote');
+  note.textContent = 'Reading…';
+  try {
+    let text;
+    if (/\.docx$/i.test(f.name)) text = xmlToText(await readDocx(await f.arrayBuffer()));
+    else text = await f.text();
+    A.copyText = text;
+    document.getElementById('copyPreviewWrap').hidden = false;
+    document.getElementById('copyPreview').value = text;
+    const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+    note.textContent = words
+      ? `Read ${words} words from ${f.name}. Have a quick look below in case anything came out oddly.`
+      : `We opened ${f.name} but couldn't find any text in it.`;
+  } catch (err) {
+    note.textContent = /\.docx$/i.test(f.name)
+      ? `We couldn't open ${f.name}. If it's an older .doc file, save it as .docx or paste the text into the box instead.`
+      : `We couldn't read ${f.name}. Plain text, Markdown or Word (.docx) work best.`;
+    document.getElementById('copyPreviewWrap').hidden = false;
+    document.getElementById('copyPreview').value = '';
+  }
+  render();
+}
+document.getElementById('fileCopy').onchange = e => readCopyFile(e.target.files[0]);
+document.getElementById('copyPreview').oninput = e => { A.copyText = e.target.value; render(); };
+
+// drag and drop for both zones
+[['dropLogo', f => readLogo(f)], ['dropCopy', f => readCopyFile(f)]].forEach(([id, fn]) => {
+  const z = document.getElementById(id);
+  ['dragenter','dragover'].forEach(ev => z.addEventListener(ev, e => { e.preventDefault(); z.style.borderColor='var(--accent-500)'; }));
+  ['dragleave','drop'].forEach(ev => z.addEventListener(ev, e => { e.preventDefault(); z.style.borderColor='var(--ink-200)'; }));
+  z.addEventListener('drop', e => fn(e.dataTransfer.files[0]));
+});
+
+/* ---- Field capture ------------------------------------------------------ */
+['brandName','logoWords','cName','cWhat','cWho','cWhy','cOffer','cAction','cContact']
+  .forEach(id => document.getElementById(id).oninput = e => { A.fields[id] = e.target.value; render(); });
+
+function render() {
+  if (typeof renderApprove === 'function') renderApprove();
+  const answered = ['kind','pal','logoMode','copyMode'].filter(k => A[k]).length;
+  document.getElementById('prog').style.width = (answered/4*100) + '%';
+  document.getElementById('count').textContent = `${answered} of 4`;
+
+  const a = answersOf();
+  const rows = [
+    ['For',       brandOf(a) || null],
+    ['You need',  A.kind ? KIND_LABEL[A.kind] : null],
+    ['The look',  A.pal ? `${A.pal.name} — ${A.pal.mood.toLowerCase()}` : null],
+    ['Logo',      logoSummary(a)],
+    ['Words',     copySummary(a)],
+  ].filter(([,v]) => v);
+
+  const sum = document.getElementById('sum');
+  sum.innerHTML = rows.length
+    ? rows.map(([k,v]) => `<div class="sum-row"><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('')
+    : `<p class="small text-muted">Answer the questions above and your brief appears here.</p>`;
+}
+
+
+
+/* ---- The account layer ----------------------------------------------------
+   This page has two lives. Served by the Worker it belongs to a signed-in
+   person: briefs are saved to their account and the download comes from the
+   server. Opened as the standalone file there is no server at all, and it
+   falls back to building everything locally. `ONLINE` is what decides, and it
+   is answered by asking the server rather than by guessing from the URL. ---- */
+const ONLINE = { ready: false, signedIn: false, user: null, usage: null, briefId: null };
+
+async function api(path, options = {}) {
+  const res = await fetch(path, {
+    credentials: 'same-origin',
+    headers: options.body ? { 'Content-Type': 'application/json' } : {},
+    ...options,
+  });
+  const data = await res.json().catch(() => ({}));
+  return { ok: res.ok, status: res.status, data };
+}
+
+async function detectAccount() {
+  if (location.protocol === 'file:') return;
+  try {
+    const { ok, data } = await api('/api/me');
+    if (!ok) return;
+    ONLINE.ready = true;
+    ONLINE.signedIn = Boolean(data.signedIn);
+    ONLINE.user = data.user || null;
+    ONLINE.usage = data.usage || null;
+  } catch { /* no server behind this page; stay in local mode */ }
+  paintAccount();
+}
+
+function paintAccount() {
+  const bar = document.getElementById('acct');
+  if (!ONLINE.ready || !ONLINE.signedIn) { bar.hidden = true; return; }
+  bar.hidden = false;
+  document.getElementById('acctWho').textContent = ONLINE.user.email;
+
+  const u = ONLINE.usage || {};
+  document.getElementById('acctUse').textContent = !u.paywall
+    ? `${u.used || 0} downloaded`
+    : u.plan ? 'Subscribed'
+    : `${u.remaining} of ${u.free} free left`;
+}
+
+/* Saving is what turns a page full of answers into something that survives
+   closing the tab — and it is what the server later builds the files from. */
+async function saveToAccount() {
+  if (!ONLINE.ready || !ONLINE.signedIn) return null;
+  const { ok, data, status } = await api('/api/briefs', {
+    method: 'POST',
+    body: JSON.stringify({ id: ONLINE.briefId, title: brandOf(answersOf()) || null, answers: answersOf() }),
+  });
+  if (status === 401) { ONLINE.signedIn = false; paintAccount(); return null; }
+  if (!ok) return null;
+  ONLINE.briefId = data.brief.id;
+  return data.brief;
+}
+
+document.getElementById('acctOut').onclick = async () => {
+  await api('/auth/signout', { method: 'POST' });
+  location.reload();
+};
+
+const signInHref = () => `/signin?returnTo=${encodeURIComponent(location.pathname)}`;
+
+/* ---- Handing the answers to the generator --------------------------------
+   The page keeps `A` in whatever shape the form finds convenient; the module
+   takes one fixed shape. Converting here means the form can change without
+   the generator — and the Worker — having to care. ------------------------- */
+function answersOf() {
+  return {
+    kind: A.kind,
+    palId: A.pal ? A.pal.id : null,
+    logoMode: A.logoMode,
+    logoStyle: A.logoStyle,
+    logo: A.logo,
+    copyMode: A.copyMode,
+    copyText: A.copyText,
+    fields: A.fields,
+  };
+}
+
+/* The stylesheet text the generated page needs to carry inline. Served from a
+   URL we can fetch it; opened straight off disk the browser refuses, and the
+   bundled standalone build has it inline already. */
+async function collectCss() {
+  const inline = [...document.querySelectorAll('style')]
+    .map(s => s.textContent).filter(t => /--accent-500\s*:/.test(t)).join('\n');
+  if (inline) return inline;
+  if (location.protocol === 'file:') return null;
+  const links = [...document.querySelectorAll('link[rel="stylesheet"]')].map(l => l.href);
+  return (await Promise.all(links.map(h => fetch(h).then(r => r.text())))).join('\n');
+}
+
+async function buildPage() {
+  const css = await collectCss();
+  return css === null ? null : buildPageFrom(answersOf(), css);
+}
+
+/* ---- Pricing and checkout ------------------------------------------------
+   Set these to your own values. CHECKOUT is a payment link from whichever
+   provider you use (Stripe Payment Links, Gumroad, Lemon Squeezy, Paddle…).
+   Leave it empty and the button asks for an email instead of pretending a
+   checkout exists.
+
+   Deliberately NOT a card form. A page like this has no server, so it cannot
+   verify a payment or take card details safely — that has to be the provider's
+   job. See SELLING.md. ---------------------------------------------------- */
+const SHOP = {
+  currency: '£',
+  prices: { website: 450, landing: 350, deck: 250, portfolio: 400 },
+  CHECKOUT: '',                      // e.g. 'https://buy.stripe.com/xxxxxxxx'
+  CONTACT: 'hello@example.com',
+};
+
+/* ---- The package -------------------------------------------------------- */
+function priceOf() { return SHOP.prices[A.kind] ?? 0; }
+
+function renderApprove() {
+  const ready = A.kind && A.pal;
+  document.getElementById('approve').hidden = !ready;
+  if (!ready) return;
+  const price = priceOf();
+  document.getElementById('ordItem').textContent = KIND_LABEL[A.kind];
+  document.getElementById('ordPrice').textContent = price ? `${SHOP.currency}${price}` : '—';
+  document.getElementById('ordNote').textContent =
+    'One payment. The files are yours — no subscription and nothing to renew.';
+  const agreed = document.getElementById('agree').checked;
+  document.getElementById('pay').disabled = !agreed;
+  document.getElementById('pack').disabled = !agreed;
+}
+document.getElementById('agree').onchange = renderApprove;
+
+document.getElementById('pay').onclick = () => {
+  const note = document.getElementById('payNote');
+  if (SHOP.CHECKOUT) {
+    window.open(SHOP.CHECKOUT, '_blank', 'noopener');
+    note.textContent = 'Opened checkout in a new tab. Your files arrive by email once the payment goes through.';
+  } else {
+    // No pretend checkout. Say what actually happens.
+    const subject = encodeURIComponent(`Approved: ${KIND_LABEL[A.kind]}`);
+    const body = encodeURIComponent(
+      `I'd like to go ahead.\n\n` +
+      `What: ${KIND_LABEL[A.kind]}\n` +
+      `Look: ${A.pal.name}\n` +
+      `Logo: ${logoSummary(answersOf()) || '—'}\n` +
+      `Words: ${copySummary(answersOf()) || '—'}\n`);
+    location.href = `mailto:${SHOP.CONTACT}?subject=${subject}&body=${body}`;
+    note.textContent = `Payment isn't set up on this page yet, so this starts an email to ${SHOP.CONTACT} with your brief in it. We'll reply with an invoice.`;
+  }
+};
+
+document.getElementById('pack').onclick = async () => {
+  const note = document.getElementById('payNote');
+  const btn = document.getElementById('pack');
+  btn.textContent = 'Packing…';
+  note.textContent = '';
+
+  try {
+    /* Online, the server builds and hands over the package — that is the only
+       way the count, and later the payment, can mean anything. Offline, the
+       page builds it itself, which is exactly what the standalone file is for. */
+    if (ONLINE.ready) {
+      if (!ONLINE.signedIn) {
+        note.innerHTML = `Almost there — <a href="${signInHref()}">sign in</a> and your files download straight away. Your first two are free.`;
+        return;
+      }
+      const brief = await saveToAccount();
+      if (!brief) { note.textContent = 'We could not save your project. Try again in a moment.'; return; }
+
+      const res = await fetch(`/api/briefs/${brief.id}/download`, { method: 'POST', credentials: 'same-origin' });
+
+      if (res.status === 402) {
+        const d = await res.json().catch(() => ({}));
+        note.textContent = d.message || 'Your free downloads are used up.';
+        return;
+      }
+      if (res.status === 409) {
+        const d = await res.json().catch(() => ({}));
+        note.textContent = d.message || "We're checking your files over.";
+        return;
+      }
+      if (!res.ok) { note.textContent = 'That did not work. Try again in a moment.'; return; }
+
+      const blob = await res.blob();
+      const name = (res.headers.get('Content-Disposition') || '').match(/filename="([^"]+)"/)?.[1]
+        || packageName(answersOf());
+      saveBlob(blob, name);
+      note.textContent = `Saved — ${(blob.size / 1024).toFixed(0)}KB. Unzip it and open index.html to see your page.`;
+
+      const me = await api('/api/me');
+      if (me.ok) { ONLINE.usage = me.data.usage; paintAccount(); }
+      return;
+    }
+
+    const page = await buildPage();
+    if (!page) {
+      note.textContent = 'To build your files, open this page from a web address rather than straight off your computer.';
+      return;
+    }
+    const bytes = await makeZip(packageFiles(answersOf(), page, { contact: SHOP.CONTACT }));
+    const blob = new Blob([bytes], { type: 'application/zip' });
+    saveBlob(blob, packageName(answersOf()));
+    note.textContent = `Saved — ${(blob.size / 1024).toFixed(0)}KB. Unzip it and open index.html to see your page.`;
+  } finally {
+    btn.textContent = 'Download my files';
+  }
+};
+
+function saveBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+}
+
+/* ---- Actions ------------------------------------------------------------ */
+document.getElementById('see').onclick = async () => {
+  const note = document.getElementById('note');
+  if (!A.kind || !A.pal) { note.textContent = 'Pick what you need and a look first, then we can show you something.'; return; }
+  const doc = await buildPage();
+  if (!doc) { note.textContent = 'To preview here, open this page from a web address rather than straight off your computer.'; return; }
+  const w = window.open('', '_blank');
+  if (!w) { note.textContent = 'Your browser blocked the preview window — allow pop-ups for this page and try again.'; return; }
+  w.document.write(doc); w.document.close();
+  note.textContent = 'Opened in a new tab. Not right? Change an answer and press it again.';
+};
+
+document.getElementById('send').onclick = async () => {
+  const note = document.getElementById('note');
+  if (!A.kind || !A.pal) { note.textContent = 'Pick what you need and a look first.'; return; }
+  const doc = await buildPage();
+  if (!doc) { note.textContent = 'To save your page, open this from a web address rather than straight off your computer.'; return; }
+  const url = URL.createObjectURL(new Blob([doc], { type:'text/html' }));
+  const a = document.createElement('a');
+  a.href = url; a.download = packageName(answersOf()).replace(/-files\.zip$/, '.html');
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+  note.textContent = 'Saved. Open the file in any browser — your brief is included inside it, so whoever builds this has everything they need.';
+};
+
+document.getElementById('reset').onclick = () => location.reload();
+
+detectAccount();
+
+render();
+</script>
+</body>
+</html>
