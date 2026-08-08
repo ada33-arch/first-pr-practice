@@ -270,7 +270,7 @@
 .btn:active { transform: translateY(0); }
 
 .btn--primary { background: var(--accent-500); color: var(--accent-on); }
-.btn--primary:hover { background: var(--accent-600); color: var(--accent-on); }
+.btn--primary:hover { background: var(--accent-600); color: var(--accent-on-600); }
 
 .btn--ink { background: var(--ink-900); color: #fff; }
 .btn--ink:hover { background: var(--ink-800); color: #fff; }

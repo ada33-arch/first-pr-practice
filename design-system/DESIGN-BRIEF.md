@@ -73,8 +73,17 @@ Full ramps (50 → 700) live in `tokens/tokens.json`.
   a CTA band, or a glow orb — and must run *within one accent ramp*
   (`accent-600 → accent-500 → accent-300`), so it is still one hue. See
   [`FAVORITES.md`](FAVORITES.md) §"Rules specific to this set".
-- Accent-on-accent text must clear 4.5:1 — use `--accent-on` from the tokens,
-  which is already set correctly per theme.
+- Accent-on-accent text must clear 4.5:1. The tokens carry the right value for
+  each pairing, so never hand-pick one:
+  - text **on `--accent-500`** → `--accent-on` (dark ink on the bright themes,
+    white on the deep ones)
+  - text **on `--accent-600`**, i.e. the primary button's hover → `--accent-on-600`
+  - **accent text on the page ground** — links, eyebrows, `.text-accent` →
+    `--accent-600`, never `--accent-500`
+- **`--accent-600` is a text colour first.** Every theme's must clear 4.5:1 on
+  white, which is what lets it double as a fill that white sits on. When adding
+  a theme, darken `600` until it does — do not lighten it to match the brand
+  swatch. `--accent-500` is where the brand's brightness lives.
 
 ---
 
@@ -231,6 +240,7 @@ Before accepting work, verify:
 - [ ] Nothing crosses the 6.5% safe margin
 - [ ] Body copy ≤ 62 characters per line
 - [ ] Accent-on-accent text passes 4.5:1 contrast
+- [ ] `--accent-600` clears 4.5:1 on white in every theme it ships with
 
 ---
 

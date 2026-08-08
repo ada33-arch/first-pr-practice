@@ -25,3 +25,15 @@ jobs:
         uses: ./.github/actions/docker-demo
         with:
           greeting: 'hello'
+
+  # Catches an unreadable colour before it reaches main, rather than at deploy
+  # time — the Pages workflow runs the same check, but only after merge.
+  design-system:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Check every accent theme stays readable
+        run: node design-system/tools/check-contrast.js

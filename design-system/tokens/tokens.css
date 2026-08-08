@@ -15,11 +15,17 @@
   --accent-100: #FFEDBF;
   --accent-300: #FFD24D;
   --accent-500: #F5B21A;
-  --accent-600: #E09A00;
-  --accent-700: #B87A00;
+  --accent-600: #9B6B00;
+  --accent-700: #6D4800;
 
   /* Text colour that stays legible on top of --accent-500 */
   --accent-on: #14181F;
+
+  /* Text colour for the darker accent fill (--accent-600), used by the primary
+     button's hover state. Every theme's --accent-600 is chosen to clear 4.5:1
+     against white — that is what makes it safe as link and eyebrow text on the
+     page ground — so white is the one value that works on it in all nine. */
+  --accent-on-600: #FFFFFF;
 
   /* --- Ink (dark anchor) ---------------------------------------------- */
   --ink-900: #14181F;
@@ -152,7 +158,7 @@
 
 .theme-amber {
   --accent-50: #FFF8E6; --accent-100: #FFEDBF; --accent-300: #FFD24D;
-  --accent-500: #F5B21A; --accent-600: #E09A00; --accent-700: #B87A00;
+  --accent-500: #F5B21A; --accent-600: #9B6B00; --accent-700: #6D4800;
   --accent-on: #14181F;
 }
 
@@ -170,20 +176,20 @@
 
 .theme-teal {
   --accent-50: #E6F8FA; --accent-100: #C0EEF3; --accent-300: #63D6E2;
-  --accent-500: #22BCCE; --accent-600: #1897A6; --accent-700: #11707B;
+  --accent-500: #22BCCE; --accent-600: #14818D; --accent-700: #11707B;
   --accent-on: #14181F;
 }
 
 .theme-green {
   --accent-50: #E7F7EF; --accent-100: #C2EBD8; --accent-300: #63CFA1;
   --accent-500: #17A673; --accent-600: #11855C; --accent-700: #0B6244;
-  --accent-on: #FFFFFF;
+  --accent-on: #14181F;
 }
 
 .theme-coral {
   --accent-50: #FDEEEA; --accent-100: #FAD5CB; --accent-300: #F29B80;
   --accent-500: #E85D33; --accent-600: #C64720; --accent-700: #993518;
-  --accent-on: #FFFFFF;
+  --accent-on: #14181F;
 }
 
 /* Added from the favourites set — the web-landing family. Violet is the
@@ -203,7 +209,7 @@
 
 .theme-lime {
   --accent-50: #F7FBE8; --accent-100: #EAF5C2; --accent-300: #D8EC7E;
-  --accent-500: #C3DE4A; --accent-600: #A3BE2C; --accent-700: #758A1A;
+  --accent-500: #C3DE4A; --accent-600: #6A7C1D; --accent-700: #4C5A11;
   --accent-on: #14181F;
 }
 

@@ -549,6 +549,12 @@ function copySummary() {
   return null;
 }
 
+/* Who the job is for. The download filename already resolves it this way;
+   the brief and the page comment should agree with it. */
+function brandOf() {
+  return (A.fields.cName || A.fields.brandName || '').trim();
+}
+
 function render() {
   if (typeof renderApprove === 'function') renderApprove();
   const answered = ['kind','pal','logoMode','copyMode'].filter(k => A[k]).length;
@@ -556,6 +562,7 @@ function render() {
   document.getElementById('count').textContent = `${answered} of 4`;
 
   const rows = [
+    ['For',       brandOf() || null],
     ['You need',  A.kind ? KIND_LABEL[A.kind] : null],
     ['The look',  A.pal ? `${A.pal.name} — ${A.pal.mood.toLowerCase()}` : null],
     ['Logo',      logoSummary()],
@@ -625,6 +632,7 @@ body { background: var(--surface-page); }` : `
 body { background: var(--surface-page); }`;
 
   const brief = [
+    brandOf() ? `For        : ${brandOf()}` : '',
     `You need   : ${KIND_LABEL[A.kind] || '—'}`,
     `The look   : ${p.name} (${p.mood})`,
     `Logo       : ${logoSummary() || '—'}`,
@@ -881,7 +889,7 @@ ${d.contact || '(add your contact details)'}
 
 | | |
 |---|---|
-| You needed | ${KIND_LABEL[A.kind] || '—'} |
+${brandOf() ? `| For | ${brandOf()} |\n` : ''}| You needed | ${KIND_LABEL[A.kind] || '—'} |
 | The look | ${p.name} — ${p.mood.toLowerCase()} |
 | Logo | ${logoSummary() || '—'} |
 | Words | ${copySummary() || '—'} |

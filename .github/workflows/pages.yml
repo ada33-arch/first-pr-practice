@@ -40,6 +40,9 @@ jobs:
           fi
           echo "No external asset references."
 
+      - name: Check every accent theme stays readable
+        run: node design-system/tools/check-contrast.js
+
       - name: Verify entry points exist
         run: |
           for f in index.html examples/picker.html examples/deck.html \
