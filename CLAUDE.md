@@ -14,7 +14,7 @@ A practice repository for the GitHub workflow — cloning, branching, committing
   - `lifecycle-demo/` — JS action (`node24`) wiring the `pre`/`main`/`post` lifecycle, no dependencies
   - `greet-and-check/` — composite action that calls `lifecycle-demo` and asserts its output
   - `docker-demo/` — container action (`debian:12-slim`) that echoes `GITHUB_SHA` and its args
-- `.github/workflows/ci.yml` — runs the composite and docker actions on push to `main` and on every PR
+- `.github/workflows/ci.yml` — two jobs, on push to `main` and on every PR: `lifecycle-demo` runs the composite and docker actions, and `typecheck` installs with `npm ci` and runs `npm run typecheck`
 - `scripts/slack-upload.sh` — uploads a file to Slack via the three-step external-upload flow
 - `connect-apps-plugin/` — a Claude Code plugin providing `/connect-apps:setup`
 - `.claude/skills/ui-ux-pro-max/` — UI/UX design-guidance skill (definition only; the `search.py` CLI and CSV data it references are not vendored here)
@@ -29,7 +29,7 @@ npm run agent        # tsx agent.ts — runs the agent; needs ANTHROPIC_API_KEY
 npm run agent "your prompt here"
 ```
 
-There is no test suite. `npm run typecheck` is the closest thing to one — run it after touching any `.ts` file.
+There is no test suite. `npm run typecheck` is the closest thing to one — run it after touching any `.ts` file. CI runs it on every pull request, so a type error can't land on `main` unnoticed.
 
 ## Verifying Other Changes
 
@@ -49,6 +49,7 @@ There is no test suite. `npm run typecheck` is the closest thing to one — run 
 - `lifecycle-demo`'s `pre` step is skipped for local `uses: ./...` references — the runner resolves pre-steps before checkout. `post` still runs, without the state `pre` would have written; `cleanup.js` handles both paths.
 - Building `docker-demo` needs a running Docker daemon. Some sandboxes ship the `docker` CLI without one — the entrypoint is a plain shell script and can be run directly when that happens.
 - In `run:` blocks, pass values in through `env:` rather than splicing `${{ }}` into the script text; a fork-controlled expression inside `run:` is code execution. `greet-and-check/action.yml` follows this.
+- The root `package.json` sets `"type": "module"`, and Node applies the *nearest* parent `package.json` to every `.js` file — including Actions scripts, which the runner executes directly. `.github/actions/lifecycle-demo/package.json` exists solely to pin that directory back to `"commonjs"`; without it the action's `require()` calls throw `ReferenceError: require is not defined in ES module scope` and CI fails. A new JS action needs the same treatment (or `.cjs` extensions).
 
 ## Conventions
 
