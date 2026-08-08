@@ -1,0 +1,18 @@
+{
+  "name": "design-system-app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Accounts, saved projects and server-built downloads for the design system.",
+  "scripts": {
+    "styles": "node tools/bundle-styles.js",
+    "db:local": "wrangler d1 execute design-system --local --file=schema.sql",
+    "db:remote": "wrangler d1 execute design-system --remote --file=schema.sql",
+    "dev": "npm run styles && wrangler dev --env development --local --port 8787",
+    "deploy": "npm run styles && wrangler deploy",
+    "check": "node tools/bundle-styles.js --check"
+  },
+  "devDependencies": {
+    "wrangler": "^3.90.0"
+  }
+}
