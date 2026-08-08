@@ -9,6 +9,7 @@ built nothing.
 |---|---|---|
 | `journey.js` | The offline path: answer, preview, approve, build the zip in the browser | a static server |
 | `online.js` | The account path: register, save, download from the API, sign out | the Worker |
+| `sandbox.js` | The shared link, in a sandboxed frame with no pop-ups and no clipboard | nothing |
 
 ## Running them
 
@@ -26,5 +27,11 @@ node tests/online.js
 will not pass there: served by the Worker, the page requires an account and
 fetches its files from the API. That is the point of the split.
 
-Both need Playwright (`npm i playwright`) and resolve Chromium from
+`sandbox.js` is the one that matters for anything shared or embedded. It runs
+the page inside `sandbox="allow-scripts allow-forms"`, which is why the preview
+renders inline instead of opening a tab and why the feedback box puts its text
+on screen as well as on the clipboard — a pop-up and the Clipboard API are both
+refused there, and a feature that only works outside a frame is not shareable.
+
+All suites need Playwright (`npm i playwright`) and resolve Chromium from
 `PLAYWRIGHT_BROWSERS_PATH`.

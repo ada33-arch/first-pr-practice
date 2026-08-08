@@ -87,6 +87,15 @@
           background: var(--surface-page); border: 1px solid var(--ink-100);
           margin-bottom: var(--space-5); }
   .btn--sm { padding: .4rem .9rem; font-size: var(--fs-caption); }
+  /* The preview lives on the page rather than in a new tab: a pop-up is one
+     browser setting away from never appearing, and side by side you can see an
+     answer change the page. */
+  .preview { margin-top: var(--space-6); border: 1px solid var(--ink-200);
+             border-radius: var(--radius-lg); overflow: hidden; background: var(--surface-page); }
+  .preview__bar { display: flex; gap: var(--space-3); align-items: center; flex-wrap: wrap;
+                  padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--ink-100);
+                  background: var(--surface-muted); }
+  .preview iframe { display: block; width: 100%; height: min(70vh, 620px); border: 0; background: #fff; }
 </style>
 </head>
 <body>
@@ -256,6 +265,18 @@
       </p>
     </div>
   </section>
+
+  <!-- PREVIEW -->
+  <div class="preview" id="previewWrap" hidden>
+    <div class="preview__bar">
+      <span class="eyebrow">Your page</span>
+      <span class="caption" id="previewNote">Scroll inside it. Change an answer and it updates.</span>
+      <span style="flex:1"></span>
+      <button class="btn btn--ghost btn--sm" type="button" id="previewOpen">Open full size</button>
+      <button class="btn btn--ghost btn--sm" type="button" id="previewClose">Close</button>
+    </div>
+    <iframe id="previewFrame" title="A preview of your page"></iframe>
+  </div>
 
   <!-- SUMMARY -->
   <div class="summary">
@@ -778,10 +799,31 @@ document.getElementById('see').onclick = async () => {
   if (!A.kind || !A.pal) { note.textContent = 'Pick what you need and a look first, then we can show you something.'; return; }
   const doc = await buildPage();
   if (!doc) { note.textContent = 'To preview here, open this page from a web address rather than straight off your computer.'; return; }
+
+  document.getElementById('previewWrap').hidden = false;
+  document.getElementById('previewFrame').srcdoc = doc;
+  document.getElementById('previewWrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  note.textContent = 'Shown below. Change an answer and press it again.';
+};
+
+document.getElementById('previewClose').onclick = () => {
+  document.getElementById('previewWrap').hidden = true;
+  document.getElementById('previewFrame').srcdoc = '';
+};
+
+/* Secondary, because a pop-up blocker can refuse it and the inline preview
+   above cannot. */
+document.getElementById('previewOpen').onclick = async () => {
+  const doc = await buildPage();
+  if (!doc) return;
   const w = window.open('', '_blank');
-  if (!w) { note.textContent = 'Your browser blocked the preview window — allow pop-ups for this page and try again.'; return; }
-  w.document.write(doc); w.document.close();
-  note.textContent = 'Opened in a new tab. Not right? Change an answer and press it again.';
+  if (!w) {
+    document.getElementById('previewNote').textContent =
+      'Your browser blocked the new tab — the preview below is the same page.';
+    return;
+  }
+  w.document.write(doc);
+  w.document.close();
 };
 
 document.getElementById('send').onclick = async () => {

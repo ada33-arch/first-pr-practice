@@ -159,21 +159,26 @@ const head = t => console.log(`\n=== ${t} ===`);
     ok('order shows a price', /[£$€]\s?\d+/.test(await p.textContent('#ordPrice')), await p.textContent('#ordPrice'));
     ok('download locked before approval', await p.evaluate(() => document.getElementById('pack').disabled));
 
-    const [pg] = await Promise.all([ctx.waitForEvent('page'), p.click('#see')]);
-    await pg.waitForLoadState('domcontentloaded');
-    await pg.waitForTimeout(400);
-    const seen = await pg.evaluate(() => ({
-      txt: document.body.innerText,
-      styled: getComputedStyle(document.documentElement).getPropertyValue('--accent-500').trim(),
-      logo: !!document.querySelector('img[src^="data:"]'),
-      h: document.body.scrollHeight,
-    }));
-    ok('their page opens and is styled', !!seen.styled, seen.styled || 'no accent token');
+    await p.click('#see');
+    await p.waitForTimeout(900);
+    const frame = p.frameLocator('#previewFrame');
+    const seen = await p.evaluate(() => {
+      const f = document.getElementById('previewFrame');
+      const d = f.contentDocument;
+      return {
+        shown: !document.getElementById('previewWrap').hidden,
+        txt: d.body.innerText,
+        styled: getComputedStyle(d.documentElement).getPropertyValue('--accent-500').trim(),
+        logo: !!d.querySelector('img[src^="data:"]'),
+        h: d.body.scrollHeight,
+      };
+    });
+    ok('the preview appears on the page', seen.shown);
+    ok('their page is styled', !!seen.styled, seen.styled || 'no accent token');
     ok('their words are on their page', /Halevy Partners/.test(seen.txt));
     ok('their logo is on their page', seen.logo);
     ok('the page is a full page, not a stub', seen.h > 1500, `${seen.h}px`);
-    await pg.screenshot({ path: DIR + '/journey-page.png', fullPage: true });
-    await pg.close();
+    await p.screenshot({ path: DIR + '/journey-page.png', fullPage: true });
 
     await p.check('#agree');
     await p.waitForTimeout(200);
