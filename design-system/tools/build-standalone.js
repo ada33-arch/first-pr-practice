@@ -108,12 +108,33 @@ let body = html.slice(bodyStart, bodyEnd);
 
 /* An ES module import needs a server; this file has to work from a USB stick.
  * Inline the module source and strip its export keywords, so the page script
- * finds the same names in its own scope that it would have imported. */
+ * finds the same names in its own scope that it would have imported.
+ *
+ * Modules import each other — package.js pulls in i18n.js — so this resolves
+ * the whole chain, deepest first, and inlines each file exactly once. */
+function inlineModule(rel, seen) {
+  const file = path.join(ROOT, rel.replace('./', '').replace(/^lib\//, 'lib/'));
+  if (seen.has(file)) return '';
+  seen.add(file);
+
+  let mod = fs.readFileSync(file, 'utf8');
+  let nested = '';
+
+  /* Pull in whatever this module itself imports before its own body, so every
+   * name is declared before the code that uses it runs. */
+  mod = mod.replace(/^\s*import\s*\{[^}]*\}\s*from\s*['"](\.\/[\w.-]+\.js)['"];?/gm, (_, dep) => {
+    nested += inlineModule(path.join(path.dirname(rel), dep).replace(/\\/g, '/'), seen);
+    return '';
+  });
+
+  mod = mod.replace(/^export\s+(?=(async\s+)?function|const|let|class)/gm, '');
+  return `${nested}/* ===== inlined ${rel} ===== */\n${mod}\n/* ===== end ${rel} ===== */\n`;
+}
+
 body = body.replace(
   /^\s*import\s*\{([^}]*)\}\s*from\s*['"](\.\/lib\/[\w.-]+\.js)['"];?/m,
   (_, specifiers, rel) => {
-    let mod = fs.readFileSync(path.join(ROOT, rel.replace('./', '')), 'utf8')
-      .replace(/^export\s+(?=(async\s+)?function|const|let|class)/gm, '');
+    let mod = inlineModule(rel, new Set());
 
     /* `import { buildPage as buildPageFrom }` means the page has its own
      * buildPage. Inlining without honouring the alias declares the name twice
@@ -123,7 +144,7 @@ body = body.replace(
       const [from, to] = spec.trim().split(/\s+as\s+/).map(t => t.trim());
       if (to && from !== to) mod = mod.replace(new RegExp(`\\b${from}\\b`, 'g'), to);
     }
-    return `/* ===== inlined ${rel} ===== */\n${mod}\n/* ===== end ${rel} ===== */`;
+    return mod;
   });
 
 const out = `<!doctype html>

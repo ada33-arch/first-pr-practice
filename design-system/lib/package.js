@@ -10,6 +10,8 @@
  * and stylesheet text; get back files.
  */
 
+import { t, KINDS, isRtl, PALETTE_TEXT } from './i18n.js';
+
 /* ---- Escaping -------------------------------------------------------------
    Everything below interpolates customer text into HTML. In a single-user page
    that was harmless — the only person you could attack was yourself. As a
@@ -66,6 +68,16 @@ export const KIND_LABEL = {
 
 export const paletteById = id => PALETTES.find(p => p.id === id) || PALETTES[0];
 
+/* A palette described in the reader's own language. Falls back to the English
+   name rather than showing nothing, so a missing translation degrades to
+   readable rather than blank. */
+export function paletteText(pal, lang) {
+  const tr = PALETTE_TEXT[lang]?.[pal.id];
+  return { name: tr?.name || pal.name, mood: tr?.mood || pal.mood, tag: tr?.tag ?? pal.tag };
+}
+
+export const kindLabel = (kind, lang = 'en') => (KINDS[lang] || KINDS.en)[kind];
+
 /* ---- Reading the answers -------------------------------------------------- */
 
 /* The shape every function here expects. Answers arrive from a form in the
@@ -93,27 +105,29 @@ export function brandOf(a) {
   return (a.fields.cName || a.fields.brandName || '').trim();
 }
 
-export function logoSummary(a) {
-  if (a.logoMode === 'have') return a.logo ? `Supplied — ${a.logo.name}` : 'Ready to upload';
+export function logoSummary(a, lang = 'en') {
+  const T = t(lang);
+  if (a.logoMode === 'have') return a.logo ? T.sumSupplied(a.logo.name) : T.sumReadyUpload;
   if (a.logoMode === 'describe') {
     const bits = [a.fields.brandName, a.logoStyle].filter(Boolean);
-    return bits.length ? bits.join(' · ') : 'To be described';
+    return bits.length ? bits.join(' · ') : T.sumToDescribe;
   }
-  if (a.logoMode === 'none') return a.fields.cName || a.fields.brandName || 'Name only, for now';
+  if (a.logoMode === 'none') return a.fields.cName || a.fields.brandName || T.sumNameOnly;
   return null;
 }
 
-export function copySummary(a) {
+export function copySummary(a, lang = 'en') {
+  const T = t(lang);
   if (a.copyMode === 'file') {
     const w = a.copyText.trim() ? a.copyText.trim().split(/\s+/).length : 0;
-    return w ? `Your document — ${w} words` : 'Ready to upload';
+    return w ? T.sumFromDoc(w) : T.sumReadyUpload;
   }
   if (a.copyMode === 'answer') {
     const filled = ['cName', 'cWhat', 'cWho', 'cWhy', 'cOffer', 'cAction']
       .filter(k => (a.fields[k] || '').trim()).length;
-    return `We'll draft it — ${filled} of 6 answered`;
+    return T.sumWeDraft(filled, 6);
   }
-  if (a.copyMode === 'none') return "We'll draft it from scratch";
+  if (a.copyMode === 'none') return T.sumFromScratch;
   return null;
 }
 
@@ -131,13 +145,14 @@ function endSentence(text) {
    No model runs here, so this composes a first draft from the customer's own
    words rather than inventing prose. It is labelled as a draft everywhere it
    appears, because that is what it is. -------------------------------------- */
-export function draftCopy(a) {
+export function draftCopy(a, lang = 'en') {
+  const T = t(lang);
   const f = a.fields;
-  const name = (f.cName || f.brandName || 'Your name here').trim();
+  const name = (f.cName || f.brandName || T.nameHere).trim();
   const what = (f.cWhat || '').trim();
   const who  = (f.cWho  || '').trim();
   const why  = (f.cWhy  || '').trim();
-  const act  = (f.cAction || 'Get in touch').trim();
+  const act  = (f.cAction || T.getInTouch).trim();
   const contact = (f.cContact || '').trim();
   const offers = (f.cOffer || '').split('\n').map(s => s.trim()).filter(Boolean).slice(0, 3);
 
@@ -155,31 +170,64 @@ export function draftCopy(a) {
        Two of those joined with a space read as one run-on line, so each clause
        is closed before the next begins. */
     if (who) {
-      sub = `Made for ${who.toLowerCase()}.`;
+      sub = T.forWhom(who);
     } else if (what && what !== headline) {
       sub = endSentence(what);
       whatSpent = true;
     } else {
-      sub = 'A line about what you do and who it helps.';
+      sub = T.subFallback;
     }
   }
 
   /* Each answer earns one place on the page. Repeating the same sentence as a
      headline and again as the section title below it is the tell of generated
      copy, so whichever slot has already used it releases the others. */
-  const offersHeading = what && !whatSpent ? what : 'What we offer';
+  const offersHeading = what && !whatSpent ? what : T.whatWeOffer;
   const whyHeading = why && why !== headline ? why : null;
 
   return { name, headline, sub, offers, act, contact, who, what, why, offersHeading, whyHeading };
 }
 
+
+/* Arabic needs three things beyond a translated string, and skipping any one
+   of them is what makes a "translated" page look wrong to a native reader.
+
+   1. A font that actually has the glyphs. The Latin stack falls back to
+      whatever the system picks, which is rarely the system's good Arabic face.
+   2. No letter-spacing. Arabic is a connected script — tracking prises the
+      joined letters apart and the result reads as broken, not as styled. The
+      house style tracks eyebrows and display type hard, so all of it is reset.
+   3. No uppercase. There is no case in Arabic, so the transform is inert on
+      the Arabic itself but still mangles any Latin brand name sitting in it. */
+const RTL_LAYER = `
+:root {
+  --font-display: "Noto Kufi Arabic", "SF Arabic", "Geeza Pro", "Dubai", "Tahoma", system-ui, sans-serif;
+  --font-body: "Noto Naskh Arabic", "SF Arabic", "Geeza Pro", "Dubai", "Tahoma", system-ui, sans-serif;
+  --tracking-display: 0;
+  --tracking-tight: 0;
+  --tracking-eyebrow: 0;
+}
+body { text-align: start; }
+h1, h2, h3, h4, .display, .h1, .h2, .h3, .eyebrow, .badge-pill, .btn, .card__title {
+  letter-spacing: 0;
+  text-transform: none;
+}
+.eyebrow { font-weight: 700; }
+/* Numerals stay Western so prices and dates match the rest of the package. */
+.stat__num, .slide__pagenum, time { font-variant-numeric: lining-nums; direction: ltr; unicode-bidi: isolate; }
+/* A Latin brand name or email inside RTL text keeps its own run. */
+.navbar__brand, a[href^="mailto:"] { unicode-bidi: isolate; }
+`;
+
 /* ---- Build the page -------------------------------------------------------
    `css` is the concatenated stylesheet text. The caller supplies it because
    the two environments obtain it differently: the browser reads its own
    <style> blocks, the Worker reads the files off disk. ---------------------- */
-export function buildPage(answers, css) {
+export function buildPage(answers, css, { lang = 'en' } = {}) {
+  const T = t(lang);
+  const rtl = isRtl(lang);
   const a = normalise(answers);
-  const d = draftCopy(a);
+  const d = draftCopy(a, lang);
   const p = paletteById(a.palId);
   const dark = p.dark;
 
@@ -188,7 +236,7 @@ export function buildPage(answers, css) {
     ? `<img src="${esc(logoSrc)}" alt="${esc(d.name)}" style="max-height:34px;width:auto">`
     : `<span>${esc(d.name)}</span>`;
 
-  const offers = d.offers.length ? d.offers : ['Something you offer', 'Something else', 'A third thing'];
+  const offers = d.offers.length ? d.offers : T.offerFallback;
   const tint = dark ? '' : ' tint-1';
 
   const darkVars = dark ? `
@@ -201,13 +249,14 @@ body { background: var(--surface-page); }` : `
 :root { --surface-page:${p.ground}; }
 body { background: var(--surface-page); }`;
 
+  const pt = paletteText(p, lang);
   const brief = [
-    brandOf(a) ? `For        : ${brandOf(a)}` : '',
-    `You need   : ${KIND_LABEL[a.kind] || '—'}`,
-    `The look   : ${p.name} (${p.mood})`,
-    `Logo       : ${logoSummary(a) || '—'}`,
-    a.logoMode === 'describe' && a.fields.logoWords ? `Logo notes : ${a.fields.logoWords}` : '',
-    `Words      : ${copySummary(a) || '—'}`,
+    brandOf(a) ? `${T.briefFor}: ${brandOf(a)}` : '',
+    `${T.briefNeed}: ${kindLabel(a.kind, lang) || '—'}`,
+    `${T.briefLook}: ${pt.name} (${pt.mood})`,
+    `${T.briefLogo}: ${logoSummary(a, lang) || '—'}`,
+    a.logoMode === 'describe' && a.fields.logoWords ? `${T.briefLogoNotes}: ${a.fields.logoWords}` : '',
+    `${T.briefWords}: ${copySummary(a, lang) || '—'}`,
   ].filter(Boolean).join('\n  ')
     // The brief sits inside an HTML comment; a stray "--" would close it early.
     .replace(/--+/g, '–');
@@ -218,7 +267,7 @@ body { background: var(--surface-page); }`;
     <div class="slide">
       <div class="slide-cover">
         <div class="slide-cover__type">
-          <span class="eyebrow">${esc(d.who || 'Presentation')}</span>
+          <span class="eyebrow">${esc(d.who || T.presentation)}</span>
           <h1 class="display">${esc(d.headline)}</h1>
           <hr class="rule">
           <p class="small text-muted">${esc(d.name)}${d.contact ? ' · ' + esc(d.contact) : ''}</p>
@@ -226,28 +275,28 @@ body { background: var(--surface-page); }`;
         <div class="slide-cover__media" style="background:var(--accent-50)"></div>
       </div>
     </div>
-    <p class="deck__caption">Cover</p>
+    <p class="deck__caption">${esc(T.cover)}</p>
   </div>
   <div class="deck__slide">
     <div class="slide slide--chromed">
       <div class="slide__logo">${esc(d.name)}</div><div class="slide__pagenum">02</div>
       <div class="slide__inner"><div class="stack stack-5">
-        <div class="stack stack-2"><span class="eyebrow">What we do</span><h2 class="h2">${esc(d.what || 'What we do')}</h2></div>
+        <div class="stack stack-2"><span class="eyebrow">${esc(T.whatWeDo)}</span><h2 class="h2">${esc(d.what || T.whatWeDo)}</h2></div>
         <div class="grid grid--3">
-          ${offers.map(o => `<article class="card stack stack-3"><span class="icon-chip"></span><h3 class="card__title">${esc(o)}</h3><p class="card__body">A sentence about this.</p></article>`).join('')}
+          ${offers.map(o => `<article class="card stack stack-3"><span class="icon-chip"></span><h3 class="card__title">${esc(o)}</h3><p class="card__body">${esc(T.cardFillerShort)}</p></article>`).join('')}
         </div>
       </div></div>
     </div>
-    <p class="deck__caption">What we do</p>
+    <p class="deck__caption">${esc(T.whatWeDo)}</p>
   </div>
   <div class="deck__slide">
     <div class="slide slide--accent">
       <div class="slide-close">
         <h2 class="display">${esc(d.act)}</h2>
-        <p class="small">${esc(d.contact || 'your@email.com')}</p>
+        <p class="small">${esc(d.contact || T.emailPlaceholder)}</p>
       </div>
     </div>
-    <p class="deck__caption">Closing</p>
+    <p class="deck__caption">${esc(T.closing)}</p>
   </div>
 </div>` : `
 <header class="container">
@@ -261,7 +310,7 @@ body { background: var(--surface-page); }`;
   <div class="container" style="padding-block:var(--space-11) var(--space-9)">
     <div class="split" style="align-items:center">
       <div class="stack stack-5">
-        ${d.who ? `<span class="badge-pill">For ${esc(d.who)}</span>` : ''}
+        ${d.who ? `<span class="badge-pill">${esc(T.forBadge(d.who))}</span>` : ''}
         <h1 class="h1">${esc(d.headline)}</h1>
         <p class="body-lg measure" style="color:rgba(255,255,255,.85)">${esc(d.sub)}</p>
         <div><a class="btn btn--ink btn--lg" href="#contact">${esc(d.act)}</a></div>
@@ -280,12 +329,12 @@ body { background: var(--surface-page); }`;
 <section class="section section--muted">
   <div class="container stack stack-6">
     <div class="stack stack-3" style="max-width:52ch">
-      <span class="eyebrow">What we offer</span>
+      <span class="eyebrow">${esc(T.whatWeOffer)}</span>
       <h2 class="h2">${esc(d.offersHeading)}</h2>
       <hr class="rule">
     </div>
     <div class="grid grid--3">
-      ${offers.map(o => `<article class="card${tint} stack stack-3"><span class="icon-chip"></span><h3 class="card__title">${esc(o)}</h3><p class="card__body">A sentence about this. Replace it with the real thing when you're ready.</p></article>`).join('')}
+      ${offers.map(o => `<article class="card${tint} stack stack-3"><span class="icon-chip"></span><h3 class="card__title">${esc(o)}</h3><p class="card__body">${esc(T.cardFiller)}</p></article>`).join('')}
     </div>
   </div>
 </section>
@@ -293,7 +342,7 @@ body { background: var(--surface-page); }`;
 ${d.whyHeading ? `<section class="section">
   <div class="container split">
     <div class="stack stack-4">
-      <span class="eyebrow">Why us</span>
+      <span class="eyebrow">${esc(T.whyUs)}</span>
       <h2 class="h2">${esc(d.whyHeading)}</h2>
       <hr class="rule">
     </div>
@@ -321,21 +370,21 @@ ${d.whyHeading ? `<section class="section">
 </footer>`;
 
   return `<!doctype html>
-<html lang="en" class="theme-${p.theme}">
+<html lang="${lang}" dir="${rtl ? 'rtl' : 'ltr'}" class="theme-${p.theme}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(d.name)}</title>
 <!--
-  Your brief
+  ${T.briefTitle}
   ${brief}
 
-  The wording below is a first draft built from your answers.
-  Change anything you like — it is a starting point, not the final copy.
+  ${T.briefNote}
 -->
 <style>
 ${css}
 ${darkVars}
+${rtl ? RTL_LAYER : ''}
 </style>
 </head>
 <body>
@@ -346,76 +395,76 @@ ${body}
 
 /* ---- The package ---------------------------------------------------------- */
 
-export function packageFiles(answers, pageHtml, { contact = 'hello@example.com', date = new Date() } = {}) {
+export function packageFiles(answers, pageHtml, { contact = 'hello@example.com', date = new Date(), lang = 'en' } = {}) {
+  const T = t(lang);
   const a = normalise(answers);
-  const d = draftCopy(a);
+  const d = draftCopy(a, lang);
   const p = paletteById(a.palId);
+  const pt = paletteText(p, lang);
   const offers = d.offers.length ? d.offers : ['—', '—', '—'];
 
   const copyMd = a.copyMode === 'file' && a.copyText.trim()
-    ? `# Your words\n\nThis is what we read from your document. Edit freely.\n\n---\n\n${a.copyText.trim()}\n`
-    : `# Your words
+    ? `# ${T.copyHeading}\n\n${T.copyFromDoc}\n\n---\n\n${a.copyText.trim()}\n`
+    : `# ${T.copyHeading}
 
-A first draft, written from your answers. Change anything.
+${T.copyDraftNote}
 
-## Headline
+## ${T.copyHeadline}
 ${d.headline}
 
-## Underneath it
+## ${T.copySub}
 ${d.sub}
 
-## What you offer
+## ${T.copyOffers}
 ${offers.map(o => '- ' + o).join('\n')}
 
-## What you want people to do
+## ${T.copyAction}
 ${d.act}
 
-## Contact
-${d.contact || '(add your contact details)'}
+## ${T.copyContact}
+${d.contact || T.copyContactMissing}
 `;
 
-  const briefMd = `# Your brief
+  const briefMd = `# ${T.briefFileHeading}
 
 | | |
 |---|---|
-${brandOf(a) ? `| For | ${brandOf(a)} |\n` : ''}| You needed | ${KIND_LABEL[a.kind] || '—'} |
-| The look | ${p.name} — ${p.mood.toLowerCase()} |
-| Logo | ${logoSummary(a) || '—'} |
-| Words | ${copySummary(a) || '—'} |
-${a.logoMode === 'describe' && a.fields.logoWords ? `\n**Logo notes:** ${a.fields.logoWords}\n` : ''}
-${a.logoStyle ? `**Logo type:** ${a.logoStyle}\n` : ''}
-Approved on ${date.toLocaleDateString('en-GB')}.
+${brandOf(a) ? `| ${T.briefFor} | ${brandOf(a)} |\n` : ''}| ${T.briefYouNeeded} | ${kindLabel(a.kind, lang) || '—'} |
+| ${T.briefLook} | ${pt.name} — ${pt.mood.toLowerCase()} |
+| ${T.briefLogo} | ${logoSummary(a, lang) || '—'} |
+| ${T.briefWords} | ${copySummary(a, lang) || '—'} |
+${a.logoMode === 'describe' && a.fields.logoWords ? `\n**${T.briefLogoNotes}:** ${a.fields.logoWords}\n` : ''}
+${a.logoStyle ? `**${T.briefLogoType}:** ${a.logoStyle}\n` : ''}
+${T.briefApproved(date.toLocaleDateString(T.locale))}
 `;
 
   const readme = `# ${d.name}
 
-Everything here is yours to keep.
+${T.readmeKeep}
 
-## The files
+## ${T.readmeFiles}
 
-| File | What it is |
+| ${T.readmeFile} | ${T.readmeWhat} |
 |---|---|
-| \`index.html\` | Your page. Double-click it to open in any browser. |
-| \`copy.md\` | Your words on their own, so you can edit them without touching the page. |
-| \`BRIEF.md\` | What you chose, for your records. |
+| \`index.html\` | ${T.readmeIndex} |
+| \`copy.md\` | ${T.readmeCopy} |
+| \`BRIEF.md\` | ${T.readmeBrief} |
 
-## Changing the words
+## ${T.readmeChanging}
 
-Open \`index.html\` in any text editor and edit the text between the tags. The
-wording in it is a first draft — replace it with your own.
+${T.readmeChangingBody}
 
-## Putting it online
+## ${T.readmeOnline}
 
-The page is a single file with nothing else to install, so almost anywhere works:
+${T.readmeOnlineBody}
 
-- **Netlify Drop** — drag the folder onto netlify.com/drop
-- **GitHub Pages** — put \`index.html\` in a repository and turn Pages on
-- **Your own host** — upload \`index.html\` by FTP
+- ${T.readmeHost1}
+- ${T.readmeHost2}
+- ${T.readmeHost3}
 
-## Making changes later
+## ${T.readmeLater}
 
-Nothing here expires and nothing phones home. If you'd rather we made the
-changes, get in touch: ${contact}
+${T.readmeLaterBody(contact)}
 `;
 
   return [
@@ -520,8 +569,8 @@ export async function makeZip(files) {
 }
 
 /* Everything a delivery needs, in one call. */
-export async function buildPackage(answers, css, opts) {
-  const page = buildPage(answers, css);
+export async function buildPackage(answers, css, opts = {}) {
+  const page = buildPage(answers, css, { lang: opts.lang });
   const files = packageFiles(answers, page, opts);
   return { page, files, zip: await makeZip(files), filename: packageName(answers) };
 }

@@ -79,6 +79,11 @@
   .sum-row dt { flex: none; width: 108px; color: var(--fg-muted); }
   .sum-row dd { margin: 0; color: var(--fg-strong); font-weight: var(--fw-medium); }
   .bar { display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center; }
+  /* The `hidden` attribute is only a UA-stylesheet `display: none`, so any
+     class that sets display — .bar, .stack, .field — silently beats it and the
+     element stays on screen. Every conditional section here carries such a
+     class, so the attribute has to be made to win. */
+  [hidden] { display: none !important; }
   .logo-prev { max-height: 46px; width: auto; }
   /* Checkbox and its wording stay on one row; only the wording wraps. */
   .approve-row { display: flex; gap: var(--space-3); align-items: flex-start; cursor: pointer; }
@@ -131,6 +136,14 @@
       <button class="opt" type="button" data-v="deck" aria-pressed="false">A presentation</button>
       <button class="opt" type="button" data-v="portfolio" aria-pressed="false">A portfolio</button>
     </div>
+
+    <!-- Asked here rather than inside the logo branch: the name is needed for
+         the page title, the download's file name and the brief, whichever
+         route they take through the logo and copy questions. -->
+    <div class="field">
+      <label for="brandName">What's it called?</label>
+      <input id="brandName" type="text" placeholder="e.g. Northbrook, Kestrel Studio">
+    </div>
   </section>
 
   <!-- 2. LOOK -->
@@ -179,10 +192,6 @@
     </div>
 
     <div id="logoDescribe" hidden class="fields">
-      <div class="field">
-        <label for="brandName">What's the name?</label>
-        <input id="brandName" type="text" placeholder="e.g. Northbrook, Kestrel Studio">
-      </div>
       <div class="field">
         <label for="logoWords">Describe the logo you have in mind</label>
         <textarea id="logoWords" rows="3" placeholder="e.g. Something simple and modern — just the name in a strong typeface, maybe a small mark. Nothing fussy."></textarea>

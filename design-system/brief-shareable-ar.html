@@ -1,4 +1,12 @@
-<title>Try it — build your page in four questions</title>
+
+<script>
+/* Set on the document the host gave us, since this build ships as a fragment
+   and cannot write its own <html dir>. Runs at parse time so nothing is ever
+   laid out left-to-right first and then flipped. */
+document.documentElement.setAttribute('dir', 'rtl');
+document.documentElement.setAttribute('lang', 'ar');
+</script>
+<title>جرّبه — ابنِ صفحتك في أربعة أسئلة</title>
 <style>
 
 /* ===== tokens/tokens.css ===== */
@@ -1661,15 +1669,39 @@ input[type="color"], input[type="text"], textarea {
 @media (min-width: 760px) { .fb-grid { grid-template-columns: 1fr 1fr; } }
 #fbOut { font-family: var(--font-mono, ui-monospace, monospace); font-size: .82rem; }
 
+
+/* ===== Arabic build only ===== */
+:root {
+  --font-display: "Noto Kufi Arabic", "SF Arabic", "Geeza Pro", "Dubai", Tahoma, system-ui, sans-serif;
+  --font-body: "Noto Naskh Arabic", "SF Arabic", "Geeza Pro", "Dubai", Tahoma, system-ui, sans-serif;
+  --tracking-display: 0;
+  --tracking-tight: 0;
+  --tracking-eyebrow: 0;
+}
+/* Arabic is a connected script: tracking prises the joined letters apart, and
+   there is no case for uppercase to act on. Both are reset everywhere the
+   house style applies them. */
+h1, h2, h3, h4, .h1, .h2, .h3, .display, .eyebrow, .label, .caption,
+.qs__n, .pal__sub, .pal__name, .pal__tag, .btn, .opt, .trybar__tag {
+  letter-spacing: 0;
+  text-transform: none;
+}
+.eyebrow, .trybar__tag { font-weight: 700; }
+/* The summary's label column sat at a fixed left width; in RTL it needs to be
+   a logical start, and Arabic labels run longer than English ones. */
+.sum-row dt { width: 132px; }
+/* Latin runs — an email, a file name, a brand written in Latin — keep their
+   own direction inside Arabic text instead of having their punctuation flipped. */
+input[type="email"], #cContact, #fbOut, code, .mono { direction: ltr; text-align: left; unicode-bidi: plaintext; }
+.pal__demo, .pal__name { text-align: start; }
+
 </style>
 
 <div class="trybar">
   <div class="trybar__in">
-    <span class="trybar__tag">Try it</span>
+    <span class="trybar__tag">جرّبه</span>
     <p>
-      Answer four questions and you'll have a real page to look at. Nothing you
-      type or upload leaves your computer — there's no account and no server
-      behind this.
+      أجب عن أربعة أسئلة وستحصل على صفحة حقيقية تنظر إليها. لا شيء مما تكتبه أو ترفعه يغادر جهازك — لا حساب ولا خادم وراء هذا.
     </p>
   </div>
 </div>
@@ -1681,49 +1713,46 @@ input[type="color"], input[type="text"], textarea {
     <span class="small" id="acctWho"></span>
     <span class="caption" id="acctUse"></span>
     <span style="flex:1"></span>
-    <a class="btn btn--ghost btn--sm" href="/projects" id="acctProjects">My projects</a>
-    <button class="btn btn--ghost btn--sm" type="button" id="acctOut">Sign out</button>
+    <a class="btn btn--ghost btn--sm" href="/projects" id="acctProjects">مشاريعي</a>
+    <button class="btn btn--ghost btn--sm" type="button" id="acctOut">تسجيل الخروج</button>
   </div>
 
   <header class="stack stack-3" style="margin-bottom: var(--space-8);">
-    <span class="eyebrow">Project brief</span>
-    <h1 class="h1">Tell us about your project</h1>
+    <span class="eyebrow">موجز المشروع</span>
+    <h1 class="h1">حدّثنا عن مشروعك</h1>
     <p class="body measure">
-      Four questions. There's a way through every one of them even if you don't
-      have a logo or your words written yet — just say so and we'll handle it.
-      Nothing you add here is uploaded anywhere; it stays on your computer.
+      أربعة أسئلة. لكلٍّ منها مخرج حتى إن لم يكن لديك شعار أو نصوص جاهزة — قل ذلك فحسب وسنتولّى الأمر. لا شيء تضيفه هنا يُرفع إلى أي مكان؛ يبقى على جهازك.
     </p>
   </header>
 
   <!-- 1. WHAT -->
   <section class="card qs stack stack-4">
     <div>
-      <div class="qs__head"><span class="qs__n">1</span><h2 class="h3">What do you need?</h2></div>
-      <p class="qs__hint">Pick the closest one. We can adjust later.</p>
+      <div class="qs__head"><span class="qs__n">1</span><h2 class="h3">ما الذي تحتاجه؟</h2></div>
+      <p class="qs__hint">اختر الأقرب. يمكننا التعديل لاحقًا.</p>
     </div>
     <div class="opts" id="qKind">
-      <button class="opt" type="button" data-v="website" aria-pressed="false">A website</button>
-      <button class="opt" type="button" data-v="landing" aria-pressed="false">A single page to sell something</button>
-      <button class="opt" type="button" data-v="deck" aria-pressed="false">A presentation</button>
-      <button class="opt" type="button" data-v="portfolio" aria-pressed="false">A portfolio</button>
+      <button class="opt" type="button" data-v="website" aria-pressed="false">موقع إلكتروني</button>
+      <button class="opt" type="button" data-v="landing" aria-pressed="false">صفحة واحدة لبيع شيء ما</button>
+      <button class="opt" type="button" data-v="deck" aria-pressed="false">عرض تقديمي</button>
+      <button class="opt" type="button" data-v="portfolio" aria-pressed="false">معرض أعمال</button>
     </div>
 
     <!-- Asked here rather than inside the logo branch: the name is needed for
          the page title, the download's file name and the brief, whichever
          route they take through the logo and copy questions. -->
     <div class="field">
-      <label for="brandName">What's it called?</label>
-      <input id="brandName" type="text" placeholder="e.g. Northbrook, Kestrel Studio">
+      <label for="brandName">ما اسمه؟</label>
+      <input id="brandName" type="text" placeholder="مثال: مروج، استوديو الصقر">
     </div>
   </section>
 
   <!-- 2. LOOK -->
   <section class="card qs stack stack-4">
     <div>
-      <div class="qs__head"><span class="qs__n">2</span><h2 class="h3">Which look do you like?</h2></div>
+      <div class="qs__head"><span class="qs__n">2</span><h2 class="h3">أي مظهر يعجبك؟</h2></div>
       <p class="qs__hint">
-        Pick whichever feels right — there's no wrong answer, and every one of
-        these is checked so your text stays easy to read.
+        اختر ما يبدو لك مناسبًا — لا إجابة خاطئة، وكلٌّ من هذه مُختبَر ليبقى نصّك سهل القراءة.
       </p>
     </div>
     <div class="palettes" id="qPal"></div>
@@ -1732,13 +1761,13 @@ input[type="color"], input[type="text"], textarea {
   <!-- 3. LOGO -->
   <section class="card qs stack stack-4">
     <div>
-      <div class="qs__head"><span class="qs__n">3</span><h2 class="h3">Your logo</h2></div>
-      <p class="qs__hint">Have one? Add it. Don't? Describe what you'd like and we'll take it from there.</p>
+      <div class="qs__head"><span class="qs__n">3</span><h2 class="h3">شعارك</h2></div>
+      <p class="qs__hint">لديك شعار؟ أضفه. لا؟ صِف ما تريده ونحن نكمل من هناك.</p>
     </div>
     <div class="opts" id="qLogoMode">
-      <button class="opt" type="button" data-v="have" aria-pressed="false">I have a logo</button>
-      <button class="opt" type="button" data-v="describe" aria-pressed="false">I'll describe what I want</button>
-      <button class="opt" type="button" data-v="none" aria-pressed="false">Just use my name for now</button>
+      <button class="opt" type="button" data-v="have" aria-pressed="false">لديّ شعار</button>
+      <button class="opt" type="button" data-v="describe" aria-pressed="false">سأصف ما أريد</button>
+      <button class="opt" type="button" data-v="none" aria-pressed="false">استخدم اسمي فقط الآن</button>
     </div>
 
     <div id="logoHave" hidden class="stack stack-4">
@@ -1754,9 +1783,9 @@ input[type="color"], input[type="text"], textarea {
       </label>
       <div id="logoOut" hidden class="stack stack-3">
         <div class="grid grid--3">
-          <div class="stack stack-2"><div class="card" style="padding:var(--space-4)"><img id="lgLight" class="logo-prev" alt="Your logo on a light background"></div><span class="caption">On light</span></div>
-          <div class="stack stack-2"><div class="card card--dark" style="padding:var(--space-4)"><img id="lgDark" class="logo-prev" alt="Your logo on a dark background"></div><span class="caption">On dark</span></div>
-          <div class="stack stack-2"><div class="card card--accent" style="padding:var(--space-4)"><img id="lgAcc" class="logo-prev" alt="Your logo on your chosen colour"></div><span class="caption">On your colour</span></div>
+          <div class="stack stack-2"><div class="card" style="padding:var(--space-4)"><img id="lgLight" class="logo-prev" alt="شعارك on a light background"></div><span class="caption">On light</span></div>
+          <div class="stack stack-2"><div class="card card--dark" style="padding:var(--space-4)"><img id="lgDark" class="logo-prev" alt="شعارك on a dark background"></div><span class="caption">On dark</span></div>
+          <div class="stack stack-2"><div class="card card--accent" style="padding:var(--space-4)"><img id="lgAcc" class="logo-prev" alt="شعارك on your chosen colour"></div><span class="caption">On your colour</span></div>
         </div>
         <p class="small" id="logoNote"></p>
       </div>
@@ -1782,13 +1811,13 @@ input[type="color"], input[type="text"], textarea {
   <!-- 4. CONTENT -->
   <section class="card qs stack stack-4">
     <div>
-      <div class="qs__head"><span class="qs__n">4</span><h2 class="h3">Your words</h2></div>
+      <div class="qs__head"><span class="qs__n">4</span><h2 class="h3">نصوصك</h2></div>
       <p class="qs__hint">Send us what you've written, or answer a few questions and we'll write a first draft for you.</p>
     </div>
     <div class="opts" id="qCopyMode">
-      <button class="opt" type="button" data-v="file" aria-pressed="false">I have a document</button>
-      <button class="opt" type="button" data-v="answer" aria-pressed="false">Ask me questions instead</button>
-      <button class="opt" type="button" data-v="none" aria-pressed="false">Nothing written yet</button>
+      <button class="opt" type="button" data-v="file" aria-pressed="false">لديّ مستند</button>
+      <button class="opt" type="button" data-v="answer" aria-pressed="false">اسألني أسئلة بدلًا من ذلك</button>
+      <button class="opt" type="button" data-v="none" aria-pressed="false">لا نصوص بعد</button>
     </div>
 
     <div id="copyFile" hidden class="stack stack-3">
@@ -1849,11 +1878,11 @@ input[type="color"], input[type="text"], textarea {
   <!-- PREVIEW -->
   <div class="preview" id="previewWrap" hidden>
     <div class="preview__bar">
-      <span class="eyebrow">Your page</span>
-      <span class="caption" id="previewNote">Scroll inside it. Change an answer and it updates.</span>
+      <span class="eyebrow">صفحتك</span>
+      <span class="caption" id="previewNote">مرّر داخلها. غيّر إجابة وستتحدّث.</span>
       <span style="flex:1"></span>
-      <button class="btn btn--ghost btn--sm" type="button" id="previewOpen">Open full size</button>
-      <button class="btn btn--ghost btn--sm" type="button" id="previewClose">Close</button>
+      <button class="btn btn--ghost btn--sm" type="button" id="previewOpen">افتح بالحجم الكامل</button>
+      <button class="btn btn--ghost btn--sm" type="button" id="previewإغلاق">إغلاق</button>
     </div>
     <iframe id="previewFrame" title="A preview of your page"></iframe>
   </div>
@@ -1862,17 +1891,17 @@ input[type="color"], input[type="text"], textarea {
   <div class="summary">
     <div class="card card--raised stack stack-4">
       <div class="bar">
-        <span class="eyebrow">Your brief</span>
+        <span class="eyebrow">موجزك</span>
         <div style="flex:1;min-width:140px"><div class="meter"><div class="meter__fill" id="prog" style="width:0%"></div></div></div>
         <span class="caption" id="count">0 of 4</span>
       </div>
       <dl id="sum" style="margin:0">
-        <p class="small text-muted" id="sumEmpty">Answer the questions above and your brief appears here.</p>
+        <p class="small text-muted" id="sumEmpty">أجب عن الأسئلة أعلاه وسيظهر موجزك هنا.</p>
       </dl>
       <div class="bar">
-        <button class="btn btn--primary" type="button" id="see">See my page</button>
-        <button class="btn btn--ink" type="button" id="send">Save my brief</button>
-        <button class="btn btn--ghost" type="button" id="reset">Start again</button>
+        <button class="btn btn--primary" type="button" id="see">شاهد صفحتي</button>
+        <button class="btn btn--ink" type="button" id="send">احفظ موجزي</button>
+        <button class="btn btn--ghost" type="button" id="reset">ابدأ من جديد</button>
       </div>
       <p class="caption" id="note"></p>
     </div>
@@ -1881,16 +1910,16 @@ input[type="color"], input[type="text"], textarea {
   <!-- 5. APPROVE -->
   <section class="card qs stack stack-4" id="approve" hidden>
     <div>
-      <div class="qs__head"><span class="qs__n">5</span><h2 class="h3">Happy with it?</h2></div>
-      <p class="qs__hint">Look at your page first, then approve it here to get the finished files.</p>
+      <div class="qs__head"><span class="qs__n">5</span><h2 class="h3">هل أعجبتك؟</h2></div>
+      <p class="qs__hint">انظر إلى صفحتك أولًا، ثم وافق عليها هنا لتحصل على الملفات النهائية.</p>
     </div>
 
     <div class="split">
       <div class="stack stack-4">
-        <span class="eyebrow">What you get</span>
+        <span class="eyebrow">ما الذي تحصل عليه</span>
         <ul class="checklist small">
           <li><span><strong>Your finished page</strong> — ready to put online, opens in any browser</span></li>
-          <li><span><strong>Your words</strong> as a separate document, so you can edit them any time</span></li>
+          <li><span><strong>نصوصك</strong> as a separate document, so you can edit them any time</span></li>
           <li><span><strong>The code</strong>, yours to keep — no subscription, no licence to renew</span></li>
           <li><span><strong>A short guide</strong> on how to put it online and what to change</span></li>
         </ul>
@@ -1902,7 +1931,7 @@ input[type="color"], input[type="text"], textarea {
 
       <div class="stack stack-4">
         <div class="card card--flat stack stack-3">
-          <span class="eyebrow">Your order</span>
+          <span class="eyebrow">طلبك</span>
           <div class="bar" style="justify-content:space-between">
             <span class="small" id="ordItem">—</span>
             <span class="h3" id="ordPrice">—</span>
@@ -1920,7 +1949,7 @@ input[type="color"], input[type="text"], textarea {
 
         <div class="bar">
           <button class="btn btn--primary" type="button" id="pay" disabled>Approve and continue</button>
-          <button class="btn btn--outline" type="button" id="pack" disabled>Download my files</button>
+          <button class="btn btn--outline" type="button" id="pack" disabled>نزّل ملفاتي</button>
         </div>
         <p class="caption" id="payNote"></p>
       </div>
@@ -1973,7 +2002,7 @@ const EN = {
   forBadge: who => `For ${who}`,
 
   // The comment carrying their brief, inside the delivered page
-  briefTitle: 'Your brief',
+  briefTitle: 'موجزك',
   briefNote: 'The wording below is a first draft built from your answers.\n  Change anything you like — it is a starting point, not the final copy.',
   briefFor: 'For',
   briefNeed: 'You need',
@@ -1983,7 +2012,7 @@ const EN = {
   briefWords: 'Words',
 
   // Files in the package
-  copyHeading: 'Your words',
+  copyHeading: 'نصوصك',
   copyFromDoc: 'This is what we read from your document. Edit freely.',
   copyDraftNote: 'A first draft, written from your answers. Change anything.',
   copyHeadline: 'Headline',
@@ -1993,7 +2022,7 @@ const EN = {
   copyContact: 'Contact',
   copyContactMissing: '(add your contact details)',
 
-  briefFileHeading: 'Your brief',
+  briefFileHeading: 'موجزك',
   briefYouNeeded: 'You needed',
   briefLogoType: 'Logo type',
   briefApproved: d => `Approved on ${d}.`,
@@ -2002,8 +2031,8 @@ const EN = {
   readmeFiles: 'The files',
   readmeFile: 'File',
   readmeWhat: 'What it is',
-  readmeIndex: 'Your page. Double-click it to open in any browser.',
-  readmeCopy: 'Your words on their own, so you can edit them without touching the page.',
+  readmeIndex: 'صفحتك. Double-click it to open in any browser.',
+  readmeCopy: 'نصوصك on their own, so you can edit them without touching the page.',
   readmeBrief: 'What you chose, for your records.',
   readmeChanging: 'Changing the words',
   readmeChangingBody: 'Open `index.html` in any text editor and edit the text between the tags. The\nwording in it is a first draft — replace it with your own.',
@@ -2106,10 +2135,10 @@ const t = lang => TABLES[lang] || EN;
 /* Kind labels, per language, keyed the same as KIND_LABEL. */
 const KINDS = {
   en: {
-    website: 'A website',
+    website: 'موقع إلكتروني',
     landing: 'A page to sell something',
-    deck: 'A presentation',
-    portfolio: 'A portfolio',
+    deck: 'عرض تقديمي',
+    portfolio: 'معرض أعمال',
   },
   ar: {
     website: 'موقع إلكتروني',
@@ -2198,10 +2227,10 @@ const PALETTES = [
 ];
 
 const KIND_LABEL = {
-  website: 'A website',
+  website: 'موقع إلكتروني',
   landing: 'A page to sell something',
-  deck: 'A presentation',
-  portfolio: 'A portfolio',
+  deck: 'عرض تقديمي',
+  portfolio: 'معرض أعمال',
 };
 
 const paletteById = id => PALETTES.find(p => p.id === id) || PALETTES[0];
@@ -2272,7 +2301,7 @@ function copySummary(a, lang = 'en') {
 /* Enough answered to be worth generating anything. */
 const isReady = a => Boolean(a.kind && a.palId);
 
-/* Close a clause typed as a fragment, so joined answers don't run together.
+/* إغلاق a clause typed as a fragment, so joined answers don't run together.
    Leaves existing terminal punctuation — including a question mark — alone. */
 function endSentence(text) {
   const t = String(text).trim();
@@ -2742,6 +2771,7 @@ function ramp(theme) {
 const palBox = document.getElementById('qPal');
 PALETTES.forEach(p => {
   const r = ramp(p.theme);
+    const pTx = paletteText(p, 'ar');
   const ink = p.dark ? '#FFFFFF' : '#14181F';
   const body = p.dark ? 'rgba(255,255,255,.62)' : '#5C6880';
   const b = document.createElement('button');
@@ -2750,18 +2780,18 @@ PALETTES.forEach(p => {
   b.setAttribute('aria-label', `${p.name} — ${p.mood}`);
   b.innerHTML =
     `<div class="pal__demo" style="background:${p.ground}">
-       <div class="pal__sub" style="color:${p.dark ? r[300] : r[600]}">Your heading</div>
-       <div class="pal__title" style="color:${ink}">A line of your<br>text, like this</div>
+       <div class="pal__sub" style="color:${p.dark ? r[300] : r[600]}">عنوانك</div>
+       <div class="pal__title" style="color:${ink}">سطر من<br>نصّك، هكذا</div>
        <div class="pal__sub" style="color:${body};text-transform:none;letter-spacing:0;font-weight:400;font-size:.72rem;margin-top:6px">
-         And a sentence underneath it.
+         وجملة تحته.
        </div>
-       <span class="pal__btn" style="background:${r[500]};color:${r.on}">Your button</span>
+       <span class="pal__btn" style="background:${r[500]};color:${r.on}">زرّك</span>
      </div>
      <div class="pal__strip">
        <span style="background:${r[600]}"></span><span style="background:${r[500]}"></span>
        <span style="background:${r[300]}"></span><span style="background:${r[100]}"></span>
      </div>
-     <div class="pal__name"><span>${p.name}</span>${p.tag ? `<span class="pal__tag">${p.tag}</span>` : ''}</div>`;
+     <div class="pal__name"><span>${pTx.name}</span>${pTx.tag ? `<span class="pal__tag">${pTx.tag}</span>` : ''}</div>`;
   b.onclick = () => {
     palBox.querySelectorAll('.pal').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
     A.pal = p;
@@ -2918,17 +2948,17 @@ function render() {
 
   const a = answersOf();
   const rows = [
-    ['For',       brandOf(a) || null],
-    ['You need',  A.kind ? KIND_LABEL[A.kind] : null],
-    ['The look',  A.pal ? `${A.pal.name} — ${A.pal.mood.toLowerCase()}` : null],
-    ['Logo',      logoSummary(a)],
-    ['Words',     copySummary(a)],
+    ['الجهة',       brandOf(a) || null],
+    ['ما تحتاجه',  A.kind ? kindLabel(A.kind, 'ar') : null],
+    ['المظهر',  A.pal ? `${paletteText(A.pal, 'ar').name} — ${paletteText(A.pal, 'ar').mood}` : null],
+    ['الشعار',      logoSummary(a, 'ar')],
+    ['النصوص',     copySummary(a, 'ar')],
   ].filter(([,v]) => v);
 
   const sum = document.getElementById('sum');
   sum.innerHTML = rows.length
     ? rows.map(([k,v]) => `<div class="sum-row"><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('')
-    : `<p class="small text-muted">Answer the questions above and your brief appears here.</p>`;
+    : `<p class="small text-muted">أجب عن الأسئلة أعلاه وسيظهر موجزك هنا.</p>`;
 }
 
 
@@ -3029,7 +3059,7 @@ async function collectCss() {
 
 async function buildPage() {
   const css = await collectCss();
-  return css === null ? null : buildPageFrom(answersOf(), css);
+  return css === null ? null : buildPageFrom(answersOf(), css, { lang: 'ar' });
 }
 
 /* ---- Pricing and checkout ------------------------------------------------
@@ -3056,10 +3086,10 @@ function renderApprove() {
   document.getElementById('approve').hidden = !ready;
   if (!ready) return;
   const price = priceOf();
-  document.getElementById('ordItem').textContent = KIND_LABEL[A.kind];
+  document.getElementById('ordItem').textContent = kindLabel(A.kind, 'ar');
   document.getElementById('ordPrice').textContent = price ? `${SHOP.currency}${price}` : '—';
   document.getElementById('ordNote').textContent =
-    'One payment. The files are yours — no subscription and nothing to renew.';
+    'دفعة واحدة. الملفات ملكك — لا اشتراك ولا تجديد.';
   const agreed = document.getElementById('agree').checked;
   document.getElementById('pay').disabled = !agreed;
   document.getElementById('pack').disabled = !agreed;
@@ -3077,9 +3107,9 @@ document.getElementById('pay').onclick = () => {
     const body = encodeURIComponent(
       `I'd like to go ahead.\n\n` +
       `What: ${KIND_LABEL[A.kind]}\n` +
-      `Look: ${A.pal.name}\n` +
-      `Logo: ${logoSummary(answersOf()) || '—'}\n` +
-      `Words: ${copySummary(answersOf()) || '—'}\n`);
+      `المظهر: ${paletteText(A.pal, 'ar').name}\n` +
+      `Logo: ${logoSummary(answersOf(), 'ar') || '—'}\n` +
+      `Words: ${copySummary(answersOf(), 'ar') || '—'}\n`);
     location.href = `mailto:${SHOP.CONTACT}?subject=${subject}&body=${body}`;
     note.textContent = `Payment isn't set up on this page yet, so this starts an email to ${SHOP.CONTACT} with your brief in it. We'll reply with an invoice.`;
   }
@@ -3130,15 +3160,15 @@ document.getElementById('pack').onclick = async () => {
 
     const page = await buildPage();
     if (!page) {
-      note.textContent = 'To build your files, open this page from a web address rather than straight off your computer.';
+      note.textContent = 'لبناء ملفاتك، افتح هذه الصفحة من عنوان على الإنترنت بدلًا من فتحها مباشرة من جهازك.';
       return;
     }
-    const bytes = await makeZip(packageFiles(answersOf(), page, { contact: SHOP.CONTACT }));
+    const bytes = await makeZip(packageFiles(answersOf(), page, { contact: SHOP.CONTACT, lang: 'ar' }));
     const blob = new Blob([bytes], { type: 'application/zip' });
     saveBlob(blob, packageName(answersOf()));
     note.textContent = `Saved — ${(blob.size / 1024).toFixed(0)}KB. Unzip it and open index.html to see your page.`;
   } finally {
-    btn.textContent = 'Download my files';
+    btn.textContent = 'نزّل ملفاتي';
   }
 };
 
@@ -3154,17 +3184,17 @@ function saveBlob(blob, filename) {
 /* ---- Actions ------------------------------------------------------------ */
 document.getElementById('see').onclick = async () => {
   const note = document.getElementById('note');
-  if (!A.kind || !A.pal) { note.textContent = 'Pick what you need and a look first, then we can show you something.'; return; }
+  if (!A.kind || !A.pal) { note.textContent = 'اختر ما تحتاجه ومظهرًا أولًا، عندها يمكننا أن نريك شيئًا.'; return; }
   const doc = await buildPage();
-  if (!doc) { note.textContent = 'To preview here, open this page from a web address rather than straight off your computer.'; return; }
+  if (!doc) { note.textContent = 'للمعاينة هنا، افتح هذه الصفحة من عنوان على الإنترنت بدلًا من فتحها مباشرة من جهازك.'; return; }
 
   document.getElementById('previewWrap').hidden = false;
   document.getElementById('previewFrame').srcdoc = doc;
   document.getElementById('previewWrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  note.textContent = 'Shown below. Change an answer and press it again.';
+  note.textContent = 'ظهرت بالأسفل. غيّر إجابة واضغط مرة أخرى.';
 };
 
-document.getElementById('previewClose').onclick = () => {
+document.getElementById('previewإغلاق').onclick = () => {
   document.getElementById('previewWrap').hidden = true;
   document.getElementById('previewFrame').srcdoc = '';
 };
@@ -3177,7 +3207,7 @@ document.getElementById('previewOpen').onclick = async () => {
   const w = window.open('', '_blank');
   if (!w) {
     document.getElementById('previewNote').textContent =
-      'Your browser blocked the new tab — the preview below is the same page.';
+      'منع متصفحك فتح التبويب الجديد — المعاينة بالأسفل هي الصفحة نفسها.';
     return;
   }
   w.document.write(doc);
@@ -3186,7 +3216,7 @@ document.getElementById('previewOpen').onclick = async () => {
 
 document.getElementById('send').onclick = async () => {
   const note = document.getElementById('note');
-  if (!A.kind || !A.pal) { note.textContent = 'Pick what you need and a look first.'; return; }
+  if (!A.kind || !A.pal) { note.textContent = 'اختر ما تحتاجه ومظهرًا أولًا.'; return; }
   const doc = await buildPage();
   if (!doc) { note.textContent = 'To save your page, open this from a web address rather than straight off your computer.'; return; }
   const url = URL.createObjectURL(new Blob([doc], { type:'text/html' }));
@@ -3203,12 +3233,12 @@ detectAccount();
 
 render();
 
-const SAVE_LABEL = 'Save my page';
-const SAVE_WORKING = 'Preparing…';
-const SAVE_DONE = 'Saved. Open the .html file in any browser — your words are in the .md beside it.';
-const SAVE_NO_PAGE = 'Answer the questions first, then this will have something to save.';
-const SAVE_UNAVAILABLE_LABEL = 'Saving is off here';
-const SAVE_UNAVAILABLE_NOTE = 'This viewer will not let a page save files. Ask for the one-file version and everything works.';
+const SAVE_LABEL = 'احفظ صفحتي';
+const SAVE_WORKING = 'جارٍ التجهيز…';
+const SAVE_DONE = 'تم الحفظ. افتح ملف ‎.html‎ في أي متصفح — ونصوصك في ملف ‎.md‎ بجانبه.';
+const SAVE_NO_PAGE = 'أجب عن الأسئلة أولًا، عندها سيكون هناك ما يُحفظ.';
+const SAVE_UNAVAILABLE_LABEL = 'الحفظ غير متاح هنا';
+const SAVE_UNAVAILABLE_NOTE = 'هذا العارض لا يسمح للصفحة بحفظ الملفات. اطلب النسخة ذات الملف الواحد وسيعمل كل شيء.';
 
 const packBtn = document.getElementById('pack');
 const note = document.getElementById('payNote');
@@ -3220,13 +3250,13 @@ const downloads = await (window.claude?.use?.('downloads') ?? Promise.resolve(nu
 function explain(err) {
   switch (err?.code) {
     case 'declined':          return '';                 // their choice; say nothing
-    case 'rate_limited':      return 'One at a time — try that again in a moment.';
-    case 'too_large':         return 'That file is too big to hand over here.';
+    case 'rate_limited':      return 'واحدة تلو الأخرى — أعد المحاولة بعد قليل.';
+    case 'too_large':         return 'هذا الملف أكبر من أن يُسلَّم هنا.';
     case 'extension_not_enabled':
     case 'rejected_extension':
-      return 'This viewer will not accept that file type. Ask for the one-file version and everything works.';
+      return 'هذا العارض لا يقبل هذا النوع من الملفات. اطلب النسخة ذات الملف الواحد وسيعمل كل شيء.';
     default:
-      return 'That did not work here. Ask for the one-file version and everything works.';
+      return 'لم ينجح ذلك هنا. اطلب النسخة ذات الملف الواحد وسيعمل كل شيء.';
   }
 }
 
@@ -3262,7 +3292,7 @@ if (packBtn) {
 
         const a = answersOf();
         const base = packageName(a).replace(/-files.zip$/, '');
-        const files = packageFiles(a, page, { contact: SHOP.CONTACT });
+        const files = packageFiles(a, page, { contact: SHOP.CONTACT, lang: 'ar' });
         const words = files.find(f => f.name === 'copy.md');
 
         if (await offer(base + '.html', page)) {
@@ -3283,36 +3313,36 @@ if (packBtn) {
 
 <section class="card qs stack stack-4" id="fbBox">
   <div>
-    <div class="qs__head"><span class="qs__n">?</span><h2 class="h3">What did you think?</h2></div>
-    <p class="qs__hint">Honest answers are more useful than kind ones. Nothing here is sent anywhere — you'll get a summary to copy and send back.</p>
+    <div class="qs__head"><span class="qs__n">?</span><h2 class="h3">ما رأيك؟</h2></div>
+    <p class="qs__hint">الإجابات الصريحة أنفع من المجاملة. لا شيء هنا يُرسل إلى أي مكان — ستحصل على ملخّص تنسخه وترسله لنا.</p>
   </div>
 
   <div class="fb-grid">
     <div class="field">
-      <label for="fbEasy">Was anything confusing or annoying?</label>
-      <textarea id="fbEasy" rows="3" placeholder="A question that didn't make sense, a step that felt slow…"></textarea>
+      <label for="fbEasy">هل كان أي شيء مربكًا أو مزعجًا؟</label>
+      <textarea id="fbEasy" rows="3" placeholder="سؤال غير مفهوم، خطوة بدت بطيئة…"></textarea>
     </div>
     <div class="field">
-      <label for="fbLook">Did the page look like something you'd use?</label>
-      <textarea id="fbLook" rows="3" placeholder="Too plain, too busy, wrong for my line of work…"></textarea>
+      <label for="fbLook">هل بدت الصفحة شيئًا قد تستخدمه؟</label>
+      <textarea id="fbLook" rows="3" placeholder="بسيطة أكثر من اللازم، مزدحمة، لا تناسب مجالي…"></textarea>
     </div>
     <div class="field">
-      <label for="fbPay">Would you pay for this? What feels fair?</label>
+      <label for="fbPay">هل ستدفع مقابل هذا؟ وما السعر العادل برأيك؟</label>
       <textarea id="fbPay" rows="3" placeholder="Be blunt — including &quot;no, because…&quot;"></textarea>
     </div>
     <div class="field">
-      <label for="fbMissing">What's missing?</label>
-      <textarea id="fbMissing" rows="3" placeholder="The one thing that would make you actually use it"></textarea>
+      <label for="fbMissing">ما الذي ينقصها؟</label>
+      <textarea id="fbMissing" rows="3" placeholder="الشيء الوحيد الذي سيجعلك تستخدمها فعلًا"></textarea>
     </div>
   </div>
 
   <div class="bar">
-    <button class="btn btn--primary" type="button" id="fbCopy">Copy my feedback</button>
+    <button class="btn btn--primary" type="button" id="fbCopy">انسخ ملاحظاتي</button>
     <span class="caption" id="fbNote"></span>
   </div>
 
   <div class="field" id="fbOutWrap" hidden>
-    <label for="fbOut">Copy this and send it back</label>
+    <label for="fbOut">انسخ هذا وأرسله لنا</label>
     <textarea id="fbOut" rows="10" readonly></textarea>
   </div>
 </section>
@@ -3335,14 +3365,14 @@ if (packBtn) {
   }
 
   var QUESTIONS = [
-    ['fbEasy', 'Confusing or annoying'],
-    ['fbLook', 'How the page looked'],
-    ['fbPay', 'Would they pay'],
-    ['fbMissing', "What's missing"]
+    ['fbEasy', 'ما كان مربكًا أو مزعجًا'],
+    ['fbLook', 'كيف بدت الصفحة'],
+    ['fbPay', 'هل سيدفع'],
+    ['fbMissing', 'ما الذي ينقص']
   ];
 
   $('fbCopy').onclick = function () {
-    var parts = ['FEEDBACK ON THE DESIGN SYSTEM', new Date().toLocaleString(), '', 'WHAT THEY CHOSE', chosen(), ''];
+    var parts = ['ملاحظات على النظام', new Date().toLocaleString(), '', 'ما الذي اختاره', chosen(), ''];
     var said = false;
 
     QUESTIONS.forEach(function (q) {
@@ -3351,7 +3381,7 @@ if (packBtn) {
     });
 
     if (!said) {
-      $('fbNote').textContent = 'Write something in at least one box first.';
+      $('fbNote').textContent = 'اكتب شيئًا في خانة واحدة على الأقل أولًا.';
       return;
     }
 
@@ -3361,10 +3391,10 @@ if (packBtn) {
 
     /* Clipboard access is refused in plenty of embedded contexts, so the text
        is on screen either way and the message says which happened. */
-    var done = function () { $('fbNote').textContent = 'Copied. Paste it wherever you like.'; };
+    var done = function () { $('fbNote').textContent = 'تم النسخ. الصقه حيث تشاء.'; };
     var fell = function () {
       $('fbOut').select();
-      $('fbNote').textContent = 'Select the text below and copy it.';
+      $('fbNote').textContent = 'حدّد النص بالأسفل وانسخه.';
     };
 
     if (navigator.clipboard && navigator.clipboard.writeText) {

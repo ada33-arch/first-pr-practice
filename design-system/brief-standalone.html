@@ -1627,6 +1627,11 @@ input[type="color"], input[type="text"], textarea {
   .sum-row dt { flex: none; width: 108px; color: var(--fg-muted); }
   .sum-row dd { margin: 0; color: var(--fg-strong); font-weight: var(--fw-medium); }
   .bar { display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center; }
+  /* The `hidden` attribute is only a UA-stylesheet `display: none`, so any
+     class that sets display — .bar, .stack, .field — silently beats it and the
+     element stays on screen. Every conditional section here carries such a
+     class, so the attribute has to be made to win. */
+  [hidden] { display: none !important; }
   .logo-prev { max-height: 46px; width: auto; }
   /* Checkbox and its wording stay on one row; only the wording wraps. */
   .approve-row { display: flex; gap: var(--space-3); align-items: flex-start; cursor: pointer; }
@@ -1681,6 +1686,14 @@ input[type="color"], input[type="text"], textarea {
       <button class="opt" type="button" data-v="deck" aria-pressed="false">A presentation</button>
       <button class="opt" type="button" data-v="portfolio" aria-pressed="false">A portfolio</button>
     </div>
+
+    <!-- Asked here rather than inside the logo branch: the name is needed for
+         the page title, the download's file name and the brief, whichever
+         route they take through the logo and copy questions. -->
+    <div class="field">
+      <label for="brandName">What's it called?</label>
+      <input id="brandName" type="text" placeholder="e.g. Northbrook, Kestrel Studio">
+    </div>
   </section>
 
   <!-- 2. LOOK -->
@@ -1729,10 +1742,6 @@ input[type="color"], input[type="text"], textarea {
     </div>
 
     <div id="logoDescribe" hidden class="fields">
-      <div class="field">
-        <label for="brandName">What's the name?</label>
-        <input id="brandName" type="text" placeholder="e.g. Northbrook, Kestrel Studio">
-      </div>
       <div class="field">
         <label for="logoWords">Describe the logo you have in mind</label>
         <textarea id="logoWords" rows="3" placeholder="e.g. Something simple and modern — just the name in a strong typeface, maybe a small mark. Nothing fussy."></textarea>
@@ -1903,6 +1912,209 @@ input[type="color"], input[type="text"], textarea {
 /* The generator lives in lib/package.js because the Worker runs the very same
    code to build what it delivers. Two copies would drift, and the copy that
    drifted would be the one customers actually receive. */
+/* ===== inlined lib/i18n.js ===== */
+/* Language for the generated deliverable.
+ *
+ * This covers the words that end up in the *customer's* page and files — the
+ * scaffolding the generator writes around their own text. The intake's own
+ * interface is translated separately, at build time, because it is markup
+ * rather than data.
+ *
+ * Arabic is not a swap of one string for another. Three things change with it:
+ * the document direction, the typography (a connected script must never be
+ * letter-spaced, and uppercase means nothing in it), and the punctuation —
+ * Arabic uses ، and ؟ rather than , and ?.
+ */
+
+const LANGS = {
+  en: { dir: 'ltr', name: 'English' },
+  ar: { dir: 'rtl', name: 'العربية' },
+};
+
+const isRtl = lang => LANGS[lang]?.dir === 'rtl';
+
+const EN = {
+  // Page scaffolding
+  presentation: 'Presentation',
+  cover: 'Cover',
+  closing: 'Closing',
+  whatWeDo: 'What we do',
+  whatWeOffer: 'What we offer',
+  whyUs: 'Why us',
+  forWhom: who => `Made for ${who.toLowerCase()}.`,
+  offerFallback: ['Something you offer', 'Something else', 'A third thing'],
+  cardFillerShort: 'A sentence about this.',
+  cardFiller: "A sentence about this. Replace it with the real thing when you're ready.",
+  nameHere: 'Your name here',
+  getInTouch: 'Get in touch',
+  subFallback: 'A line about what you do and who it helps.',
+  emailPlaceholder: 'your@email.com',
+  forBadge: who => `For ${who}`,
+
+  // The comment carrying their brief, inside the delivered page
+  briefTitle: 'Your brief',
+  briefNote: 'The wording below is a first draft built from your answers.\n  Change anything you like — it is a starting point, not the final copy.',
+  briefFor: 'For',
+  briefNeed: 'You need',
+  briefLook: 'The look',
+  briefLogo: 'Logo',
+  briefLogoNotes: 'Logo notes',
+  briefWords: 'Words',
+
+  // Files in the package
+  copyHeading: 'Your words',
+  copyFromDoc: 'This is what we read from your document. Edit freely.',
+  copyDraftNote: 'A first draft, written from your answers. Change anything.',
+  copyHeadline: 'Headline',
+  copySub: 'Underneath it',
+  copyOffers: 'What you offer',
+  copyAction: 'What you want people to do',
+  copyContact: 'Contact',
+  copyContactMissing: '(add your contact details)',
+
+  briefFileHeading: 'Your brief',
+  briefYouNeeded: 'You needed',
+  briefLogoType: 'Logo type',
+  briefApproved: d => `Approved on ${d}.`,
+
+  readmeKeep: 'Everything here is yours to keep.',
+  readmeFiles: 'The files',
+  readmeFile: 'File',
+  readmeWhat: 'What it is',
+  readmeIndex: 'Your page. Double-click it to open in any browser.',
+  readmeCopy: 'Your words on their own, so you can edit them without touching the page.',
+  readmeBrief: 'What you chose, for your records.',
+  readmeChanging: 'Changing the words',
+  readmeChangingBody: 'Open `index.html` in any text editor and edit the text between the tags. The\nwording in it is a first draft — replace it with your own.',
+  readmeOnline: 'Putting it online',
+  readmeOnlineBody: 'The page is a single file with nothing else to install, so almost anywhere works:',
+  readmeHost1: '**Netlify Drop** — drag the folder onto netlify.com/drop',
+  readmeHost2: '**GitHub Pages** — put `index.html` in a repository and turn Pages on',
+  readmeHost3: '**Your own host** — upload `index.html` by FTP',
+  readmeLater: 'Making changes later',
+  readmeLaterBody: c => `Nothing here expires and nothing phones home. If you'd rather we made the\nchanges, get in touch: ${c}`,
+
+  // Summaries of what they answered
+  sumSupplied: n => `Supplied — ${n}`,
+  sumReadyUpload: 'Ready to upload',
+  sumToDescribe: 'To be described',
+  sumNameOnly: 'Name only, for now',
+  sumFromDoc: n => `Your document — ${n} words`,
+  sumWeDraft: (a, b) => `We'll draft it — ${a} of ${b} answered`,
+  sumFromScratch: "We'll draft it from scratch",
+
+  locale: 'en-GB',
+};
+
+const AR = {
+  presentation: 'عرض تقديمي',
+  cover: 'الغلاف',
+  closing: 'الختام',
+  whatWeDo: 'ما الذي نقوم به',
+  whatWeOffer: 'ما الذي نقدّمه',
+  whyUs: 'لماذا نحن',
+  /* "من أجل" rather than the لـ prefix: attaching ل to a word beginning with
+     ال requires contracting it (لـالشركات → للشركات), which string
+     concatenation cannot do. The standalone phrase is always correct. */
+  forWhom: who => `مصمّم من أجل ${who}.`,
+  offerFallback: ['شيء تقدّمه', 'شيء آخر', 'وشيء ثالث'],
+  cardFillerShort: 'جملة عن هذا.',
+  cardFiller: 'جملة عن هذا. استبدلها بنصّك الحقيقي حين تكون جاهزًا.',
+  nameHere: 'اسمك هنا',
+  getInTouch: 'تواصل معنا',
+  subFallback: 'سطر يشرح ما الذي تقوم به ومَن يستفيد منه.',
+  emailPlaceholder: 'your@email.com',
+  forBadge: who => `من أجل ${who}`,
+
+  briefTitle: 'موجزك',
+  briefNote: 'النصّ أدناه مسوّدة أولى مبنيّة على إجاباتك.\n  غيّر منه ما تشاء — فهو نقطة بداية، وليس النصّ النهائي.',
+  briefFor: 'الجهة',
+  briefNeed: 'ما تحتاجه',
+  briefLook: 'المظهر',
+  briefLogo: 'الشعار',
+  briefLogoNotes: 'ملاحظات الشعار',
+  briefWords: 'النصوص',
+
+  copyHeading: 'نصوصك',
+  copyFromDoc: 'هذا ما قرأناه من مستندك. عدّله كما تشاء.',
+  copyDraftNote: 'مسوّدة أولى مكتوبة من إجاباتك. غيّر منها ما تشاء.',
+  copyHeadline: 'العنوان الرئيسي',
+  copySub: 'السطر الذي تحته',
+  copyOffers: 'ما الذي تقدّمه',
+  copyAction: 'ما الذي تريد من الناس فعله',
+  copyContact: 'وسيلة التواصل',
+  copyContactMissing: '(أضف بيانات التواصل)',
+
+  briefFileHeading: 'موجزك',
+  briefYouNeeded: 'ما احتجته',
+  briefLogoType: 'نوع الشعار',
+  briefApproved: d => `تمت الموافقة بتاريخ ${d}.`,
+
+  readmeKeep: 'كل ما هنا ملكك، تحتفظ به.',
+  readmeFiles: 'الملفات',
+  readmeFile: 'الملف',
+  readmeWhat: 'ما هو',
+  readmeIndex: 'صفحتك. انقر عليها مرتين لفتحها في أي متصفح.',
+  readmeCopy: 'نصوصك وحدها، لتعدّلها دون أن تمسّ الصفحة.',
+  readmeBrief: 'ما اخترته، لسجلّاتك.',
+  readmeChanging: 'تغيير النصوص',
+  readmeChangingBody: 'افتح `index.html` في أي محرّر نصوص وعدّل الكلام بين الوسوم. ما فيه\nمسوّدة أولى — استبدلها بنصّك أنت.',
+  readmeOnline: 'نشرها على الإنترنت',
+  readmeOnlineBody: 'الصفحة ملفّ واحد لا يحتاج إلى تثبيت أي شيء، لذا تعمل في أي مكان تقريبًا:',
+  readmeHost1: '**Netlify Drop** — اسحب المجلّد إلى netlify.com/drop',
+  readmeHost2: '**GitHub Pages** — ضع `index.html` في مستودع وفعّل Pages',
+  readmeHost3: '**استضافتك الخاصة** — ارفع `index.html` عبر FTP',
+  readmeLater: 'التعديل لاحقًا',
+  readmeLaterBody: c => `لا شيء هنا تنتهي صلاحيته ولا شيء يتّصل بنا. وإن فضّلت أن نجري\nالتعديلات نيابة عنك، تواصل معنا: ${c}`,
+
+  sumSupplied: n => `مُرفق — ${n}`,
+  sumReadyUpload: 'جاهز للرفع',
+  sumToDescribe: 'سيتم وصفه',
+  sumNameOnly: 'الاسم فقط، في الوقت الحالي',
+  sumFromDoc: n => `من مستندك — ${n} كلمة`,
+  sumWeDraft: (a, b) => `سنكتبها لك — أجبت عن ${a} من ${b}`,
+  sumFromScratch: 'سنكتبها لك من الصفر',
+
+  locale: 'ar',
+};
+
+const TABLES = { en: EN, ar: AR };
+
+const t = lang => TABLES[lang] || EN;
+
+/* Kind labels, per language, keyed the same as KIND_LABEL. */
+const KINDS = {
+  en: {
+    website: 'A website',
+    landing: 'A page to sell something',
+    deck: 'A presentation',
+    portfolio: 'A portfolio',
+  },
+  ar: {
+    website: 'موقع إلكتروني',
+    landing: 'صفحة لبيع شيء ما',
+    deck: 'عرض تقديمي',
+    portfolio: 'معرض أعمال',
+  },
+};
+
+/* Palette names and moods, so the look a customer picks is described in their
+   own language rather than left in English beside translated questions. */
+const PALETTE_TEXT = {
+  ar: {
+    warm:     { name: 'دافئ وواثق',   tag: 'الأكثر اختيارًا', mood: 'قريب، نشِط، إنساني' },
+    trusted:  { name: 'هادئ وموثوق',  tag: 'كلاسيكي',        mood: 'راسخ، آمن، جاد' },
+    modern:   { name: 'عصري وحادّ',   tag: 'تقني',           mood: 'حديث، تقني، فاخر' },
+    natural:  { name: 'منعش وطبيعي',  tag: '',               mood: 'صحّي، مستدام، هادئ' },
+    bold:     { name: 'جريء وحيوي',   tag: '',               mood: 'إبداعي، دافئ، لافت' },
+    clean:    { name: 'نظيف وواضح',   tag: '',               mood: 'دقيق، صافٍ، منفتح' },
+    money:    { name: 'دقيق ومحدَّد',  tag: 'مالي',           mood: 'مضبوط، معتمَد، رصين' },
+    darkprem: { name: 'داكن وفاخر',   tag: 'داكن',           mood: 'لافت، راقٍ، واثق' },
+    darkgold: { name: 'داكن ودافئ',   tag: 'داكن',           mood: 'ثري، متأنٍّ، تحريري' },
+  },
+};
+
+/* ===== end lib/i18n.js ===== */
 /* ===== inlined ./lib/package.js ===== */
 /* Turning a brief into a deliverable package.
  *
@@ -1915,6 +2127,7 @@ input[type="color"], input[type="text"], textarea {
  * Nothing here touches the DOM, the network, or any global. Give it answers
  * and stylesheet text; get back files.
  */
+
 
 /* ---- Escaping -------------------------------------------------------------
    Everything below interpolates customer text into HTML. In a single-user page
@@ -1972,6 +2185,16 @@ const KIND_LABEL = {
 
 const paletteById = id => PALETTES.find(p => p.id === id) || PALETTES[0];
 
+/* A palette described in the reader's own language. Falls back to the English
+   name rather than showing nothing, so a missing translation degrades to
+   readable rather than blank. */
+function paletteText(pal, lang) {
+  const tr = PALETTE_TEXT[lang]?.[pal.id];
+  return { name: tr?.name || pal.name, mood: tr?.mood || pal.mood, tag: tr?.tag ?? pal.tag };
+}
+
+const kindLabel = (kind, lang = 'en') => (KINDS[lang] || KINDS.en)[kind];
+
 /* ---- Reading the answers -------------------------------------------------- */
 
 /* The shape every function here expects. Answers arrive from a form in the
@@ -1999,27 +2222,29 @@ function brandOf(a) {
   return (a.fields.cName || a.fields.brandName || '').trim();
 }
 
-function logoSummary(a) {
-  if (a.logoMode === 'have') return a.logo ? `Supplied — ${a.logo.name}` : 'Ready to upload';
+function logoSummary(a, lang = 'en') {
+  const T = t(lang);
+  if (a.logoMode === 'have') return a.logo ? T.sumSupplied(a.logo.name) : T.sumReadyUpload;
   if (a.logoMode === 'describe') {
     const bits = [a.fields.brandName, a.logoStyle].filter(Boolean);
-    return bits.length ? bits.join(' · ') : 'To be described';
+    return bits.length ? bits.join(' · ') : T.sumToDescribe;
   }
-  if (a.logoMode === 'none') return a.fields.cName || a.fields.brandName || 'Name only, for now';
+  if (a.logoMode === 'none') return a.fields.cName || a.fields.brandName || T.sumNameOnly;
   return null;
 }
 
-function copySummary(a) {
+function copySummary(a, lang = 'en') {
+  const T = t(lang);
   if (a.copyMode === 'file') {
     const w = a.copyText.trim() ? a.copyText.trim().split(/\s+/).length : 0;
-    return w ? `Your document — ${w} words` : 'Ready to upload';
+    return w ? T.sumFromDoc(w) : T.sumReadyUpload;
   }
   if (a.copyMode === 'answer') {
     const filled = ['cName', 'cWhat', 'cWho', 'cWhy', 'cOffer', 'cAction']
       .filter(k => (a.fields[k] || '').trim()).length;
-    return `We'll draft it — ${filled} of 6 answered`;
+    return T.sumWeDraft(filled, 6);
   }
-  if (a.copyMode === 'none') return "We'll draft it from scratch";
+  if (a.copyMode === 'none') return T.sumFromScratch;
   return null;
 }
 
@@ -2037,13 +2262,14 @@ function endSentence(text) {
    No model runs here, so this composes a first draft from the customer's own
    words rather than inventing prose. It is labelled as a draft everywhere it
    appears, because that is what it is. -------------------------------------- */
-function draftCopy(a) {
+function draftCopy(a, lang = 'en') {
+  const T = t(lang);
   const f = a.fields;
-  const name = (f.cName || f.brandName || 'Your name here').trim();
+  const name = (f.cName || f.brandName || T.nameHere).trim();
   const what = (f.cWhat || '').trim();
   const who  = (f.cWho  || '').trim();
   const why  = (f.cWhy  || '').trim();
-  const act  = (f.cAction || 'Get in touch').trim();
+  const act  = (f.cAction || T.getInTouch).trim();
   const contact = (f.cContact || '').trim();
   const offers = (f.cOffer || '').split('\n').map(s => s.trim()).filter(Boolean).slice(0, 3);
 
@@ -2061,31 +2287,64 @@ function draftCopy(a) {
        Two of those joined with a space read as one run-on line, so each clause
        is closed before the next begins. */
     if (who) {
-      sub = `Made for ${who.toLowerCase()}.`;
+      sub = T.forWhom(who);
     } else if (what && what !== headline) {
       sub = endSentence(what);
       whatSpent = true;
     } else {
-      sub = 'A line about what you do and who it helps.';
+      sub = T.subFallback;
     }
   }
 
   /* Each answer earns one place on the page. Repeating the same sentence as a
      headline and again as the section title below it is the tell of generated
      copy, so whichever slot has already used it releases the others. */
-  const offersHeading = what && !whatSpent ? what : 'What we offer';
+  const offersHeading = what && !whatSpent ? what : T.whatWeOffer;
   const whyHeading = why && why !== headline ? why : null;
 
   return { name, headline, sub, offers, act, contact, who, what, why, offersHeading, whyHeading };
 }
 
+
+/* Arabic needs three things beyond a translated string, and skipping any one
+   of them is what makes a "translated" page look wrong to a native reader.
+
+   1. A font that actually has the glyphs. The Latin stack falls back to
+      whatever the system picks, which is rarely the system's good Arabic face.
+   2. No letter-spacing. Arabic is a connected script — tracking prises the
+      joined letters apart and the result reads as broken, not as styled. The
+      house style tracks eyebrows and display type hard, so all of it is reset.
+   3. No uppercase. There is no case in Arabic, so the transform is inert on
+      the Arabic itself but still mangles any Latin brand name sitting in it. */
+const RTL_LAYER = `
+:root {
+  --font-display: "Noto Kufi Arabic", "SF Arabic", "Geeza Pro", "Dubai", "Tahoma", system-ui, sans-serif;
+  --font-body: "Noto Naskh Arabic", "SF Arabic", "Geeza Pro", "Dubai", "Tahoma", system-ui, sans-serif;
+  --tracking-display: 0;
+  --tracking-tight: 0;
+  --tracking-eyebrow: 0;
+}
+body { text-align: start; }
+h1, h2, h3, h4, .display, .h1, .h2, .h3, .eyebrow, .badge-pill, .btn, .card__title {
+  letter-spacing: 0;
+  text-transform: none;
+}
+.eyebrow { font-weight: 700; }
+/* Numerals stay Western so prices and dates match the rest of the package. */
+.stat__num, .slide__pagenum, time { font-variant-numeric: lining-nums; direction: ltr; unicode-bidi: isolate; }
+/* A Latin brand name or email inside RTL text keeps its own run. */
+.navbar__brand, a[href^="mailto:"] { unicode-bidi: isolate; }
+`;
+
 /* ---- Build the page -------------------------------------------------------
    `css` is the concatenated stylesheet text. The caller supplies it because
    the two environments obtain it differently: the browser reads its own
    <style> blocks, the Worker reads the files off disk. ---------------------- */
-function buildPageFrom(answers, css) {
+function buildPageFrom(answers, css, { lang = 'en' } = {}) {
+  const T = t(lang);
+  const rtl = isRtl(lang);
   const a = normalise(answers);
-  const d = draftCopy(a);
+  const d = draftCopy(a, lang);
   const p = paletteById(a.palId);
   const dark = p.dark;
 
@@ -2094,7 +2353,7 @@ function buildPageFrom(answers, css) {
     ? `<img src="${esc(logoSrc)}" alt="${esc(d.name)}" style="max-height:34px;width:auto">`
     : `<span>${esc(d.name)}</span>`;
 
-  const offers = d.offers.length ? d.offers : ['Something you offer', 'Something else', 'A third thing'];
+  const offers = d.offers.length ? d.offers : T.offerFallback;
   const tint = dark ? '' : ' tint-1';
 
   const darkVars = dark ? `
@@ -2107,13 +2366,14 @@ body { background: var(--surface-page); }` : `
 :root { --surface-page:${p.ground}; }
 body { background: var(--surface-page); }`;
 
+  const pt = paletteText(p, lang);
   const brief = [
-    brandOf(a) ? `For        : ${brandOf(a)}` : '',
-    `You need   : ${KIND_LABEL[a.kind] || '—'}`,
-    `The look   : ${p.name} (${p.mood})`,
-    `Logo       : ${logoSummary(a) || '—'}`,
-    a.logoMode === 'describe' && a.fields.logoWords ? `Logo notes : ${a.fields.logoWords}` : '',
-    `Words      : ${copySummary(a) || '—'}`,
+    brandOf(a) ? `${T.briefFor}: ${brandOf(a)}` : '',
+    `${T.briefNeed}: ${kindLabel(a.kind, lang) || '—'}`,
+    `${T.briefLook}: ${pt.name} (${pt.mood})`,
+    `${T.briefLogo}: ${logoSummary(a, lang) || '—'}`,
+    a.logoMode === 'describe' && a.fields.logoWords ? `${T.briefLogoNotes}: ${a.fields.logoWords}` : '',
+    `${T.briefWords}: ${copySummary(a, lang) || '—'}`,
   ].filter(Boolean).join('\n  ')
     // The brief sits inside an HTML comment; a stray "--" would close it early.
     .replace(/--+/g, '–');
@@ -2124,7 +2384,7 @@ body { background: var(--surface-page); }`;
     <div class="slide">
       <div class="slide-cover">
         <div class="slide-cover__type">
-          <span class="eyebrow">${esc(d.who || 'Presentation')}</span>
+          <span class="eyebrow">${esc(d.who || T.presentation)}</span>
           <h1 class="display">${esc(d.headline)}</h1>
           <hr class="rule">
           <p class="small text-muted">${esc(d.name)}${d.contact ? ' · ' + esc(d.contact) : ''}</p>
@@ -2132,28 +2392,28 @@ body { background: var(--surface-page); }`;
         <div class="slide-cover__media" style="background:var(--accent-50)"></div>
       </div>
     </div>
-    <p class="deck__caption">Cover</p>
+    <p class="deck__caption">${esc(T.cover)}</p>
   </div>
   <div class="deck__slide">
     <div class="slide slide--chromed">
       <div class="slide__logo">${esc(d.name)}</div><div class="slide__pagenum">02</div>
       <div class="slide__inner"><div class="stack stack-5">
-        <div class="stack stack-2"><span class="eyebrow">What we do</span><h2 class="h2">${esc(d.what || 'What we do')}</h2></div>
+        <div class="stack stack-2"><span class="eyebrow">${esc(T.whatWeDo)}</span><h2 class="h2">${esc(d.what || T.whatWeDo)}</h2></div>
         <div class="grid grid--3">
-          ${offers.map(o => `<article class="card stack stack-3"><span class="icon-chip"></span><h3 class="card__title">${esc(o)}</h3><p class="card__body">A sentence about this.</p></article>`).join('')}
+          ${offers.map(o => `<article class="card stack stack-3"><span class="icon-chip"></span><h3 class="card__title">${esc(o)}</h3><p class="card__body">${esc(T.cardFillerShort)}</p></article>`).join('')}
         </div>
       </div></div>
     </div>
-    <p class="deck__caption">What we do</p>
+    <p class="deck__caption">${esc(T.whatWeDo)}</p>
   </div>
   <div class="deck__slide">
     <div class="slide slide--accent">
       <div class="slide-close">
         <h2 class="display">${esc(d.act)}</h2>
-        <p class="small">${esc(d.contact || 'your@email.com')}</p>
+        <p class="small">${esc(d.contact || T.emailPlaceholder)}</p>
       </div>
     </div>
-    <p class="deck__caption">Closing</p>
+    <p class="deck__caption">${esc(T.closing)}</p>
   </div>
 </div>` : `
 <header class="container">
@@ -2167,7 +2427,7 @@ body { background: var(--surface-page); }`;
   <div class="container" style="padding-block:var(--space-11) var(--space-9)">
     <div class="split" style="align-items:center">
       <div class="stack stack-5">
-        ${d.who ? `<span class="badge-pill">For ${esc(d.who)}</span>` : ''}
+        ${d.who ? `<span class="badge-pill">${esc(T.forBadge(d.who))}</span>` : ''}
         <h1 class="h1">${esc(d.headline)}</h1>
         <p class="body-lg measure" style="color:rgba(255,255,255,.85)">${esc(d.sub)}</p>
         <div><a class="btn btn--ink btn--lg" href="#contact">${esc(d.act)}</a></div>
@@ -2186,12 +2446,12 @@ body { background: var(--surface-page); }`;
 <section class="section section--muted">
   <div class="container stack stack-6">
     <div class="stack stack-3" style="max-width:52ch">
-      <span class="eyebrow">What we offer</span>
+      <span class="eyebrow">${esc(T.whatWeOffer)}</span>
       <h2 class="h2">${esc(d.offersHeading)}</h2>
       <hr class="rule">
     </div>
     <div class="grid grid--3">
-      ${offers.map(o => `<article class="card${tint} stack stack-3"><span class="icon-chip"></span><h3 class="card__title">${esc(o)}</h3><p class="card__body">A sentence about this. Replace it with the real thing when you're ready.</p></article>`).join('')}
+      ${offers.map(o => `<article class="card${tint} stack stack-3"><span class="icon-chip"></span><h3 class="card__title">${esc(o)}</h3><p class="card__body">${esc(T.cardFiller)}</p></article>`).join('')}
     </div>
   </div>
 </section>
@@ -2199,7 +2459,7 @@ body { background: var(--surface-page); }`;
 ${d.whyHeading ? `<section class="section">
   <div class="container split">
     <div class="stack stack-4">
-      <span class="eyebrow">Why us</span>
+      <span class="eyebrow">${esc(T.whyUs)}</span>
       <h2 class="h2">${esc(d.whyHeading)}</h2>
       <hr class="rule">
     </div>
@@ -2227,21 +2487,21 @@ ${d.whyHeading ? `<section class="section">
 </footer>`;
 
   return `<!doctype html>
-<html lang="en" class="theme-${p.theme}">
+<html lang="${lang}" dir="${rtl ? 'rtl' : 'ltr'}" class="theme-${p.theme}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(d.name)}</title>
 <!--
-  Your brief
+  ${T.briefTitle}
   ${brief}
 
-  The wording below is a first draft built from your answers.
-  Change anything you like — it is a starting point, not the final copy.
+  ${T.briefNote}
 -->
 <style>
 ${css}
 ${darkVars}
+${rtl ? RTL_LAYER : ''}
 </style>
 </head>
 <body>
@@ -2252,76 +2512,76 @@ ${body}
 
 /* ---- The package ---------------------------------------------------------- */
 
-function packageFiles(answers, pageHtml, { contact = 'hello@example.com', date = new Date() } = {}) {
+function packageFiles(answers, pageHtml, { contact = 'hello@example.com', date = new Date(), lang = 'en' } = {}) {
+  const T = t(lang);
   const a = normalise(answers);
-  const d = draftCopy(a);
+  const d = draftCopy(a, lang);
   const p = paletteById(a.palId);
+  const pt = paletteText(p, lang);
   const offers = d.offers.length ? d.offers : ['—', '—', '—'];
 
   const copyMd = a.copyMode === 'file' && a.copyText.trim()
-    ? `# Your words\n\nThis is what we read from your document. Edit freely.\n\n---\n\n${a.copyText.trim()}\n`
-    : `# Your words
+    ? `# ${T.copyHeading}\n\n${T.copyFromDoc}\n\n---\n\n${a.copyText.trim()}\n`
+    : `# ${T.copyHeading}
 
-A first draft, written from your answers. Change anything.
+${T.copyDraftNote}
 
-## Headline
+## ${T.copyHeadline}
 ${d.headline}
 
-## Underneath it
+## ${T.copySub}
 ${d.sub}
 
-## What you offer
+## ${T.copyOffers}
 ${offers.map(o => '- ' + o).join('\n')}
 
-## What you want people to do
+## ${T.copyAction}
 ${d.act}
 
-## Contact
-${d.contact || '(add your contact details)'}
+## ${T.copyContact}
+${d.contact || T.copyContactMissing}
 `;
 
-  const briefMd = `# Your brief
+  const briefMd = `# ${T.briefFileHeading}
 
 | | |
 |---|---|
-${brandOf(a) ? `| For | ${brandOf(a)} |\n` : ''}| You needed | ${KIND_LABEL[a.kind] || '—'} |
-| The look | ${p.name} — ${p.mood.toLowerCase()} |
-| Logo | ${logoSummary(a) || '—'} |
-| Words | ${copySummary(a) || '—'} |
-${a.logoMode === 'describe' && a.fields.logoWords ? `\n**Logo notes:** ${a.fields.logoWords}\n` : ''}
-${a.logoStyle ? `**Logo type:** ${a.logoStyle}\n` : ''}
-Approved on ${date.toLocaleDateString('en-GB')}.
+${brandOf(a) ? `| ${T.briefFor} | ${brandOf(a)} |\n` : ''}| ${T.briefYouNeeded} | ${kindLabel(a.kind, lang) || '—'} |
+| ${T.briefLook} | ${pt.name} — ${pt.mood.toLowerCase()} |
+| ${T.briefLogo} | ${logoSummary(a, lang) || '—'} |
+| ${T.briefWords} | ${copySummary(a, lang) || '—'} |
+${a.logoMode === 'describe' && a.fields.logoWords ? `\n**${T.briefLogoNotes}:** ${a.fields.logoWords}\n` : ''}
+${a.logoStyle ? `**${T.briefLogoType}:** ${a.logoStyle}\n` : ''}
+${T.briefApproved(date.toLocaleDateString(T.locale))}
 `;
 
   const readme = `# ${d.name}
 
-Everything here is yours to keep.
+${T.readmeKeep}
 
-## The files
+## ${T.readmeFiles}
 
-| File | What it is |
+| ${T.readmeFile} | ${T.readmeWhat} |
 |---|---|
-| \`index.html\` | Your page. Double-click it to open in any browser. |
-| \`copy.md\` | Your words on their own, so you can edit them without touching the page. |
-| \`BRIEF.md\` | What you chose, for your records. |
+| \`index.html\` | ${T.readmeIndex} |
+| \`copy.md\` | ${T.readmeCopy} |
+| \`BRIEF.md\` | ${T.readmeBrief} |
 
-## Changing the words
+## ${T.readmeChanging}
 
-Open \`index.html\` in any text editor and edit the text between the tags. The
-wording in it is a first draft — replace it with your own.
+${T.readmeChangingBody}
 
-## Putting it online
+## ${T.readmeOnline}
 
-The page is a single file with nothing else to install, so almost anywhere works:
+${T.readmeOnlineBody}
 
-- **Netlify Drop** — drag the folder onto netlify.com/drop
-- **GitHub Pages** — put \`index.html\` in a repository and turn Pages on
-- **Your own host** — upload \`index.html\` by FTP
+- ${T.readmeHost1}
+- ${T.readmeHost2}
+- ${T.readmeHost3}
 
-## Making changes later
+## ${T.readmeLater}
 
-Nothing here expires and nothing phones home. If you'd rather we made the
-changes, get in touch: ${contact}
+${T.readmeLaterBody(contact)}
 `;
 
   return [
@@ -2426,13 +2686,14 @@ async function makeZip(files) {
 }
 
 /* Everything a delivery needs, in one call. */
-async function buildPackage(answers, css, opts) {
-  const page = buildPageFrom(answers, css);
+async function buildPackage(answers, css, opts = {}) {
+  const page = buildPageFrom(answers, css, { lang: opts.lang });
   const files = packageFiles(answers, page, opts);
   return { page, files, zip: await makeZip(files), filename: packageName(answers) };
 }
 
 /* ===== end ./lib/package.js ===== */
+
 
 /* ============================================================================
    Client-facing brief. Deliberately shows no file paths, class names or CSS —

@@ -33,6 +33,19 @@ const head = t => console.log(`\n=== ${t} ===`);
   await p.goto(DS + 'brief.html');
   await p.waitForTimeout(400);
 
+
+  /* The `hidden` attribute alone is a UA-stylesheet rule that any class setting
+     `display` overrides, so asserting on el.hidden proves nothing about what a
+     person sees. Assert on the computed style. */
+  {
+    const target = p.locator('body');
+    const showing = await target.evaluate(() =>
+      [...document.querySelectorAll('[hidden]')]
+        .filter(el => getComputedStyle(el).display !== 'none')
+        .map(el => el.id || el.className));
+    ok('hidden elements really are hidden', showing.length === 0, showing.join(', '));
+  }
+
   head('1. FRONT DOOR — nothing technical is shown');
   {
     const txt = await p.evaluate(() => document.body.innerText);

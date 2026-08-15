@@ -93,8 +93,105 @@ const feedback = `
 </section>
 `;
 
+/* ---- Handing over the files in a hosted viewer -----------------------------
+   A shared page runs in a viewer that grants no download permission, so the
+   blob link the offline build uses is silently inert — the button appears to
+   work and nothing arrives. The viewer's own save mechanism is the only route,
+   and its allowlist has no `.zip` in it, so the package cannot go over as one
+   archive. What it can hand over is the two things a person actually wants:
+   the finished page, and their words. --------------------------------------- */
+const capabilityDownload = `
+const packBtn = document.getElementById('pack');
+const note = document.getElementById('payNote');
+
+/* null means this view cannot save at all — say so rather than leaving a
+   button that quietly does nothing. */
+const downloads = await (window.claude?.use?.('downloads') ?? Promise.resolve(null));
+
+function explain(err) {
+  switch (err?.code) {
+    case 'declined':          return '';                 // their choice; say nothing
+    case 'rate_limited':      return 'One at a time — try that again in a moment.';
+    case 'too_large':         return 'That file is too big to hand over here.';
+    case 'extension_not_enabled':
+    case 'rejected_extension':
+      return 'This viewer will not accept that file type. Ask for the one-file version and everything works.';
+    default:
+      return 'That did not work here. Ask for the one-file version and everything works.';
+  }
+}
+
+async function offer(filename, data) {
+  try {
+    await downloads.save({ filename, data });
+    return true;
+  } catch (err) {
+    const msg = explain(err);
+    if (msg) note.textContent = msg;
+    return false;
+  }
+}
+
+if (packBtn) {
+  /* Always take the click, never rely on \`disabled\`: the page's own approval
+     logic re-enables this button whenever the checkbox changes, which would
+     hand control back to the original blob-download handler — the one that is
+     silently inert here. Owning the handler is the only way to be sure the
+     button cannot quietly do nothing. */
+  packBtn.textContent = downloads ? SAVE_LABEL : SAVE_UNAVAILABLE_LABEL;
+  if (!downloads) {
+    packBtn.onclick = () => { note.textContent = SAVE_UNAVAILABLE_NOTE; };
+  } else {
+    packBtn.onclick = async () => {
+      const label = packBtn.textContent;
+      packBtn.disabled = true;
+      packBtn.textContent = SAVE_WORKING;
+      note.textContent = '';
+      try {
+        const page = await buildPage();
+        if (!page) { note.textContent = SAVE_NO_PAGE; return; }
+
+        const a = answersOf();
+        const base = packageName(a).replace(/-files\.zip$/, '');
+        const files = packageFiles(a, page, { contact: SHOP.CONTACT${'{{LANG}}'} });
+        const words = files.find(f => f.name === 'copy.md');
+
+        if (await offer(base + '.html', page)) {
+          if (words) await offer(base + '-copy.md', words.text);
+          note.textContent = SAVE_DONE;
+        }
+      } finally {
+        packBtn.disabled = false;
+        packBtn.textContent = label;
+      }
+    };
+  }
+}
+<\/script>
+`;
+
+const SAVE_STRINGS_EN = `
+const SAVE_LABEL = 'Save my page';
+const SAVE_WORKING = 'Preparing…';
+const SAVE_DONE = 'Saved. Open the .html file in any browser — your words are in the .md beside it.';
+const SAVE_NO_PAGE = 'Answer the questions first, then this will have something to save.';
+const SAVE_UNAVAILABLE_LABEL = 'Saving is off here';
+const SAVE_UNAVAILABLE_NOTE = 'This viewer will not let a page save files. Ask for the one-file version and everything works.';
+`;
+
 /* Put the banner at the very top and the feedback box at the very end. */
 body = banner + body + feedback;
+
+/* The save code has to run inside the page's own module: buildPage, answersOf,
+ * packageFiles, packageName and SHOP are declared there, and a second
+ * <script type="module"> gets its own scope and cannot see any of them. A
+ * separate script would parse fine and then throw on the first click. */
+const moduleEnd = body.lastIndexOf('<\/script>');
+if (moduleEnd < 0) {
+  console.error('Could not find the end of the page module to inject the save code into.');
+  process.exit(1);
+}
+body = body.slice(0, moduleEnd) + SAVE_STRINGS_EN + capabilityDownload.replace('{{LANG}}', '') + '\n' + body.slice(moduleEnd);
 
 const extraStyle = `
 /* ===== shared-link build only ===== */
@@ -171,6 +268,7 @@ const script = `
 })();
 <\/script>
 `;
+
 
 const out = `<title>${title}</title>
 <style>
