@@ -16,6 +16,9 @@ window.PLATFORM = {
   whatsapp: "971508400886",
   email: "",
 
+  // n8n webhook that receives signups (workflow 1). Empty = WhatsApp only.
+  signupWebhook: "",
+
   plans: {
     free: {
       name: { ar: "الملف الشخصي", en: "Profile" },
@@ -119,6 +122,8 @@ window.SITE = {
   // Leave "" to fall back to copy-to-clipboard checkout.
   whatsapp: "971508400886",
   email: "",
+  // n8n webhook that receives this seller's orders (workflow 4). Empty = WhatsApp only.
+  orderWebhook: "",
   // Newsletter form POST endpoint (Mailchimp / Buttondown / Formspree …).
   // Empty + no email = the newsletter block and its link stay hidden.
   newsletterAction: "",
@@ -346,6 +351,8 @@ window.I18N = {
     "cart.title": "سلة المشتريات",
     "cart.empty": "سلتك فارغة",
     "cart.emptyHint": "تصفح المتجر وأضف ما يعجبك",
+    "cart.name": "اسمك (اختياري)",
+    "cart.phone": "رقم واتسابك (اختياري)",
     "cart.total": "الإجمالي",
     "cart.checkout": "إتمام الطلب عبر واتساب",
     "cart.copy": "نسخ تفاصيل الطلب",
@@ -354,6 +361,7 @@ window.I18N = {
     "cart.browse": "تصفح المتجر",
     "order.title": "طلب جديد",
     "order.total": "الإجمالي",
+    "order.from": "الزبون",
     "newsletter.title": "النشرة الأسبوعية",
     "newsletter.sub": "فكرة عملية واحدة كل أسبوع. بدون سبام.",
     "newsletter.placeholder": "بريدك الإلكتروني",
@@ -429,6 +437,8 @@ window.I18N = {
     "cart.title": "Your cart",
     "cart.empty": "Your cart is empty",
     "cart.emptyHint": "Browse the store and add something you like",
+    "cart.name": "Your name (optional)",
+    "cart.phone": "Your WhatsApp number (optional)",
     "cart.total": "Total",
     "cart.checkout": "Checkout on WhatsApp",
     "cart.copy": "Copy order details",
@@ -437,6 +447,7 @@ window.I18N = {
     "cart.browse": "Browse the store",
     "order.title": "New order",
     "order.total": "Total",
+    "order.from": "Customer",
     "newsletter.title": "Weekly newsletter",
     "newsletter.sub": "One practical idea every week. No spam.",
     "newsletter.placeholder": "Your email address",

@@ -9,7 +9,10 @@
   var P = window.PLATFORM || {};
   var DICT = window.I18N || { ar: {}, en: {} };
 
-  var KEY = { lang: "nzm.lang", theme: "nzm.theme", cart: "nzm.cart" };
+  var KEY = {
+    lang: "nzm.lang", theme: "nzm.theme", cart: "nzm.cart",
+    buyerName: "nzm.buyer.name", buyerPhone: "nzm.buyer.phone",
+  };
 
   var store = {
     get: function (k, fallback) {
@@ -53,6 +56,28 @@
     var cur = tx(S.currency) || "SAR";
     return lang === "ar" ? num + " " + cur : cur + " " + num;
   }
+  /* Hand the same event to n8n. Fire-and-forget: the WhatsApp handoff must not
+     wait on it, and a dead webhook must never block a sale. */
+  function postHook(url, payload) {
+    if (!url) return;
+    try {
+      fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        keepalive: true,
+        mode: "cors",
+      }).catch(function () {});
+    } catch (e) { /* offline, blocked, whatever — the WhatsApp path still runs */ }
+  }
+
+  function buyer() {
+    return {
+      name: String(store.get(KEY.buyerName, "") || "").trim(),
+      phone: String(store.get(KEY.buyerPhone, "") || "").trim(),
+    };
+  }
+
   function waLink(text) {
     if (!S.whatsapp) return "";
     return "https://wa.me/" + String(S.whatsapp).replace(/\D/g, "") + "?text=" + encodeURIComponent(text);
@@ -160,16 +185,34 @@
       var p = findProduct(l.id);
       return l.qty + "× " + tx(p.title) + " — " + money(p.price * l.qty);
     });
+    var who = buyer();
+    var tail = [t("order.total") + ": " + money(cartTotal())];
+    if (who.name || who.phone) {
+      tail.push(t("order.from") + ": " + [who.name, who.phone].filter(Boolean).join(" · "));
+    }
     return [
       t("order.title") + " · " + tx(S.name),
       "————————————",
       lines.join("\n"),
       "————————————",
-      t("order.total") + ": " + money(cartTotal()),
-    ].join("\n");
+    ].concat(tail).join("\n");
   }
   function checkout() {
     if (!cart.length) return;
+    var who = buyer();
+    postHook(S.orderWebhook, {
+      handle: S.handle,
+      seller_phone: S.whatsapp,
+      currency: tx(S.currency),
+      customer_name: who.name,
+      customer_phone: who.phone,
+      items: cart.map(function (l) {
+        var p = findProduct(l.id);
+        return { id: p.id, title: tx(p.title), qty: l.qty, price: p.price };
+      }),
+      total: cartTotal(),
+      source: "storefront",
+    });
     var text = orderText();
     var url = waLink(text);
     if (url) { window.open(url, "_blank", "noopener"); return; }
@@ -338,8 +381,14 @@
         "</div>";
     }).join("");
 
+    var who = buyer();
     var waReady = !!S.whatsapp;
     foot.innerHTML =
+      '<div class="buyer">' +
+        '<input data-buyer="name" value="' + esc(who.name) + '" data-i18n-ph="cart.name">' +
+        '<input data-buyer="phone" class="ltr" type="tel" inputmode="tel" value="' +
+          esc(who.phone) + '" data-i18n-ph="cart.phone">' +
+      "</div>" +
       '<div class="totals"><span>' + esc(t("cart.total")) + "</span><span>" + esc(money(cartTotal())) + "</span></div>" +
       '<button class="btn btn--block ' + (waReady ? "btn--wa" : "btn--primary") + '" data-checkout>' +
         (waReady ? icon("whatsapp") : icon("bolt")) +
@@ -357,6 +406,11 @@
     });
     qsa("[data-remove]", body).forEach(function (btn) {
       btn.addEventListener("click", function () { removeFromCart(btn.getAttribute("data-remove")); });
+    });
+    qsa("[data-buyer]", foot).forEach(function (input) {
+      input.addEventListener("input", function () {
+        store.set(input.getAttribute("data-buyer") === "name" ? KEY.buyerName : KEY.buyerPhone, input.value);
+      });
     });
   }
 
@@ -653,6 +707,15 @@
     form.addEventListener("submit", function (ev) {
       ev.preventDefault();
       if (!valid()) { toast(t("signup.required")); return; }
+      var data = new FormData(form);
+      postHook(P.signupWebhook, {
+        name: data.get("name"),
+        handle: data.get("handle"),
+        phone: data.get("phone"),
+        sells: data.get("sells"),
+        plan: data.get("plan"),
+        source: "website",
+      });
       var text = signupText();
       var url = P.whatsapp
         ? "https://wa.me/" + String(P.whatsapp).replace(/\D/g, "") + "?text=" + encodeURIComponent(text)

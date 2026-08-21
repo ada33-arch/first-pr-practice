@@ -1015,3 +1015,17 @@ html[dir="rtl"] .backlink svg { transform: none; }
   background: color-mix(in srgb, var(--accent) 10%, transparent);
 }
 .choice input { accent-color: var(--accent); width: 16px; height: 16px; flex: none; }
+
+/* optional buyer details in the cart — they ride along to the seller and to n8n */
+.buyer { display: grid; gap: .5rem; }
+.buyer input {
+  padding: .6rem .8rem;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--hairline);
+  background: var(--surface);
+  font-size: .85rem;
+  outline: none;
+  width: 100%;
+}
+.buyer input:focus { border-color: color-mix(in srgb, var(--accent) 55%, transparent); }
+.buyer input::placeholder { color: var(--ink-mute); }

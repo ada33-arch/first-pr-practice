@@ -18,6 +18,7 @@ A practice repository for the GitHub workflow — cloning, branching, committing
 - `scripts/slack-upload.sh` — uploads a file to Slack via the three-step external-upload flow
 - `connect-apps-plugin/` — a Claude Code plugin providing `/connect-apps:setup`
 - `site/` — static bilingual (AR/EN, RTL) storefront platform: a landing page and free signup, plus an example seller's link page, store, and product pages. No build step; all content lives in `site/assets/js/data.js` (`PLATFORM` for the business, `SITE` for the demo seller). `node site/bundle.mjs` emits a single-file build. See `site/README.md`.
+- `n8n/` — the four automations behind the platform, as importable n8n workflow JSON: signup, store activation and payment, renewal and suspension, customer order. `n8n/timeline.html` is a standalone read-through of all four; `n8n/README.md` covers credentials, the Google Sheet schema, and the WhatsApp 24-hour rule.
 - `.claude/skills/ui-ux-pro-max/` — UI/UX design-guidance skill (definition only; the `search.py` CLI and CSV data it references are not vendored here)
 - `.mcp.json` — HTTP MCP servers wired up for this repo: `github` and `graphify`
 

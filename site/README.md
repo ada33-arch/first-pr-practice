@@ -59,6 +59,11 @@ message and hand it off:
 Each falls back to email, then to copying the text to the clipboard. The signup
 page says this in plain words rather than implying an account was created.
 
+Both also POST to an n8n webhook when one is configured — `PLATFORM.signupWebhook`
+and `SITE.orderWebhook`. That's where the automation lives: see [`../n8n/`](../n8n/)
+for the four workflows and what each one sends. The POST is fire-and-forget, so a
+webhook that is down or unset costs nothing; the WhatsApp handoff still runs.
+
 That's enough to launch and take your first subscribers. Real accounts, hosted
 per-seller pages, and card payments need a server — that's the next build, not
 this one.

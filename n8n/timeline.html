@@ -1,0 +1,768 @@
+<title>Matjari Automations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --paper:      #faf8f4;
+    --card:       #ffffff;
+    --ink:        #1b1813;
+    --ink-soft:   #5f594e;
+    --ink-mute:   #918a7c;
+    --rule:       #e4ded2;
+    --rule-soft:  #efeae0;
+
+    --owner:      #a8762b;
+    --owner-bg:   #f6edda;
+    --seller:     #2c7a67;
+    --seller-bg:  #e3f1ec;
+    --customer:   #37629f;
+    --customer-bg:#e5edf8;
+    --system:     #6d6558;
+    --system-bg:  #efece5;
+
+    --font-display: "Fraunces", Georgia, serif;
+    --font-body: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --font-ar: "Tajawal", system-ui, sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:      #14130f;
+      --card:       #1c1b16;
+      --ink:        #f0ece3;
+      --ink-soft:   #b0a99c;
+      --ink-mute:   #7e776a;
+      --rule:       #302e26;
+      --rule-soft:  #262419;
+
+      --owner:      #d9ad5f;
+      --owner-bg:   #2c2415;
+      --seller:     #6cc3aa;
+      --seller-bg:  #162a24;
+      --customer:   #86aee6;
+      --customer-bg:#17222f;
+      --system:     #a09889;
+      --system-bg:  #252319;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:      #14130f;
+    --card:       #1c1b16;
+    --ink:        #f0ece3;
+    --ink-soft:   #b0a99c;
+    --ink-mute:   #7e776a;
+    --rule:       #302e26;
+    --rule-soft:  #262419;
+
+    --owner:      #d9ad5f;
+    --owner-bg:   #2c2415;
+    --seller:     #6cc3aa;
+    --seller-bg:  #162a24;
+    --customer:   #86aee6;
+    --customer-bg:#17222f;
+    --system:     #a09889;
+    --system-bg:  #252319;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { width: min(100% - 2.5rem, 860px); margin-inline: auto; }
+
+  h1, h2, h3 { font-family: var(--font-display); font-weight: 600; line-height: 1.15; margin: 0; }
+  h1 { font-size: clamp(2rem, 5vw, 2.9rem); letter-spacing: -.015em; text-wrap: balance; }
+  h2 { font-size: clamp(1.35rem, 3.2vw, 1.75rem); }
+  h3 { font-size: 1.02rem; font-family: var(--font-body); font-weight: 600; }
+  p { margin: 0; }
+  a { color: inherit; }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: .74rem;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--owner);
+  }
+  .lede { color: var(--ink-soft); font-size: 1.05rem; max-width: 62ch; margin-top: 1rem; }
+  .muted { color: var(--ink-soft); }
+  .tiny { font-size: .84rem; }
+
+  header.top { padding: 3.5rem 0 2rem; border-bottom: 1px solid var(--rule); }
+
+  /* jump nav ------------------------------------------------------------- */
+  .jump { display: grid; gap: .5rem; margin-top: 2rem; }
+  @media (min-width: 720px) { .jump { grid-template-columns: repeat(4, 1fr); } }
+  .jump a {
+    display: grid;
+    gap: .15rem;
+    padding: .8rem .9rem;
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    background: var(--card);
+    text-decoration: none;
+    transition: border-color .2s, transform .2s;
+  }
+  .jump a:hover { border-color: var(--owner); transform: translateY(-2px); }
+  .jump b { font-size: .92rem; font-weight: 600; }
+  .jump span { font-size: .78rem; color: var(--ink-mute); font-family: var(--font-mono); }
+
+  /* setup strip ---------------------------------------------------------- */
+  section { padding: 3rem 0; border-bottom: 1px solid var(--rule); }
+  .section-head { display: flex; align-items: baseline; gap: .9rem; flex-wrap: wrap; margin-bottom: 1.6rem; }
+  .section-head .file {
+    font-family: var(--font-mono);
+    font-size: .78rem;
+    color: var(--ink-mute);
+    background: var(--system-bg);
+    padding: .2rem .5rem;
+    border-radius: 5px;
+  }
+  .trigger {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    flex-wrap: wrap;
+    padding: .75rem 1rem;
+    border-radius: 10px;
+    background: var(--system-bg);
+    border: 1px solid var(--rule);
+    font-size: .88rem;
+    margin-bottom: 1.8rem;
+  }
+  .trigger b { font-family: var(--font-mono); font-weight: 500; font-size: .82rem; }
+
+  .grid2 { display: grid; gap: 1rem; }
+  @media (min-width: 700px) { .grid2 { grid-template-columns: 1fr 1fr; } }
+  .box {
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    background: var(--card);
+    padding: 1.1rem 1.2rem;
+  }
+  .box h3 { margin-bottom: .5rem; }
+  .box ul { margin: 0; padding-inline-start: 1.1rem; color: var(--ink-soft); font-size: .9rem; }
+  .box li { margin-bottom: .3rem; }
+  code, .mono { font-family: var(--font-mono); font-size: .86em; }
+  code {
+    background: var(--system-bg);
+    padding: .12em .38em;
+    border-radius: 4px;
+    color: var(--ink);
+  }
+
+  /* the timeline --------------------------------------------------------- */
+  .timeline { position: relative; display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+  .step { position: relative; display: grid; grid-template-columns: 34px 1fr; gap: 1rem; }
+  .step__rail { position: relative; display: flex; justify-content: center; }
+  .step__rail::before {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    width: 2px;
+    background: var(--rule);
+  }
+  .step:first-child .step__rail::before { inset-block-start: 16px; }
+  .step:last-child .step__rail::before { inset-block-end: calc(100% - 16px); }
+  .step__dot {
+    position: relative;
+    z-index: 1;
+    margin-top: 4px;
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    font-family: var(--font-mono);
+    font-size: .74rem;
+    font-weight: 500;
+    background: var(--card);
+    border: 2px solid var(--rule);
+    color: var(--ink-soft);
+  }
+  .step--key .step__dot { border-color: var(--owner); color: var(--owner); }
+  .step--stop .step__dot { border-style: dashed; }
+  .step__body { padding-bottom: 1.9rem; min-width: 0; }
+  .step__title { display: flex; align-items: baseline; gap: .6rem; flex-wrap: wrap; }
+  .node {
+    font-family: var(--font-mono);
+    font-size: .74rem;
+    padding: .16rem .45rem;
+    border-radius: 5px;
+    background: var(--system-bg);
+    color: var(--system);
+    white-space: nowrap;
+  }
+  .step__body > p { color: var(--ink-soft); font-size: .92rem; margin-top: .35rem; }
+  .when {
+    font-family: var(--font-mono);
+    font-size: .72rem;
+    color: var(--ink-mute);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+  }
+
+  /* who sees what -------------------------------------------------------- */
+  .msg {
+    margin-top: .7rem;
+    max-width: 52ch;
+    border-inline-start: 3px solid var(--rule);
+    border-radius: 0 10px 10px 0;
+    padding: .7rem .9rem;
+    background: var(--system-bg);
+  }
+  html[dir="rtl"] .msg { border-radius: 10px 0 0 10px; }
+  .msg--seller { border-color: var(--seller); background: var(--seller-bg); }
+  .msg--owner { border-color: var(--owner); background: var(--owner-bg); }
+  .msg--customer { border-color: var(--customer); background: var(--customer-bg); }
+  .msg--system { border-color: var(--system); background: var(--system-bg); }
+  .msg .who { background: transparent; padding-inline: 0; }
+  .who {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    font-size: .72rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    padding: .12rem .45rem;
+    border-radius: 5px;
+  }
+  .who--seller { background: var(--seller-bg); color: var(--seller); }
+  .who--owner { background: var(--owner-bg); color: var(--owner); }
+  .who--customer { background: var(--customer-bg); color: var(--customer); }
+  .who--system { background: var(--system-bg); color: var(--system); }
+  .bubble {
+    margin-top: .4rem;
+    font-family: var(--font-ar);
+    direction: rtl;
+    text-align: right;
+    font-size: .88rem;
+    line-height: 1.75;
+    white-space: pre-line;
+    color: var(--ink);
+  }
+  .payload {
+    margin-top: .4rem;
+    max-width: 100%;
+    font-family: var(--font-mono);
+    font-size: .78rem;
+    color: var(--ink-soft);
+    overflow-x: auto;
+    white-space: pre;
+    padding-bottom: .2rem;
+  }
+
+  /* callout -------------------------------------------------------------- */
+  .callout {
+    border: 1px solid var(--owner);
+    border-radius: 12px;
+    background: var(--owner-bg);
+    padding: 1.2rem 1.3rem;
+    display: grid;
+    gap: .5rem;
+  }
+  .callout h3 { color: var(--owner); }
+  .callout p { color: var(--ink); font-size: .92rem; }
+
+  table { width: 100%; border-collapse: collapse; font-size: .86rem; }
+  .scroll { overflow-x: auto; }
+  th, td { text-align: start; padding: .5rem .7rem; border-bottom: 1px solid var(--rule-soft); }
+  th { font-family: var(--font-mono); font-size: .74rem; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-mute); font-weight: 500; }
+  td.mono { font-family: var(--font-mono); font-size: .8rem; }
+
+  footer { padding: 2.5rem 0 3.5rem; color: var(--ink-mute); font-size: .85rem; }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="eyebrow">n8n · four workflows</div>
+    <h1>What happens after every button</h1>
+    <p class="lede">
+      Signing up, turning a store on, keeping the subscription alive, and taking an order —
+      each one traced step by step, with the exact message every person receives.
+      Import the four JSON files from <code>n8n/</code> and this is what runs.
+    </p>
+    <nav class="jump">
+      <a href="#signup"><b>1 · Free signup</b><span>01-signup-free</span></a>
+      <a href="#store"><b>2 · Store activation</b><span>02-store-activation</span></a>
+      <a href="#renewal"><b>3 · Renewal</b><span>03-subscription-renewal</span></a>
+      <a href="#order"><b>4 · Customer order</b><span>04-customer-order</span></a>
+    </nav>
+  </div>
+</header>
+
+<section id="signup">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>1 · Someone signs up, free</h2>
+      <span class="file">01-signup-free.json</span>
+    </div>
+    <div class="trigger">
+      <span class="who who--system">Trigger</span>
+      <span>The signup form POSTs to</span>
+      <b>/webhook/matjari-signup</b>
+      <span class="when">· nobody pays anything in this flow</span>
+    </div>
+
+    <ol class="timeline">
+      <li class="step step--key">
+        <div class="step__rail"><span class="step__dot">1</span></div>
+        <div class="step__body">
+          <div class="step__title"><h3>They fill in four fields</h3><span class="node">Signup submitted</span></div>
+          <p>Name, handle, WhatsApp number, and what they want to sell. The plan radio decides whether this ends here or continues into flow 2.</p>
+          <div class="msg msg--system">
+            <span class="who who--system">Payload</span>
+            <div class="payload">{ "name": "أحمد العامري", "handle": "ahmed",
+  "phone": "0508400886", "sells": "عطور", "plan": "free" }</div>
+          </div>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="step__rail"><span class="step__dot">2</span></div>
+        <div class="step__body">
+          <div class="step__title"><h3>The data gets cleaned before anything trusts it</h3><span class="node">Validate and normalise</span></div>
+          <p><code>Ahmed.Alameri!!</code> becomes <code>ahmed.alameri</code>. <code>0508400886</code> becomes <code>971508400886</code>, so WhatsApp can actually reach it. A name under two characters or a broken number stops here.</p>
+        </div>
+      </li>
+
+      <li class="step step--stop">
+        <div class="step__rail"><span class="step__dot">✕</span></div>
+        <div class="step__body">
+          <div class="step__title"><h3>Bad input turns back</h3><span class="node">Reject: missing fields</span></div>
+          <p>The site gets <code>400</code> with the list of what was wrong, and shows it. Nothing is written.</p>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="step__rail"><span class="step__dot">3</span></div>
+        <div class="step__body">
+          <div class="step__title"><h3>Is the handle already someone's?</h3><span class="node">Look up the handle</span></div>
+          <p>A lookup against the <code>sellers</code> sheet. Taken means <code>409</code> and the site asks them to pick another — this is the one check that has to happen before the row exists, because two people on one handle is one broken page.</p>
+        </div>
+      </li>
+
+      <li class="step step--key">
+        <div class="step__rail"><span class="step__dot">4</span></div>
+        <div class="step__body">
+          <div class="step__title"><h3>The account exists</h3><span class="node">Create the seller row</span></div>
+          <p>One row: <code>plan=free</code>, <code>status=active</code>, <code>store_status=off</code>, and their page URL. That row is the account — every later flow reads and updates it.</p>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="step__rail"><span class="step__dot">5</span></div>
+        <div class="step__body">
+          <div class="step__title"><h3>Both of you hear about it, at once</h3><span class="node">WhatsApp ×2</span></div>
+          <div class="msg msg--seller">
+            <span class="who who--seller">Seller receives</span>
+            <div class="bubble">أهلاً أحمد العامري 👋
+
+تم تسجيلك في متجري.
+صفحتك: matjari.ae/@ahmed
+
+الخطوة الجاية: أرسل لنا صورتك، نبذة قصيرة، وروابط حساباتك — ونجهّز صفحتك خلال ٢٤ ساعة.
+
+وإذا حبيت تضيف متجر ومنتجات، رد بكلمة (متجر) ونرسل لك التفاصيل.</div>
+          </div>
+          <div class="msg msg--owner">
+            <span class="who who--owner">You receive</span>
+            <div class="bubble">🆕 تسجيل جديد
+
+الاسم: أحمد العامري
+الرابط: matjari.ae/@ahmed
+واتساب: 971508400886
+يبيع: عطور
+الباقة المطلوبة: مجاني</div>
+          </div>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="step__rail"><span class="step__dot">6</span></div>
+        <div class="step__body">
+          <div class="step__title"><h3>And the page confirms</h3><span class="node">Reply: account created</span></div>
+          <p>The site gets <code>{ ok: true, page_url }</code> back. Your only manual job starts here: build their page from the row.</p>
+        </div>
+      </li>
+    </ol>
+
+    <div class="grid2" style="margin-top:.5rem">
+      <div class="box">
+        <h3>The seller ends with</h3>
+        <ul><li>A confirmed handle nobody else can take</li><li>Their page URL</li><li>A clear next step, and the word that starts flow 2</li></ul>
+      </div>
+      <div class="box">
+        <h3>You end with</h3>
+        <ul><li>A row in the sheet</li><li>Their number, in an open 24-hour window</li><li>One page to build by hand</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="store">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>2 · They want a store</h2>
+      <span class="file">02-store-activation.json</span>
+    </div>
+    <div class="trigger">
+      <span class="who who--system">Two triggers</span>
+      <b>/webhook/matjari-store-request</b>
+      <span>then, later,</span>
+      <b>/webhook/matjari-stripe</b>
+    </div>
+
+    <ol class="timeline">
+      <li class="step step--key">
+        <div class="step__rail"><span class="step__dot">1</span></div>
+        <div class="step__body">
+          <div class="step__title"><h3>The request arrives</h3><span class="node">Store requested</span></div>
+          <p>Either they picked the store plan at signup, or they replied <span dir="rtl" class="mono">متجر</span> later and you fire the webhook. Either way it needs only their handle.</p>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="step__rail"><span class="step__dot">2</span></div>
+        <div class="step__body">
+          <div class="step__title"><h3>The seller has to exist first</h3><span class="node">Find the seller</span></div>
+          <p>No row, no store — <code>404</code>. Flow 1 is a hard prerequisite, which is why a store can never exist without an account behind it.</p>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="step__rail"><span class="step__dot">3</span></div>
+        <div class="step__body">
+          <div class="step__title"><h3>A real payment link, made on the spot</h3><span class="node">Create the payment link</span></div>
+          <p>Stripe creates a link for the recurring monthly price, tagged with their handle so the callback knows whose store to switch on. The row goes to <code>awaiting_payment</code> — requested, not active.</p>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="step__rail"><span class="step__dot">4</span></div>
+        <div class="step__body">
+          <div class="step__title"><h3>The link goes out</h3><span class="node">WhatsApp: send the payment link</span></div>
+          <div class="msg msg--seller">
+            <span class="who who--seller">Seller receives</span>
+            <div class="bubble">تفعيل المتجر 🛍️
+
+المتجر: 29 د.إ شهرياً، تقدر توقفه في أي وقت.
+
+اللي بيوصلك:
+• منتجات بلا حد مع صور وأسعار
+• صفحة لكل منتج وتصنيفات وبحث
+• سلة وطلبات توصلك واتساب مباشرة
+• تستلم المبلغ من الزبون مباشرة، بدون نسبة علينا
+
+رابط الدفع: stripe.com/pay/…
+
+بعد الدفع يتفعّل متجرك خلال دقائق.</div>
+          </div>
+          <div class="msg msg--owner">
+            <span class="who who--owner">You receive</span>
+            <div class="bubble">💳 طلب تفعيل متجر
+
+أحمد العامري — ahmed
+واتساب: 971508400886
+أُرسل له رابط الدفع (29 د.إ / شهر).</div>
+          </div>
+        </div>
+      </li>
+
+      <li class="step step--stop">
+        <div class="step__rail"><span class="step__dot">⏸</span></div>
+        <div class="step__body">
+          <div class="step__title"><h3>Then nothing happens</h3></div>
+          <p class="when">minutes · or days · or never</p>
+          <p>The flow ends here. They are registered, their page works, their store does not. Nothing is waiting on a timer — the second half only starts if money moves.</p>
+        </div>
+      </li>
+
+      <li class="step step--key">
+        <div class="step__rail"><span class="step__dot">5</span></div>
+        <div class="step__body">
+          <div class="step__title"><h3>Stripe calls back</h3><span class="node">Stripe says it was paid</span></div>
+          <p>Stripe posts every event it has. <code>Read the Stripe event</code> keeps only <code>checkout.session.completed</code> and <code>invoice.paid</code>, and only when the status really is paid. Everything else gets a polite 200 and is dropped.</p>
+        </div>
+      </li>
+
+      <li class="step step--key">
+        <div class="step__rail"><span class="step__dot">6</span></div>
+        <div class="step__body">
+          <div class="step__title"><h3>The store switches on</h3><span class="node">Switch the store on</span></div>
+          <p>One row update: <code>store_status=active</code>, <code>plan=store</code>, and <code>next_renewal</code> exactly one month out. That date is what flow 3 lives on.</p>
+          <div class="msg msg--seller">
+            <span class="who who--seller">Seller receives</span>
+            <div class="bubble">تم استلام الدفعة ✅
+
+متجرك شغّال الحين: matjari.ae/@ahmed
+التجديد القادم: 2026-09-21
+
+أرسل لنا منتجاتك (صورة، اسم، سعر، وصف قصير) ونضيفها لك، أو أضفها بنفسك من لوحة التحكم.</div>
+          </div>
+          <div class="msg msg--owner">
+            <span class="who who--owner">You receive</span>
+            <div class="bubble">💰 اشتراك جديد مدفوع
+
+ahmed — 29 AED
+التجديد القادم: 2026-09-21</div>
+          </div>
+        </div>
+      </li>
+    </ol>
+
+    <div class="callout" style="margin-top:.5rem">
+      <h3>Asking is not paying</h3>
+      <p>A store only becomes active on a Stripe callback — never on the request. Anyone can ask; only a payment flips the row. That single rule is what keeps the subscription honest without you checking anything by hand.</p>
+    </div>
+  </div>
+</section>
+
+<section id="renewal">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>3 · The month comes around again</h2>
+      <span class="file">03-subscription-renewal.json</span>
+    </div>
+    <div class="trigger">
+      <span class="who who--system">Trigger</span>
+      <span>Schedule —</span>
+      <b>09:00 Asia/Dubai, every day</b>
+      <span class="when">· no webhook, no button</span>
+    </div>
+
+    <ol class="timeline">
+      <li class="step">
+        <div class="step__rail"><span class="step__dot">1</span></div>
+        <div class="step__body">
+          <div class="step__title"><h3>Read every seller, work out what today means</h3><span class="node">Who needs what today?</span></div>
+          <p>For each active store it compares <code>next_renewal</code> to today and sorts them into four buckets. A seller in none of them is simply skipped — most mornings, that is everyone.</p>
+          <div class="scroll">
+            <table>
+              <tr><th>When</th><th>Bucket</th><th>What fires</th></tr>
+              <tr><td class="mono">−3 days</td><td class="mono">reminder</td><td>Friendly heads-up, no link</td></tr>
+              <tr><td class="mono">day 0</td><td class="mono">due_today</td><td>Payment link</td></tr>
+              <tr><td class="mono">+3 days</td><td class="mono">overdue</td><td>Warning, store still running</td></tr>
+              <tr><td class="mono">+7 days</td><td class="mono">suspend</td><td>Store off, page stays</td></tr>
+            </table>
+          </div>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="step__rail"><span class="step__dot">2</span></div>
+        <div class="step__body">
+          <div class="step__title"><h3>Three days before</h3><span class="node">WhatsApp: renewal in 3 days</span></div>
+          <div class="msg msg--seller">
+            <span class="who who--seller">Seller receives</span>
+            <div class="bubble">تذكير ودّي 🗓️
+
+اشتراك متجرك يتجدد بعد ٣ أيام (2026-09-21) — 29 د.إ.
+
+ما عليك سوّي شي إذا الدفع تلقائي. وإذا تبي توقف الاشتراك رد بكلمة (إيقاف) قبل التاريخ.</div>
+          </div>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="step__rail"><span class="step__dot">3</span></div>
+        <div class="step__body">
+          <div class="step__title"><h3>On the day, and three days late</h3><span class="node">WhatsApp ×2 branches</span></div>
+          <p>The due-day message carries the payment link. The late one carries the link and the consequence — and says the part that matters most:</p>
+          <div class="msg msg--seller">
+            <span class="who who--seller">Seller receives</span>
+            <div class="bubble">متجرك متأخر ٣ أيام عن التجديد ⏳
+
+رابط الدفع: stripe.com/pay/…
+
+بعد ٧ أيام من تاريخ التجديد يتوقف المتجر مؤقتاً — بس صفحتك وروابطك تبقى شغالة مجاناً وما تروح.</div>
+          </div>
+        </div>
+      </li>
+
+      <li class="step step--key">
+        <div class="step__rail"><span class="step__dot">4</span></div>
+        <div class="step__body">
+          <div class="step__title"><h3>After the grace period, the store switches off</h3><span class="node">Suspend the store</span></div>
+          <p>The row goes to <code>suspended</code>. Their products stay in the sheet, their page and links keep working on the free plan. Nothing is deleted, ever — one payment brings the whole store back exactly as it was.</p>
+          <div class="msg msg--seller">
+            <span class="who who--seller">Seller receives</span>
+            <div class="bubble">تم إيقاف المتجر مؤقتاً
+
+صفحتك وروابطك ما زالت شغالة: matjari.ae/@ahmed
+منتجاتك محفوظة كما هي.
+
+أي وقت تدفع، يرجع المتجر بنفس المنتجات: stripe.com/pay/…</div>
+          </div>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="step__rail"><span class="step__dot">5</span></div>
+        <div class="step__body">
+          <div class="step__title"><h3>You get one line per person, not a report</h3><span class="node">WhatsApp: daily line to the owner</span></div>
+          <div class="msg msg--owner">
+            <span class="who who--owner">You receive</span>
+            <div class="bubble">📋 متابعة الاشتراكات
+
+ahmed — متأخر ٣ أيام
+التجديد: 2026-09-21</div>
+          </div>
+          <p>On a quiet morning, nothing arrives at all. That silence is the useful part — a message means something needs you.</p>
+        </div>
+      </li>
+    </ol>
+
+    <div class="callout" style="margin-top:.5rem">
+      <h3>Suspending, not deleting, is the business decision</h3>
+      <p>A suspended seller is still on the platform, still sending people to a page with your name at the bottom, and one tap from paying again. A deleted seller is gone. The flow is built around the first.</p>
+    </div>
+  </div>
+</section>
+
+<section id="order">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>4 · A customer buys something</h2>
+      <span class="file">04-customer-order.json</span>
+    </div>
+    <div class="trigger">
+      <span class="who who--system">Trigger</span>
+      <span>Checkout POSTs the cart to</span>
+      <b>/webhook/matjari-order</b>
+    </div>
+
+    <ol class="timeline">
+      <li class="step step--key">
+        <div class="step__rail"><span class="step__dot">1</span></div>
+        <div class="step__body">
+          <div class="step__title"><h3>The cart arrives as an order</h3><span class="node">Build the order</span></div>
+          <p>Line totals are recalculated here, never trusted from the browser. It mints an id like <code>ORD-260821-4821</code> and normalises the customer's number the same way flow 1 does.</p>
+          <div class="msg msg--system">
+            <span class="who who--system">Payload</span>
+            <div class="payload">{ "handle": "_ys", "seller_phone": "971508400886",
+  "customer_name": "سالم", "customer_phone": "0551234567",
+  "items": [ { "title": "عود ملكي", "qty": 1, "price": 150 } ] }</div>
+          </div>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="step__rail"><span class="step__dot">2</span></div>
+        <div class="step__body">
+          <div class="step__title"><h3>Written down before anyone is told</h3><span class="node">Write it to the orders sheet</span></div>
+          <p>Status <code>new</code>. The sheet is the record — if a WhatsApp message fails, the order still exists.</p>
+        </div>
+      </li>
+
+      <li class="step step--key">
+        <div class="step__rail"><span class="step__dot">3</span></div>
+        <div class="step__body">
+          <div class="step__title"><h3>The seller gets everything needed to fulfil it</h3><span class="node">WhatsApp: new order for the seller</span></div>
+          <div class="msg msg--seller">
+            <span class="who who--seller">Seller receives</span>
+            <div class="bubble">🛒 طلب جديد ORD-260821-4821
+
+1× عود ملكي — 150 د.إ
+
+الإجمالي: 150 د.إ
+الزبون: سالم
+رقمه: 971551234567
+
+رد على الزبون واتفق معه على التوصيل والدفع.</div>
+          </div>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="step__rail"><span class="step__dot">4</span></div>
+        <div class="step__body">
+          <div class="step__title"><h3>The customer gets a receipt — if they left a number</h3><span class="node">Did the customer leave a number?</span></div>
+          <p>Both cart fields are optional. Empty means this branch is skipped cleanly; the order still reaches the seller.</p>
+          <div class="msg msg--customer">
+            <span class="who who--customer">Customer receives</span>
+            <div class="bubble">شكراً سالم 🌟
+
+وصل طلبك ORD-260821-4821:
+1× عود ملكي — 150 د.إ
+
+الإجمالي: 150 د.إ
+
+البائع بيتواصل معك قريب لتأكيد التوصيل والدفع.</div>
+          </div>
+        </div>
+      </li>
+
+      <li class="step step--stop">
+        <div class="step__rail"><span class="step__dot">⏱</span></div>
+        <div class="step__body">
+          <div class="step__title"><h3>24 hours pass</h3><span class="node">Wait 24 hours</span></div>
+          <p class="when">the workflow sleeps, then wakes on this exact order</p>
+          <p>It re-reads the row. If you or the seller changed the status to <code>done</code> in the sheet, nothing happens. If it still says <code>new</code>:</p>
+          <div class="msg msg--seller">
+            <span class="who who--seller">Seller receives</span>
+            <div class="bubble">تذكير: الطلب ORD-260821-4821 صار له ٢٤ ساعة بدون رد.
+
+الزبون: سالم — 971551234567
+الإجمالي: 150 د.إ</div>
+          </div>
+        </div>
+      </li>
+    </ol>
+
+    <div class="callout" style="margin-top:.5rem">
+      <h3>You are not in this conversation</h3>
+      <p>No message in this flow goes to you, and no money passes through the platform — the customer pays the seller directly. You charge the seller a monthly fee and nothing else. That is exactly what the site's FAQ promises, and it is why running this needs no payment licence.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head"><h2>Two things that will bite you</h2></div>
+    <div class="grid2">
+      <div class="box">
+        <h3>WhatsApp's 24-hour window</h3>
+        <p class="tiny muted" style="margin-bottom:.6rem">Plain text only reaches someone within 24 hours of <em>their</em> last message to you. After that, approved templates only.</p>
+        <ul>
+          <li>Flows 1, 2 and 4 are safe — the site's buttons make the person message you first, which opens the window</li>
+          <li>Flow 3 fires weeks later, so its reminders need Meta-approved templates</li>
+          <li>Messages to your own number are never affected</li>
+        </ul>
+      </div>
+      <div class="box">
+        <h3><code>next_renewal</code> must be a real date</h3>
+        <p class="tiny muted" style="margin-bottom:.6rem">Flow 3 skips any row it can't read a date from — silently, forever.</p>
+        <ul>
+          <li>Flow 2 writes it automatically on payment</li>
+          <li>Activate someone by hand and you must type it yourself</li>
+          <li>Format: <code>2026-09-21</code></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="border-bottom:0">
+  <div class="wrap">
+    <div class="section-head"><h2>Still yours to do by hand</h2></div>
+    <p class="lede" style="margin-top:0">
+      Building each seller's actual page. The automations record them, take their money, chase
+      renewals, and route their orders — but the page itself you still make from the row in the
+      sheet. Automating that is the moment this needs a real backend, and it is the next build,
+      not this one.
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">Four workflows in <code>n8n/</code> · storefront in <code>site/</code></div>
+</footer>
