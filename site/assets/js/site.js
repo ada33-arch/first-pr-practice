@@ -510,6 +510,171 @@
     });
   }
 
+  /* ======================================================== motion layer ==
+     Drawn in the browser, not imported: no GIFs, no video, no libraries.
+     Everything here checks prefers-reduced-motion before it runs. */
+
+  var loops = [];
+  function clearLoops() {
+    loops.forEach(clearTimeout);
+    loops = [];
+  }
+  function reduced() {
+    return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  /* the headline arrives word by word, not as a block */
+  function splitHeadline(el) {
+    if (!el || reduced()) return;
+    var words = el.textContent.trim().split(/\s+/);
+    if (words.length > 14) return;
+    el.innerHTML = words.map(function (w, i) {
+      return '<span class="word" style="--d:' + (90 + i * 60) + 'ms">' + esc(w) + "</span>";
+    }).join(" ");
+  }
+
+  /* the phone in the hero runs a loop of someone using it */
+  function livePhone() {
+    var phone = qs(".phone");
+    if (!phone || reduced()) return;
+    var rows = qsa(".phone__links span", phone);
+    var tiles = qsa(".phone__grid i", phone);
+    if (!rows.length) return;
+
+    var cursor = document.createElement("span");
+    cursor.className = "phone__cursor";
+    phone.appendChild(cursor);
+
+    var i = 0;
+    function beat() {
+      rows.forEach(function (r) { r.classList.remove("is-focus"); });
+      tiles.forEach(function (t) { t.classList.remove("is-pop"); });
+
+      var row = rows[i % rows.length];
+      row.classList.add("is-focus");
+
+      var pr = phone.getBoundingClientRect();
+      var rr = row.getBoundingClientRect();
+      cursor.classList.add("is-on");
+      cursor.style.transform = "translate(" +
+        (rr.left - pr.left + rr.width * 0.16) + "px," +
+        (rr.top - pr.top + rr.height / 2 - 11) + "px)";
+      cursor.classList.remove("is-tap");
+      void cursor.offsetWidth;
+      cursor.classList.add("is-tap");
+
+      if (i % rows.length === rows.length - 1) {
+        tiles.forEach(function (t, n) {
+          loops.push(setTimeout(function () { t.classList.add("is-pop"); }, 320 + n * 140));
+        });
+      }
+      i++;
+      loops.push(setTimeout(beat, 2600));
+    }
+    loops.push(setTimeout(beat, 900));
+  }
+
+  /* the connector behind the three steps draws itself once, on arrival.
+     A plain scroll check, not an observer: jumping straight past an element
+     crosses no threshold, so an observer would never fire and the line would
+     sit at zero width forever. */
+  function drawSteps() {
+    var steps = qs(".steps");
+    if (!steps) return;
+    if (reduced()) { steps.classList.add("is-in"); return; }
+    function check() {
+      if (steps.getBoundingClientRect().top < window.innerHeight * 0.85) {
+        steps.classList.add("is-in");
+        window.removeEventListener("scroll", check);
+      }
+    }
+    window.addEventListener("scroll", check, { passive: true });
+    check();
+  }
+
+  /* prices roll up from zero when their card arrives */
+  function rollPrices() {
+    if (reduced() || !("IntersectionObserver" in window)) return;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        var el = entry.target;
+        io.unobserve(el);
+        var text = el.textContent;
+        var match = text.match(/[\d,]+/);
+        if (!match) return;
+        var target = Number(match[0].replace(/,/g, ""));
+        if (!target) return;
+        var head = text.slice(0, match.index);
+        var tail = text.slice(match.index + match[0].length);
+        var started = null;
+        function frame(now) {
+          if (!started) started = now;
+          var k = Math.min(1, (now - started) / 850);
+          var eased = 1 - Math.pow(1 - k, 3);
+          el.textContent = head + Math.round(target * eased).toLocaleString("en-US") + tail;
+          if (k < 1) requestAnimationFrame(frame);
+        }
+        el.textContent = head + "0" + tail;
+        requestAnimationFrame(frame);
+      });
+    }, { rootMargin: "0px 0px -10% 0px" });
+    qsa(".plan__price").forEach(function (el) { io.observe(el); });
+  }
+
+  /* primary buttons lean toward the cursor — only where there is a real cursor */
+  function magnetise() {
+    if (reduced() || !window.matchMedia("(pointer: fine)").matches) return;
+    qsa(".btn--primary").forEach(function (b) {
+      b.classList.add("btn--magnetic");
+      b.addEventListener("pointermove", function (ev) {
+        var r = b.getBoundingClientRect();
+        b.style.transform =
+          "translate(" + ((ev.clientX - (r.left + r.width / 2)) / r.width * 8).toFixed(2) + "px," +
+          ((ev.clientY - (r.top + r.height / 2)) / r.height * 6).toFixed(2) + "px)";
+      });
+      b.addEventListener("pointerleave", function () { b.style.transform = ""; });
+    });
+  }
+
+  /* stagger the bottles so six of them never bob in unison */
+  function stagger() {
+    qsa(".product").forEach(function (card, i) {
+      card.style.setProperty("--bob", (i % 5) * 0.7 + "s");
+    });
+  }
+
+  function scrollProgress() {
+    var bar = document.createElement("div");
+    bar.className = "progress";
+    document.body.appendChild(bar);
+    var ticking = false;
+    function paint() {
+      var max = document.documentElement.scrollHeight - window.innerHeight;
+      bar.style.transform = "scaleX(" + (max > 0 ? window.scrollY / max : 0) + ")";
+      ticking = false;
+    }
+    window.addEventListener("scroll", function () {
+      if (!ticking) { ticking = true; requestAnimationFrame(paint); }
+    }, { passive: true });
+    paint();
+  }
+
+  function motion() {
+    var root = qs("[data-page-root]");
+    if (root) {
+      root.classList.remove("is-entering");
+      void root.offsetWidth;
+      root.classList.add("is-entering");
+    }
+    splitHeadline(qs(".hero--landing h1"));
+    livePhone();
+    drawSteps();
+    rollPrices();
+    magnetise();
+    stagger();
+  }
+
   /* ------------------------------------------------------------- pages -- */
   /* ------------------------------------------------------------ landing -- */
   /* a live sketch of the seller page, built from the demo profile's own data */
@@ -533,6 +698,14 @@
           "</div>" +
         "</div>" +
       "</div>";
+  }
+
+  /* one row of categories, doubled so the loop has no seam */
+  function marqueeRow(items, extra) {
+    var cells = items.map(function (item) {
+      return '<span class="sell"><i>' + item.icon + "</i>" + esc(tx(item.label)) + "</span>";
+    }).join("");
+    return '<div class="marquee' + extra + '"><div class="marquee__track">' + cells + cells + "</div></div>";
   }
 
   function planCard(plan, key) {
@@ -570,6 +743,7 @@
 
     root.innerHTML =
       '<section class="hero hero--landing shell shell--wide">' +
+        '<div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>' +
         '<div class="hero__copy">' +
           '<div class="eyebrow reveal" data-i18n="land.eyebrow"></div>' +
           '<h1 class="reveal" data-i18n="land.title"></h1>' +
@@ -586,11 +760,8 @@
       '<section class="section shell shell--wide">' +
         '<div class="section__head"><h2 class="section__title" data-i18n="land.sells"></h2>' +
         '<span class="tiny muted" data-i18n="land.sellsSub"></span></div>' +
-        '<div class="sells">' +
-          (P.sells || []).map(function (item) {
-            return '<span class="sell reveal"><i>' + item.icon + "</i>" + esc(tx(item.label)) + "</span>";
-          }).join("") +
-        "</div>" +
+        marqueeRow(P.sells || [], "") +
+        marqueeRow((P.sells || []).slice().reverse(), " marquee--back") +
       "</section>" +
 
       '<section class="section shell shell--wide">' +
@@ -642,6 +813,7 @@
 
     root.innerHTML =
       '<section class="hero hero--landing shell shell--wide">' +
+        '<div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>' +
         '<div class="hero__copy">' +
           '<div class="eyebrow reveal" data-i18n="setup.eyebrow"></div>' +
           '<h1 class="reveal" data-i18n="setup.title"></h1>' +
@@ -1091,6 +1263,7 @@
 
   function renderPage() {
     var page = document.body.dataset.page;
+    clearLoops();
     renderChrome();
     if (page === "landing") renderLanding();
     else if (page === "setup") renderSetup();
@@ -1101,6 +1274,7 @@
     applyLang();
     revealAll();
     renderCart();
+    motion();
   }
 
   /* hooks for a host page (used by the single-file build's hash router) */
@@ -1109,9 +1283,9 @@
   /* ---------------------------------------------------------------- go -- */
   document.addEventListener("DOMContentLoaded", function () {
     mountChrome();
-    applyTheme();
+    scrollProgress();
+    /* renderPage() owns the order from here: chrome, page, language, motion.
+       Anything called after it would undo the word-splitting in the headline. */
     renderPage();
-    renderCart();
-    applyLang();
   });
 })();

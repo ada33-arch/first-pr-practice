@@ -101,9 +101,29 @@ pick the branch and the `/site` folder.
 Before going live, change the `<title>`, `description`, and `og:` tags in each
 HTML file, and the inline SVG favicon in each `<head>`.
 
+## The motion
+
+All of it is drawn in the browser — no GIFs, no video, no animation library, nothing
+to download. It lives in the motion section at the end of `styles.css` and the
+`motion()` block in `site.js`:
+
+- a drifting aurora behind the hero, plus film grain and a hairline grid so the
+  background isn't a flat gradient
+- the headline arrives word by word
+- the phone floats, and a cursor taps through its links on a loop
+- the categories run as two marquees going opposite ways
+- the connector behind the three steps draws itself on arrival
+- prices roll up from zero when their card scrolls in
+- the bottles bob out of sync, with a shimmer crossing the glass
+- primary buttons lean toward the cursor, on devices that have one
+
+`prefers-reduced-motion: reduce` turns off every one of them, and the page stays
+complete and readable without any of it.
+
 ## Notes
 
-- Fonts come from Google Fonts (Tajawal, Plus Jakarta Sans) with system fallbacks.
+- Fonts come from Google Fonts (Bricolage Grotesque for Latin display, IBM Plex
+  Sans and IBM Plex Sans Arabic for text) with system fallbacks.
 - Language, theme, and cart persist in `localStorage` under the `nzm.*` keys.
 - All rendered data goes through an HTML escaper; outbound links carry `rel="noopener"`.
 - `prefers-reduced-motion` disables the reveal and hover motion.
