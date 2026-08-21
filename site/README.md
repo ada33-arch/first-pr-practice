@@ -73,6 +73,13 @@ Open `index.html` directly, or serve the folder:
 npx serve site      # or: python3 -m http.server -d site 8000
 ```
 
+## One file instead of three
+
+`node site/bundle.mjs` inlines the CSS and JS and swaps the page links for hash
+routes (`#/store`, `#/product?id=…`), producing a single `site/standalone.html`
+you can email, drop on any host, or open offline. The multi-page version stays
+the source of truth — rebuild after editing `data.js`.
+
 ## Publishing
 
 Any static host works. For GitHub Pages: Settings → Pages → deploy from a branch,

@@ -559,7 +559,9 @@
   function renderProduct() {
     var root = qs("[data-page-root]");
     if (!root) return;
-    var id = new URLSearchParams(window.location.search).get("id");
+    var hashQuery = (window.location.hash.split("?")[1] || "");
+    var id = new URLSearchParams(window.location.search).get("id") ||
+             new URLSearchParams(hashQuery).get("id");
     var p = findProduct(id) || (S.products || [])[0];
 
     if (!p) {
@@ -643,6 +645,9 @@
     applyLang();
     revealAll();
   }
+
+  /* hooks for a host page (used by the single-file build's hash router) */
+  window.SiteApp = { render: renderPage, openCart: openCart, refreshCart: renderCart };
 
   /* ---------------------------------------------------------------- go -- */
   document.addEventListener("DOMContentLoaded", function () {
