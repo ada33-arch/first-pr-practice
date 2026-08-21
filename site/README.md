@@ -1,100 +1,92 @@
-# Link-in-bio + storefront
+# The platform: free profile, paid store
 
-A static, dependency-free site in the shape of a creator link page (like nzmly.com):
-an elegant profile page of links, a product store, and a product page that closes
-the sale over WhatsApp.
+A static, dependency-free site for a small storefront platform. Anyone signs up
+free and gets a link-in-bio page under their name; adding a store — products,
+cart, orders — is a monthly subscription. Perfume is only the example seller;
+the store doesn't care what you sell.
 
-Bilingual Arabic/English with full RTL, dark and light themes, and a cart that
-survives a reload. No build step, no framework, no backend — open `index.html` and
-it runs.
+Bilingual Arabic/English with full RTL, dark and light themes. No build step, no
+framework, no backend — open `index.html` and it runs.
 
 ## Pages
 
 | File | What it is |
 | --- | --- |
-| `index.html` | The link-in-bio page: avatar, bio, socials, link cards, featured products, optional newsletter block |
-| `store.html` | The store: search, category chips, product grid |
-| `product.html?id=<id>` | One product: art, price, what's included, quantity, buy |
+| `index.html` | The platform landing page: hero, what you can sell, how it works, pricing, FAQ |
+| `signup.html` | Free signup. `?plan=store` preselects the paid plan |
+| `demo.html` | The example seller's link page — what a customer's page looks like |
+| `store.html` | The example seller's store: search, categories, product grid |
+| `product.html?id=<id>` | One product: art, price, details, quantity, buy |
 
-The topbar (language, theme, cart) and the cart drawer are injected by
-`assets/js/site.js`, so every page stays a few lines of HTML.
+Seller pages carry a ribbon marking them as an example, and their own brand in
+the topbar; platform pages carry the platform's brand and a signup button. The
+topbar, ribbon, and cart drawer are all injected by `assets/js/site.js`.
 
 ## Editing your content
 
-**Everything you change day-to-day is in [`assets/js/data.js`](assets/js/data.js).**
-Every piece of text is a pair — `{ ar: "…", en: "…" }` — and the site picks the side
-matching the current language.
+Everything lives in [`assets/js/data.js`](assets/js/data.js), split in two.
+Every string is a pair — `{ ar: "…", en: "…" }`.
+
+**`window.PLATFORM`** — the business.
 
 ```js
-window.SITE = {
-  handle: "Abdullrhman",
-  name: { ar: "عبدالرحمن", en: "Abdullrhman" },
-  whatsapp: "9665XXXXXXXX",     // digits only, country code first, no + and no spaces
-  currency: { ar: "ر.س", en: "SAR" },
-  ...
-}
+name: { ar: "متجري", en: "Matjari" },   // your brand
+domain: "matjari.ae",                    // shown in the @handle preview
+whatsapp: "971508400886",                // where signups arrive
+plans: { free: {...}, store: { price: 29, ... } },
+sells: [...], steps: [...], faq: [...],
 ```
 
-- **Profile** — `name`, `bio`, `handle`, `verified`. Set `avatar: "assets/img/me.jpg"`
-  to use a photo; leave it empty and the `initials` are drawn instead.
-- **Links** — the `links` array, top to bottom. `url` can be a page (`store.html`),
-  an external URL, or the literal `"wa"` to build a WhatsApp link from your number.
-  Add `tag: { ar: "الأهم", en: "Top" }` for the little highlight pill.
-- **Products** — the `products` array. `id` must be unique (it's the `?id=` in the
-  product URL). `featured: true` puts it in the home rail. `oldPrice` renders the
-  struck-through price, `badge` the corner label.
-- **Product art** — set `image: "assets/img/course.jpg"` for a real photo. With no
-  image it falls back to `art: { emoji, from, to }` — an emoji on a gradient.
-- **Interface wording** — `window.I18N` at the bottom of the same file.
+Change `plans.store.price` and the number updates on the landing page, the plan
+cards, and the signup form together.
 
-## Taking payment
+**`window.SITE`** — the example seller (name, links, socials, products). Swapping
+this swaps the demo; the product list is where `id`, `price`, `badge`,
+`featured`, and the bottle colours live.
 
-Checkout builds a formatted order and hands it off:
+**`window.I18N`** — every piece of interface wording.
 
-1. `whatsapp` set → opens WhatsApp with the order pre-written. **Recommended.**
-2. Otherwise `email` set → opens a pre-filled mail draft.
-3. Otherwise → copies the order to the clipboard and tells the buyer to send it.
+## What actually happens when someone signs up
 
-This is deliberate: it needs no server and no merchant account, and it matches how
-most creator storefronts actually take orders. When you want card payments, replace
-the `checkout()` function in `assets/js/site.js` with a redirect to a payment link
-(Stripe Payment Links, Tap, Moyasar, PayLink) and pass the cart total to it.
+There is no backend, no accounts, and no payment processing. Both flows compose a
+message and hand it off:
 
-The newsletter block only appears once `newsletterAction` (a form POST endpoint from
-Mailchimp, Buttondown, Formspree…) or `email` is set. It stays hidden rather than
-pretending to collect addresses that go nowhere. Same for the WhatsApp link card,
-which hides until a number exists.
+- **Signup** → opens WhatsApp to `PLATFORM.whatsapp` with the name, handle,
+  number, and chosen plan. You reply and set the page up by hand.
+- **An order in the store** → opens WhatsApp to that seller's number with the
+  cart contents and total.
+
+Each falls back to email, then to copying the text to the clipboard. The signup
+page says this in plain words rather than implying an account was created.
+
+That's enough to launch and take your first subscribers. Real accounts, hosted
+per-seller pages, and card payments need a server — that's the next build, not
+this one.
+
+## One file instead of five
+
+`node bundle.mjs` inlines the CSS and JS and swaps page links for hash routes
+(`#/`, `#/signup`, `#/demo`, `#/store`, `#/product?id=…`), producing a single
+`standalone.html` you can host anywhere or open offline. The multi-page version
+stays the source of truth — rebuild after editing `data.js`.
 
 ## Running it
-
-Open `index.html` directly, or serve the folder:
 
 ```bash
 npx serve site      # or: python3 -m http.server -d site 8000
 ```
 
-## One file instead of three
-
-`node site/bundle.mjs` inlines the CSS and JS and swaps the page links for hash
-routes (`#/store`, `#/product?id=…`), producing a single `site/standalone.html`
-you can email, drop on any host, or open offline. The multi-page version stays
-the source of truth — rebuild after editing `data.js`.
-
 ## Publishing
 
 Any static host works. For GitHub Pages: Settings → Pages → deploy from a branch,
-pick the branch and the `/site` folder. Then point your domain at it and put the
-link in your Instagram bio.
+pick the branch and the `/site` folder.
 
-Two things to change before you go live:
-- the `<title>`, `description`, and `og:` tags in each HTML file
-- `favicon` — the inline SVG in each `<head>`
+Before going live, change the `<title>`, `description`, and `og:` tags in each
+HTML file, and the inline SVG favicon in each `<head>`.
 
 ## Notes
 
-- Fonts come from Google Fonts (Tajawal for Arabic, Plus Jakarta Sans for Latin) and
-  fall back to system fonts offline.
-- Language, theme, and cart live in `localStorage` under the `nzm.*` keys.
-- Product data is rendered through an HTML-escaper, and outbound links carry
-  `rel="noopener"`.
+- Fonts come from Google Fonts (Tajawal, Plus Jakarta Sans) with system fallbacks.
+- Language, theme, and cart persist in `localStorage` under the `nzm.*` keys.
+- All rendered data goes through an HTML escaper; outbound links carry `rel="noopener"`.
 - `prefers-reduced-motion` disables the reveal and hover motion.

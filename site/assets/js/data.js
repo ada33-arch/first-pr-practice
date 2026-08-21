@@ -3,6 +3,97 @@
    Text is bilingual: { ar: "عربي", en: "English" }.
    ========================================================================== */
 
+/* ==========================================================================
+   THE PLATFORM — the business itself.
+   Signing up is free and gives you a profile page. Adding a store is monthly.
+   ========================================================================== */
+window.PLATFORM = {
+  name: { ar: "متجري", en: "Matjari" },          // ← your brand name
+  mark: { ar: "م", en: "M" },
+  domain: "matjari.ae",                           // ← used in the @handle preview
+
+  // where signups arrive: the same WhatsApp trick the orders use
+  whatsapp: "971508400886",
+  email: "",
+
+  plans: {
+    free: {
+      name: { ar: "الملف الشخصي", en: "Profile" },
+      price: 0,
+      note: { ar: "دائماً", en: "forever" },
+      lines: [
+        { ar: "صفحة روابط باسمك", en: "A link page under your name" },
+        { ar: "رابط قصير تحطه في البايو", en: "A short link for your bio" },
+        { ar: "روابط ومواقع تواصل بلا حد", en: "Unlimited links and socials" },
+        { ar: "زر واتساب مباشر", en: "A direct WhatsApp button" },
+        { ar: "عربي وإنجليزي، فاتح وداكن", en: "Arabic and English, light and dark" },
+      ],
+    },
+    store: {
+      name: { ar: "المتجر", en: "Store" },
+      price: 29,                                  // ← your monthly price
+      period: { ar: "شهرياً", en: "per month" },
+      note: { ar: "تقدر توقفه في أي وقت", en: "Cancel whenever you want" },
+      badge: { ar: "الأكثر طلباً", en: "Most popular" },
+      lines: [
+        { ar: "كل مزايا الملف الشخصي", en: "Everything in Profile" },
+        { ar: "منتجات بلا حد مع صور وأسعار", en: "Unlimited products with images and prices" },
+        { ar: "صفحة لكل منتج وتصنيفات وبحث", en: "A page per product, categories, and search" },
+        { ar: "سلة مشتريات وطلبات تصلك واتساب", en: "A cart, with orders arriving on WhatsApp" },
+        { ar: "تستلم المبلغ مباشرة من الزبون", en: "You take payment directly from the buyer" },
+      ],
+    },
+  },
+
+  // what people sell on it — the perfume shop is only one example
+  sells: [
+    { icon: "🧴", label: { ar: "عطور ومستحضرات", en: "Perfume and beauty" } },
+    { icon: "📚", label: { ar: "كتب ومطبوعات", en: "Books and print" } },
+    { icon: "🎓", label: { ar: "دورات وملفات", en: "Courses and files" } },
+    { icon: "💻", label: { ar: "أنظمة وبرامج", en: "Software and systems" } },
+    { icon: "🛠️", label: { ar: "خدمات وحجوزات", en: "Services and bookings" } },
+    { icon: "🔁", label: { ar: "اشتراكات شهرية", en: "Monthly subscriptions" } },
+  ],
+
+  steps: [
+    {
+      title: { ar: "سجّل مجاناً", en: "Sign up free" },
+      body: { ar: "اسمك ورابطك فقط. بدون بطاقة بنكية وبدون التزام.", en: "Just your name and your handle. No card, no commitment." },
+    },
+    {
+      title: { ar: "جهّز صفحتك", en: "Set up your page" },
+      body: { ar: "صورتك، نبذتك، روابطك وحساباتك — وصفحتك جاهزة للبايو.", en: "Photo, bio, links, socials — ready for your bio." },
+    },
+    {
+      title: { ar: "فعّل المتجر وقت ما تحتاج", en: "Turn the store on when you need it" },
+      body: { ar: "أضف منتجاتك وتبدأ الطلبات توصلك على واتساب مباشرة.", en: "Add your products and orders start arriving on WhatsApp." },
+    },
+  ],
+
+  faq: [
+    {
+      q: { ar: "التسجيل مجاني فعلاً؟", en: "Is signing up really free?" },
+      a: { ar: "نعم. الملف الشخصي وصفحة الروابط مجانية دائماً، والاشتراك الشهري فقط لمن يبي متجر بمنتجات وسلة وطلبات.",
+           en: "Yes. The profile and link page are free forever. The monthly fee is only for a store with products, a cart, and orders." },
+    },
+    {
+      q: { ar: "كيف تصلني الطلبات والمبالغ؟", en: "How do orders and payments reach me?" },
+      a: { ar: "الطلب يوصلك على واتساب بتفاصيله كاملة، وتتفق مع الزبون على الدفع مباشرة. ما ناخذ نسبة من مبيعاتك.",
+           en: "Each order arrives on WhatsApp in full, and you settle payment with the buyer directly. We take no cut of your sales." },
+    },
+    {
+      q: { ar: "وش أقدر أبيع؟", en: "What can I sell?" },
+      a: { ar: "أي شيء: عطور، كتب، دورات، أنظمة وبرامج، خدمات، اشتراكات. المتجر ما يفرض عليك نوع منتج.",
+           en: "Anything: perfume, books, courses, software, services, subscriptions. The store doesn't limit you to one kind of product." },
+    },
+    {
+      q: { ar: "أقدر ألغي الاشتراك؟", en: "Can I cancel?" },
+      a: { ar: "في أي وقت. لو أوقفت الاشتراك يرجع ملفك الشخصي مجاني وتبقى روابطك شغالة.",
+           en: "Any time. If you stop, your profile goes back to free and your links keep working." },
+    },
+  ],
+};
+
 /* the same spec list for every bottle — edit once */
 const NOTES = [
   { ar: "١٢ مل رول أون", en: "12 ml roll-on" },
@@ -192,6 +283,42 @@ window.SITE = {
 /* --------------------------------------------------------------- strings -- */
 window.I18N = {
   ar: {
+    "nav.start": "ابدأ مجاناً",
+    "nav.example": "شوف مثال",
+    "nav.pricing": "الأسعار",
+    "nav.platform": "المنصّة",
+    "land.eyebrow": "منصّة عربية للمتاجر الصغيرة",
+    "land.title": "صفحتك مجانية. ومتجرك متى ما احتجته.",
+    "land.sub": "سجّل ببلاش واحصل على صفحة روابط باسمك تحطها في البايو. وإذا بغيت تبيع، فعّل المتجر باشتراك شهري بسيط.",
+    "land.ctaMain": "أنشئ صفحتك مجاناً",
+    "land.ctaDemo": "شوف مثال حقيقي",
+    "land.noCard": "بدون بطاقة بنكية",
+    "land.sells": "بِع اللي تبيه",
+    "land.sellsSub": "العطور مجرد مثال. المتجر ما يحدّد نوع منتجك.",
+    "land.steps": "ثلاث خطوات وتبدأ",
+    "land.pricing": "الأسعار",
+    "land.pricingSub": "الصفحة مجانية دائماً. تدفع فقط لو بغيت متجر.",
+    "land.faq": "أسئلة متكررة",
+    "land.finalTitle": "جاهز تفتح صفحتك؟",
+    "land.finalSub": "التسجيل مجاني وياخذ دقيقة.",
+    "plan.freePrice": "مجاني",
+    "plan.ctaFree": "ابدأ مجاناً",
+    "plan.ctaStore": "فعّل المتجر",
+    "signup.title": "أنشئ حسابك",
+    "signup.sub": "الحساب والصفحة مجانية. تقدر تضيف المتجر بعدين وقت ما تحتاجه.",
+    "signup.name": "اسمك أو اسم مشروعك",
+    "signup.handle": "اسم الرابط",
+    "signup.contact": "رقم واتساب",
+    "signup.what": "وش تبي تبيع؟ (اختياري)",
+    "signup.plan": "تبي تبدأ بإيش؟",
+    "signup.submit": "أرسل طلب التسجيل",
+    "signup.copy": "نسخ البيانات",
+    "signup.copied": "تم نسخ بياناتك — أرسلها لنا",
+    "signup.note": "التسجيل حالياً يتم عبر واتساب: تضغط الزر فتفتح المحادثة ببياناتك جاهزة، ونرد عليك ونجهّز صفحتك.",
+    "signup.required": "عبّي اسمك واسم الرابط ورقم واتساب أول.",
+    "signup.request": "طلب تسجيل جديد",
+    "demo.ribbon": "هذه صفحة مثال على المنصّة",
+    "demo.ribbonCta": "أنشئ صفحتك",
     "nav.store": "المتجر",
     "nav.links": "الروابط",
     "profile.links": "روابطي",
@@ -233,12 +360,48 @@ window.I18N = {
     "newsletter.cta": "اشترك",
     "newsletter.done": "تم! راجع بريدك لتأكيد الاشتراك",
     "footer.rights": "جميع الحقوق محفوظة",
-    "footer.built": "صُنع بحب",
+    "footer.built": "صُنع على",
     "a11y.theme": "تبديل الوضع",
     "a11y.lang": "تغيير اللغة",
     "a11y.cart": "السلة",
   },
   en: {
+    "nav.start": "Start free",
+    "nav.example": "See an example",
+    "nav.pricing": "Pricing",
+    "nav.platform": "Platform",
+    "land.eyebrow": "A storefront platform, Arabic-first",
+    "land.title": "Your page is free. Your store, whenever you need it.",
+    "land.sub": "Sign up for nothing and get a link page under your name for your bio. When you're ready to sell, switch the store on for a small monthly fee.",
+    "land.ctaMain": "Create your page free",
+    "land.ctaDemo": "See a real example",
+    "land.noCard": "No card required",
+    "land.sells": "Sell whatever you want",
+    "land.sellsSub": "Perfume is only the example. The store doesn't care what you sell.",
+    "land.steps": "Three steps to open",
+    "land.pricing": "Pricing",
+    "land.pricingSub": "The page is free forever. You only pay if you want a store.",
+    "land.faq": "Common questions",
+    "land.finalTitle": "Ready to open your page?",
+    "land.finalSub": "Signing up is free and takes a minute.",
+    "plan.freePrice": "Free",
+    "plan.ctaFree": "Start free",
+    "plan.ctaStore": "Turn on the store",
+    "signup.title": "Create your account",
+    "signup.sub": "The account and the page are free. You can add the store later, whenever you need it.",
+    "signup.name": "Your name or your brand",
+    "signup.handle": "Your handle",
+    "signup.contact": "WhatsApp number",
+    "signup.what": "What do you want to sell? (optional)",
+    "signup.plan": "Where do you want to start?",
+    "signup.submit": "Send my signup",
+    "signup.copy": "Copy my details",
+    "signup.copied": "Details copied — send them to us",
+    "signup.note": "Signups run over WhatsApp for now: the button opens a chat with your details filled in, we reply and set your page up.",
+    "signup.required": "Add your name, handle, and WhatsApp number first.",
+    "signup.request": "New signup request",
+    "demo.ribbon": "This is an example page on the platform",
+    "demo.ribbonCta": "Create yours",
     "nav.store": "Store",
     "nav.links": "Links",
     "profile.links": "My links",
@@ -280,7 +443,7 @@ window.I18N = {
     "newsletter.cta": "Subscribe",
     "newsletter.done": "Done! Check your inbox to confirm",
     "footer.rights": "All rights reserved",
-    "footer.built": "Made with care",
+    "footer.built": "Built on",
     "a11y.theme": "Toggle theme",
     "a11y.lang": "Change language",
     "a11y.cart": "Cart",

@@ -6,6 +6,7 @@
   "use strict";
 
   var S = window.SITE || {};
+  var P = window.PLATFORM || {};
   var DICT = window.I18N || { ar: {}, en: {} };
 
   var KEY = { lang: "nzm.lang", theme: "nzm.theme", cart: "nzm.cart" };
@@ -101,10 +102,11 @@
     qsa("[data-i18n-aria]").forEach(function (el) { el.setAttribute("aria-label", t(el.getAttribute("data-i18n-aria"))); });
     var toggle = qs("[data-lang-toggle]");
     if (toggle) toggle.textContent = lang === "ar" ? "EN" : "ع";
+    var owner = document.body.dataset.brand === "platform" ? P : S;
     var mark = qs("[data-brand-mark]");
-    if (mark) mark.textContent = tx(S.initials) || "A";
+    if (mark) mark.textContent = tx(owner.mark || owner.initials) || "M";
     var brandName = qs("[data-brand-name]");
-    if (brandName) brandName.textContent = tx(S.name);
+    if (brandName) brandName.textContent = tx(owner.name);
   }
   function setLang(next) {
     lang = next;
@@ -207,28 +209,17 @@
   }
 
   /* ------------------------------------------------------------- chrome -- */
+  var PLATFORM_PAGES = ["landing", "signup"];
+
   function mountChrome() {
-    var page = document.body.dataset.page;
+    var ribbon = document.createElement("div");
+    ribbon.className = "ribbon";
+    ribbon.hidden = true;
+    document.body.prepend(ribbon);
+
     var header = document.createElement("header");
     header.className = "topbar";
-    header.innerHTML =
-      '<div class="topbar__inner">' +
-        '<a class="brand" href="index.html">' +
-          '<span class="brand__mark" data-brand-mark></span>' +
-          "<span data-brand-name></span>" +
-        "</a>" +
-        '<div class="topbar__tools">' +
-          (page === "home"
-            ? '<a class="icon-btn icon-btn--text" href="store.html" data-i18n="nav.store"></a>'
-            : '<a class="icon-btn icon-btn--text" href="index.html" data-i18n="nav.links"></a>') +
-          '<button class="icon-btn icon-btn--text" data-lang-toggle data-i18n-aria="a11y.lang"></button>' +
-          '<button class="icon-btn" data-theme-toggle data-i18n-aria="a11y.theme"></button>' +
-          '<button class="icon-btn" data-cart-open data-i18n-aria="a11y.cart">' + icon("cart") +
-            '<span class="cart-count" data-cart-count>0</span>' +
-          "</button>" +
-        "</div>" +
-      "</div>";
-    document.body.prepend(header);
+    document.body.insertBefore(header, ribbon.nextSibling);
 
     var extras = document.createElement("div");
     extras.innerHTML =
@@ -260,6 +251,44 @@
     window.addEventListener("scroll", function () {
       header.classList.toggle("is-stuck", window.scrollY > 8);
     }, { passive: true });
+  }
+
+  /* the platform wears its own brand; a seller page wears the seller's */
+  function renderChrome() {
+    var page = document.body.dataset.page;
+    var onPlatform = PLATFORM_PAGES.indexOf(page) !== -1;
+    document.body.dataset.brand = onPlatform ? "platform" : "seller";
+
+    var sideLink = onPlatform
+      ? '<a class="icon-btn icon-btn--text" href="demo.html" data-i18n="nav.example"></a>'
+      : (page === "home"
+          ? '<a class="icon-btn icon-btn--text" href="store.html" data-i18n="nav.store"></a>'
+          : '<a class="icon-btn icon-btn--text" href="demo.html" data-i18n="nav.links"></a>');
+
+    qs(".topbar").innerHTML =
+      '<div class="topbar__inner">' +
+        '<a class="brand" href="' + (onPlatform ? "index.html" : "demo.html") + '">' +
+          '<span class="brand__mark" data-brand-mark></span>' +
+          "<span data-brand-name></span>" +
+        "</a>" +
+        '<div class="topbar__tools">' +
+          sideLink +
+          '<button class="icon-btn icon-btn--text" data-lang-toggle data-i18n-aria="a11y.lang"></button>' +
+          '<button class="icon-btn" data-theme-toggle data-i18n-aria="a11y.theme"></button>' +
+          (onPlatform
+            ? '<a class="btn btn--primary btn--sm" href="signup.html" data-i18n="nav.start"></a>'
+            : '<button class="icon-btn" data-cart-open data-i18n-aria="a11y.cart">' + icon("cart") +
+              '<span class="cart-count" data-cart-count>0</span></button>') +
+        "</div>" +
+      "</div>";
+
+    var ribbon = qs(".ribbon");
+    ribbon.hidden = onPlatform;
+    ribbon.innerHTML = onPlatform ? "" :
+      '<span data-i18n="demo.ribbon"></span>' +
+      '<a href="signup.html" data-i18n="demo.ribbonCta"></a>';
+
+    applyTheme();
   }
 
   function openCart(open) {
@@ -387,9 +416,14 @@
 
   function footerHTML() {
     var year = new Date().getFullYear();
+    var onPlatform = document.body.dataset.brand === "platform";
+    var owner = onPlatform ? P : S;
+    var second = onPlatform
+      ? '<span class="ltr">' + esc(P.domain || "") + "</span>"
+      : '<a href="index.html">' + esc(t("footer.built")) + " " + esc(tx(P.name)) + "</a>";
     return '<footer class="footer"><div class="shell">' +
-      "<div>© " + year + " " + esc(tx(S.name)) + " · <span>" + esc(t("footer.rights")) + "</span></div>" +
-      '<div class="tiny">' + esc(t("footer.built")) + ' · <span class="ltr">@' + esc(S.handle) + "</span></div>" +
+      "<div>© " + year + " " + esc(tx(owner.name)) + " · <span>" + esc(t("footer.rights")) + "</span></div>" +
+      '<div class="tiny">' + second + "</div>" +
       "</div></footer>";
   }
 
@@ -423,6 +457,221 @@
   }
 
   /* ------------------------------------------------------------- pages -- */
+  /* ------------------------------------------------------------ landing -- */
+  /* a live sketch of the seller page, built from the demo profile's own data */
+  function phoneMock() {
+    var links = (S.links || []).slice(0, 3);
+    var picks = (S.products || []).filter(function (x) { return x.featured; }).slice(0, 2);
+    return '<div class="phone" aria-hidden="true">' +
+        '<div class="phone__screen">' +
+          '<div class="phone__avatar">' + esc(tx(S.initials)) + "</div>" +
+          '<div class="phone__name">' + esc(tx(S.name)) + "</div>" +
+          '<div class="phone__handle ltr">@' + esc(S.handle) + "</div>" +
+          '<div class="phone__links">' +
+            links.map(function (l) {
+              return '<span><i>' + l.icon + "</i>" + esc(tx(l.title)) + "</span>";
+            }).join("") +
+          "</div>" +
+          '<div class="phone__grid">' +
+            picks.map(function (x) {
+              return '<i style="background:linear-gradient(150deg,' + x.art.from + "," + x.art.to + ')"></i>';
+            }).join("") +
+          "</div>" +
+        "</div>" +
+      "</div>";
+  }
+
+  function planCard(plan, key) {
+    var isStore = key === "store";
+    var price = isStore
+      ? '<span class="plan__price">' + esc(money(plan.price)) + "</span>" +
+        '<span class="plan__period">' + esc(tx(plan.period)) + "</span>"
+      : '<span class="plan__price">' + esc(t("plan.freePrice")) + "</span>" +
+        '<span class="plan__period">' + esc(tx(plan.note)) + "</span>";
+    return '<article class="plan' + (isStore ? " plan--lead" : "") + ' reveal">' +
+        (plan.badge ? '<span class="plan__badge">' + esc(tx(plan.badge)) + "</span>" : "") +
+        '<h3 class="plan__name">' + esc(tx(plan.name)) + "</h3>" +
+        '<div class="plan__cost">' + price + "</div>" +
+        "<ul>" + (plan.lines || []).map(function (line) {
+          return "<li>" + icon("check") + "<span>" + esc(tx(line)) + "</span></li>";
+        }).join("") + "</ul>" +
+        '<a class="btn ' + (isStore ? "btn--primary" : "btn--ghost") + ' btn--block" href="signup.html' +
+          (isStore ? "?plan=store" : "") + '" data-i18n="' + (isStore ? "plan.ctaStore" : "plan.ctaFree") + '"></a>' +
+        (isStore ? '<p class="plan__note tiny muted">' + esc(tx(plan.note)) + "</p>" : "") +
+      "</article>";
+  }
+
+  function renderLanding() {
+    var root = qs("[data-page-root]");
+    if (!root) return;
+
+    root.innerHTML =
+      '<section class="hero hero--landing shell shell--wide">' +
+        '<div class="hero__copy">' +
+          '<div class="eyebrow reveal" data-i18n="land.eyebrow"></div>' +
+          '<h1 class="reveal" data-i18n="land.title"></h1>' +
+          '<p class="reveal" data-i18n="land.sub"></p>' +
+          '<div class="hero__cta reveal">' +
+            '<a class="btn btn--primary" href="signup.html" data-i18n="land.ctaMain"></a>' +
+            '<a class="btn btn--ghost" href="demo.html" data-i18n="land.ctaDemo"></a>' +
+          "</div>" +
+          '<p class="tiny muted reveal">' + icon("check", "inline-tick") + '<span data-i18n="land.noCard"></span></p>' +
+        "</div>" +
+        '<div class="hero__art reveal">' + phoneMock() + "</div>" +
+      "</section>" +
+
+      '<section class="section shell shell--wide">' +
+        '<div class="section__head"><h2 class="section__title" data-i18n="land.sells"></h2>' +
+        '<span class="tiny muted" data-i18n="land.sellsSub"></span></div>' +
+        '<div class="sells">' +
+          (P.sells || []).map(function (item) {
+            return '<span class="sell reveal"><i>' + item.icon + "</i>" + esc(tx(item.label)) + "</span>";
+          }).join("") +
+        "</div>" +
+      "</section>" +
+
+      '<section class="section shell shell--wide">' +
+        '<div class="section__head"><h2 class="section__title" data-i18n="land.steps"></h2></div>' +
+        '<ol class="steps">' +
+          (P.steps || []).map(function (step, i) {
+            return '<li class="step reveal"><span class="step__num">' + (i + 1) + "</span>" +
+              "<div><h3>" + esc(tx(step.title)) + "</h3><p class=\"muted\">" + esc(tx(step.body)) + "</p></div></li>";
+          }).join("") +
+        "</ol>" +
+      "</section>" +
+
+      '<section class="section shell shell--wide" id="pricing">' +
+        '<div class="section__head"><h2 class="section__title" data-i18n="land.pricing"></h2>' +
+        '<span class="tiny muted" data-i18n="land.pricingSub"></span></div>' +
+        '<div class="plans">' +
+          planCard(P.plans.free, "free") +
+          planCard(P.plans.store, "store") +
+        "</div>" +
+      "</section>" +
+
+      '<section class="section shell">' +
+        '<div class="section__head"><h2 class="section__title" data-i18n="land.faq"></h2></div>' +
+        '<div class="faq">' +
+          (P.faq || []).map(function (item) {
+            return "<details class=\"reveal\"><summary>" + esc(tx(item.q)) + icon("chevron", "faq__arrow") +
+              "</summary><p>" + esc(tx(item.a)) + "</p></details>";
+          }).join("") +
+        "</div>" +
+      "</section>" +
+
+      '<section class="section shell">' +
+        '<div class="final reveal">' +
+          '<h2 data-i18n="land.finalTitle"></h2>' +
+          '<p class="muted" data-i18n="land.finalSub"></p>' +
+          '<a class="btn btn--primary" href="signup.html" data-i18n="land.ctaMain"></a>' +
+        "</div>" +
+      "</section>" +
+      footerHTML();
+  }
+
+  /* ------------------------------------------------------------- signup -- */
+  function renderSignup() {
+    var root = qs("[data-page-root]");
+    if (!root) return;
+    var wantsStore = new URLSearchParams(
+      window.location.search || (window.location.hash.split("?")[1] || "")
+    ).get("plan") === "store";
+
+    root.innerHTML =
+      '<section class="shell signup">' +
+        '<div class="eyebrow" data-i18n="land.eyebrow"></div>' +
+        '<h1 data-i18n="signup.title"></h1>' +
+        '<p class="muted" data-i18n="signup.sub"></p>' +
+        '<form class="form" novalidate>' +
+          '<label class="field"><span data-i18n="signup.name"></span>' +
+            '<input name="name" autocomplete="name" required></label>' +
+          '<label class="field"><span data-i18n="signup.handle"></span>' +
+            '<input name="handle" class="ltr" inputmode="latin" placeholder="ahmed" required>' +
+            '<small class="field__hint ltr" data-handle-preview>' + esc(P.domain || "") + "/@</small></label>" +
+          '<label class="field"><span data-i18n="signup.contact"></span>' +
+            '<input name="phone" class="ltr" type="tel" inputmode="tel" placeholder="+971 50 000 0000" required></label>' +
+          '<label class="field"><span data-i18n="signup.what"></span>' +
+            '<input name="sells" placeholder="' + esc(tx((P.sells && P.sells[0] && P.sells[0].label) || "")) + '"></label>' +
+          '<fieldset class="field">' +
+            '<legend data-i18n="signup.plan"></legend>' +
+            '<div class="choices">' +
+              '<label class="choice' + (wantsStore ? "" : " is-on") + '">' +
+                '<input type="radio" name="plan" value="free"' + (wantsStore ? "" : " checked") + ">" +
+                "<span>" + esc(tx(P.plans.free.name)) + " · " + esc(t("plan.freePrice")) + "</span></label>" +
+              '<label class="choice' + (wantsStore ? " is-on" : "") + '">' +
+                '<input type="radio" name="plan" value="store"' + (wantsStore ? " checked" : "") + ">" +
+                "<span>" + esc(tx(P.plans.store.name)) + " · " + esc(money(P.plans.store.price)) +
+                " " + esc(tx(P.plans.store.period)) + "</span></label>" +
+            "</div>" +
+          "</fieldset>" +
+          '<button class="btn btn--primary btn--block" type="submit">' + icon("whatsapp") +
+            '<span data-i18n="signup.submit"></span></button>' +
+          '<button class="btn btn--ghost btn--block btn--sm" type="button" data-copy-signup ' +
+            'data-i18n="signup.copy"></button>' +
+          '<p class="tiny muted" data-i18n="signup.note"></p>' +
+        "</form>" +
+      "</section>" +
+      footerHTML();
+
+    var form = qs(".form", root);
+    var handle = qs('[name="handle"]', form);
+    var preview = qs("[data-handle-preview]", form);
+
+    function paintPreview() {
+      var clean = handle.value.trim().replace(/[^a-zA-Z0-9._-]/g, "").toLowerCase();
+      handle.value = clean;
+      preview.textContent = (P.domain || "") + "/@" + clean;
+    }
+    handle.addEventListener("input", paintPreview);
+
+    qsa(".choice input", form).forEach(function (radio) {
+      radio.addEventListener("change", function () {
+        qsa(".choice", form).forEach(function (c) { c.classList.remove("is-on"); });
+        radio.closest(".choice").classList.add("is-on");
+      });
+    });
+
+    function signupText() {
+      var data = new FormData(form);
+      var plan = data.get("plan") === "store" ? P.plans.store : P.plans.free;
+      return [
+        t("signup.request") + " · " + tx(P.name),
+        "————————————",
+        tx({ ar: "الاسم", en: "Name" }) + ": " + (data.get("name") || "—"),
+        tx({ ar: "الرابط", en: "Handle" }) + ": " + (P.domain || "") + "/@" + (data.get("handle") || ""),
+        tx({ ar: "واتساب", en: "WhatsApp" }) + ": " + (data.get("phone") || "—"),
+        tx({ ar: "يبيع", en: "Sells" }) + ": " + (data.get("sells") || "—"),
+        tx({ ar: "الباقة", en: "Plan" }) + ": " + tx(plan.name),
+      ].join("\n");
+    }
+
+    function valid() {
+      var data = new FormData(form);
+      return ["name", "handle", "phone"].every(function (k) { return String(data.get(k) || "").trim(); });
+    }
+
+    form.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      if (!valid()) { toast(t("signup.required")); return; }
+      var text = signupText();
+      var url = P.whatsapp
+        ? "https://wa.me/" + String(P.whatsapp).replace(/\D/g, "") + "?text=" + encodeURIComponent(text)
+        : "";
+      if (url) { window.open(url, "_blank", "noopener"); return; }
+      if (P.email) {
+        window.location.href = "mailto:" + P.email + "?subject=" +
+          encodeURIComponent(t("signup.request")) + "&body=" + encodeURIComponent(text);
+        return;
+      }
+      copy(text).then(function () { toast(t("signup.copied")); });
+    });
+
+    qs("[data-copy-signup]", form).addEventListener("click", function () {
+      if (!valid()) { toast(t("signup.required")); return; }
+      copy(signupText()).then(function () { toast(t("signup.copied")); });
+    });
+  }
+
   function renderHome() {
     var root = qs("[data-page-root]");
     if (!root) return;
@@ -669,11 +918,15 @@
 
   function renderPage() {
     var page = document.body.dataset.page;
-    if (page === "home") renderHome();
+    renderChrome();
+    if (page === "landing") renderLanding();
+    else if (page === "signup") renderSignup();
+    else if (page === "home") renderHome();
     else if (page === "store") renderStore();
     else if (page === "product") renderProduct();
     applyLang();
     revealAll();
+    renderCart();
   }
 
   /* hooks for a host page (used by the single-file build's hash router) */

@@ -14,14 +14,21 @@ const read = (p) => readFileSync(resolve(here, p), "utf8");
 const out = process.argv[2] ? resolve(process.cwd(), process.argv[2]) : resolve(here, "standalone.html");
 
 const router = `
-/* hash router: index.html -> #/ , store.html -> #/store , product.html?id=x -> #/product?id=x */
+/* hash router: index.html -> #/ , demo.html -> #/demo , product.html?id=x -> #/product?id=x */
 (function () {
-  var PAGES = ["home", "store", "product"];
+  /* hash segment -> the body\'s data-page value */
+  var ROUTES = {
+    "": "landing",
+    signup: "signup",
+    demo: "home",
+    store: "store",
+    product: "product",
+  };
 
   function route() {
     var hash = window.location.hash.replace(/^#\\/?/, "");
     var page = hash.split("?")[0];
-    document.body.dataset.page = PAGES.indexOf(page) === -1 ? "home" : page;
+    document.body.dataset.page = ROUTES[page] || "landing";
     if (window.SiteApp) window.SiteApp.render();
     window.scrollTo(0, 0);
   }
@@ -40,12 +47,12 @@ const router = `
   /* set the starting page synchronously — site.js reads body.dataset.page
      in its own DOMContentLoaded handler, which is registered before this one */
   var initial = window.location.hash.replace(/^#\\/?/, "").split("?")[0];
-  document.body.dataset.page = PAGES.indexOf(initial) === -1 ? "home" : initial;
+  document.body.dataset.page = ROUTES[initial] || "landing";
 })();
 `;
 
-const html = `<title>Ahmed Alameri Storefront</title>
-<meta name="description" content="صفحة روابط ومتجر منتجات رقمية — Arabic-first link-in-bio page and product store.">
+const html = `<title>Matjari</title>
+<meta name="description" content="منصّة عربية: صفحة روابط مجانية، ومتجر باشتراك شهري بسيط.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
