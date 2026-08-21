@@ -44,7 +44,7 @@ const router = `
 })();
 `;
 
-const html = `<title>Abdullrhman Storefront</title>
+const html = `<title>Ahmed Alameri Storefront</title>
 <meta name="description" content="صفحة روابط ومتجر منتجات رقمية — Arabic-first link-in-bio page and product store.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

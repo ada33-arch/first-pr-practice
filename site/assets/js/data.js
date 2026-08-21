@@ -5,32 +5,31 @@
 
 window.SITE = {
   /* ------------------------------------------------------------ profile -- */
-  handle: "Abdullrhman",
-  name: { ar: "عبدالرحمن", en: "Abdullrhman" },
+  handle: "_ys",
+  name: { ar: "احمد العامري", en: "Ahmed Alameri" },
   verified: true,
   avatar: "",              // e.g. "assets/img/avatar.jpg" — falls back to initials
-  initials: { ar: "ع", en: "A" },
+  initials: { ar: "أ", en: "A" },
   bio: {
-    ar: "أصنع محتوى ومنتجات رقمية تساعدك تبدأ صح وتوفر وقتك. كل الروابط والمنتجات هنا.",
-    en: "I make content and digital products that save you time and get you started right. Every link and product lives here.",
+    ar: "محتوى ومنتجات رقمية من الإمارات. كل روابطي ومنتجاتي في مكان واحد، والطلب مباشرة على واتساب.",
+    en: "Content and digital products from the UAE. Every link and product in one place — order straight over WhatsApp.",
   },
 
   /* ------------------------------------------------------------ contact -- */
   // WhatsApp number in international format, digits only (no + and no spaces).
   // Leave "" to fall back to copy-to-clipboard checkout.
-  whatsapp: "",
+  whatsapp: "971508400886",
   email: "",
   // Newsletter form POST endpoint (Mailchimp / Buttondown / Formspree …).
   // Empty + no email = the newsletter block and its link stay hidden.
   newsletterAction: "",
-  currency: { ar: "ر.س", en: "SAR" },
+  currency: { ar: "د.إ", en: "AED" },
 
   /* ------------------------------------------------------------ socials -- */
   socials: [
-    { icon: "instagram", label: "Instagram", url: "https://instagram.com/" },
-    { icon: "tiktok",    label: "TikTok",    url: "https://tiktok.com/" },
-    { icon: "x",         label: "X",         url: "https://x.com/" },
-    { icon: "youtube",   label: "YouTube",   url: "https://youtube.com/" },
+    { icon: "instagram", label: "Instagram", url: "https://instagram.com/_ys" },
+    { icon: "snapchat",  label: "Snapchat",  url: "https://snapchat.com/add/ahmad536" },
+    { icon: "whatsapp",  label: "WhatsApp",  url: "https://wa.me/971508400886" },
   ],
 
   /* -------------------------------------------------------------- links -- */
@@ -63,7 +62,7 @@ window.SITE = {
     {
       icon: "💬",
       title: { ar: "تواصل معي واتساب", en: "Message me on WhatsApp" },
-      sub:   { ar: "للطلبات والاستفسارات", en: "Orders and questions" },
+      sub:   { ar: "للطلبات والاستفسارات · ٠٥٠ ٨٤٠ ٠٨٨٦", en: "Orders and questions · 050 840 0886" },
       url: "wa",              // "wa" resolves to the WhatsApp number above
     },
   ],
