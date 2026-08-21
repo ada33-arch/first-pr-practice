@@ -252,7 +252,7 @@
   }
 
   /* ------------------------------------------------------------- chrome -- */
-  var PLATFORM_PAGES = ["landing", "signup"];
+  var PLATFORM_PAGES = ["landing", "signup", "setup"];
 
   function mountChrome() {
     var ribbon = document.createElement("div");
@@ -537,21 +537,30 @@
 
   function planCard(plan, key) {
     var isStore = key === "store";
-    var price = isStore
-      ? '<span class="plan__price">' + esc(money(plan.price)) + "</span>" +
-        '<span class="plan__period">' + esc(tx(plan.period)) + "</span>"
-      : '<span class="plan__price">' + esc(t("plan.freePrice")) + "</span>" +
-        '<span class="plan__period">' + esc(tx(plan.note)) + "</span>";
-    return '<article class="plan' + (isStore ? " plan--lead" : "") + ' reveal">' +
+    var isSetup = key === "setup";
+    var price;
+    if (isStore) {
+      price = '<span class="plan__price">' + esc(money(plan.price)) + "</span>" +
+              '<span class="plan__period">' + esc(tx(plan.period)) + "</span>";
+    } else if (isSetup) {
+      price = '<span class="plan__price">' + esc(money(plan.price)) + "</span>" +
+              '<span class="plan__period">' + esc(tx(plan.once)) + "</span>";
+    } else {
+      price = '<span class="plan__price">' + esc(t("plan.freePrice")) + "</span>" +
+              '<span class="plan__period">' + esc(tx(plan.note)) + "</span>";
+    }
+    var cta = isStore ? "plan.ctaStore" : isSetup ? "plan.ctaSetup" : "plan.ctaFree";
+    var href = isStore ? "signup.html?plan=store" : isSetup ? "setup.html" : "signup.html";
+    return '<article class="plan' + (isStore ? " plan--lead" : "") + (isSetup ? " plan--setup" : "") + ' reveal">' +
         (plan.badge ? '<span class="plan__badge">' + esc(tx(plan.badge)) + "</span>" : "") +
         '<h3 class="plan__name">' + esc(tx(plan.name)) + "</h3>" +
         '<div class="plan__cost">' + price + "</div>" +
         "<ul>" + (plan.lines || []).map(function (line) {
           return "<li>" + icon("check") + "<span>" + esc(tx(line)) + "</span></li>";
         }).join("") + "</ul>" +
-        '<a class="btn ' + (isStore ? "btn--primary" : "btn--ghost") + ' btn--block" href="signup.html' +
-          (isStore ? "?plan=store" : "") + '" data-i18n="' + (isStore ? "plan.ctaStore" : "plan.ctaFree") + '"></a>' +
-        (isStore ? '<p class="plan__note tiny muted">' + esc(tx(plan.note)) + "</p>" : "") +
+        '<a class="btn ' + (isStore ? "btn--primary" : "btn--ghost") + ' btn--block" href="' + href +
+          '" data-i18n="' + cta + '"></a>' +
+        (isStore || isSetup ? '<p class="plan__note tiny muted">' + esc(tx(plan.note)) + "</p>" : "") +
       "</article>";
   }
 
@@ -600,6 +609,7 @@
         '<div class="plans">' +
           planCard(P.plans.free, "free") +
           planCard(P.plans.store, "store") +
+          planCard(P.plans.setup, "setup") +
         "</div>" +
       "</section>" +
 
@@ -623,13 +633,114 @@
       footerHTML();
   }
 
+  /* -------------------------------------------------------------- setup -- */
+  function renderSetup() {
+    var root = qs("[data-page-root]");
+    if (!root) return;
+    var d = P.setup || {};
+    var plan = P.plans.setup;
+
+    root.innerHTML =
+      '<section class="hero hero--landing shell shell--wide">' +
+        '<div class="hero__copy">' +
+          '<div class="eyebrow reveal" data-i18n="setup.eyebrow"></div>' +
+          '<h1 class="reveal" data-i18n="setup.title"></h1>' +
+          '<p class="reveal" data-i18n="setup.sub"></p>' +
+          '<div class="hero__cta reveal">' +
+            '<a class="btn btn--primary" href="signup.html?plan=setup" data-i18n="setup.cta"></a>' +
+            '<span class="price-chip">' + esc(money(plan.price)) + " · " +
+              '<span data-i18n="plan.once"></span></span>' +
+          "</div>" +
+          '<p class="tiny muted reveal">' + icon("check", "inline-tick") +
+            "<span>" + esc(tx(plan.note)) + "</span></p>" +
+        "</div>" +
+        '<div class="hero__art reveal">' +
+          '<ul class="plan__list">' +
+            (plan.lines || []).map(function (line) {
+              return "<li>" + icon("check") + "<span>" + esc(tx(line)) + "</span></li>";
+            }).join("") +
+          "</ul>" +
+        "</div>" +
+      "</section>" +
+
+      '<section class="section shell shell--wide">' +
+        '<div class="callout reveal">' +
+          '<h3 data-i18n="setup.legalTitle"></h3>' +
+          '<p data-i18n="setup.legal"></p>' +
+        "</div>" +
+      "</section>" +
+
+      '<section class="section shell shell--wide">' +
+        '<div class="split">' +
+          '<div class="box reveal"><h3 data-i18n="setup.ours"></h3><ul class="features">' +
+            (d.ours || []).map(function (x) {
+              return "<li>" + icon("check") + "<span>" + esc(tx(x)) + "</span></li>";
+            }).join("") + "</ul></div>" +
+          '<div class="box reveal"><h3 data-i18n="setup.yours"></h3><ul class="features features--plain">' +
+            (d.yours || []).map(function (x) {
+              return "<li>" + icon("chevron") + "<span>" + esc(tx(x)) + "</span></li>";
+            }).join("") + "</ul></div>" +
+        "</div>" +
+      "</section>" +
+
+      '<section class="section shell shell--wide">' +
+        '<div class="section__head"><h2 class="section__title" data-i18n="setup.steps"></h2></div>' +
+        '<ol class="stages">' +
+          (d.steps || []).map(function (step) {
+            return '<li class="stage reveal">' +
+                '<span class="stage__when">' + esc(tx(step.days)) + "</span>" +
+                "<div><h3>" + esc(tx(step.title)) + "</h3>" +
+                '<p class="muted">' + esc(tx(step.body)) + "</p></div>" +
+              "</li>";
+          }).join("") +
+        "</ol>" +
+      "</section>" +
+
+      '<section class="section shell shell--wide">' +
+        '<div class="section__head"><h2 class="section__title" data-i18n="setup.fees"></h2></div>' +
+        '<div class="fees">' +
+          (d.fees || []).map(function (f) {
+            return '<div class="fee reveal"><span class="fee__label">' + esc(tx(f.label)) + "</span>" +
+              "<span>" + esc(tx(f.value)) + "</span></div>";
+          }).join("") +
+        "</div>" +
+      "</section>" +
+
+      '<section class="section shell">' +
+        '<div class="section__head"><h2 class="section__title" data-i18n="setup.faq"></h2></div>' +
+        '<div class="faq">' +
+          (d.faq || []).map(function (item) {
+            return "<details class=\"reveal\"><summary>" + esc(tx(item.q)) + icon("chevron", "faq__arrow") +
+              "</summary><p>" + esc(tx(item.a)) + "</p></details>";
+          }).join("") +
+        "</div>" +
+      "</section>" +
+
+      '<section class="section shell">' +
+        '<div class="final reveal">' +
+          '<h2 data-i18n="setup.title"></h2>' +
+          '<p class="muted" data-i18n="setup.finalSub"></p>' +
+          '<a class="btn btn--primary" href="signup.html?plan=setup" data-i18n="setup.cta"></a>' +
+        "</div>" +
+      "</section>" +
+      footerHTML();
+  }
+
   /* ------------------------------------------------------------- signup -- */
   function renderSignup() {
     var root = qs("[data-page-root]");
     if (!root) return;
-    var wantsStore = new URLSearchParams(
+    var asked = new URLSearchParams(
       window.location.search || (window.location.hash.split("?")[1] || "")
-    ).get("plan") === "store";
+    ).get("plan");
+    var wanted = ["free", "store", "setup"].indexOf(asked) === -1 ? "free" : asked;
+
+    function choice(key, label) {
+      var on = wanted === key;
+      return '<label class="choice' + (on ? " is-on" : "") + '">' +
+        '<input type="radio" name="plan" value="' + key + '"' + (on ? " checked" : "") + ">" +
+        "<span>" + label + "</span></label>";
+    }
 
     root.innerHTML =
       '<section class="shell signup">' +
@@ -649,13 +760,11 @@
           '<fieldset class="field">' +
             '<legend data-i18n="signup.plan"></legend>' +
             '<div class="choices">' +
-              '<label class="choice' + (wantsStore ? "" : " is-on") + '">' +
-                '<input type="radio" name="plan" value="free"' + (wantsStore ? "" : " checked") + ">" +
-                "<span>" + esc(tx(P.plans.free.name)) + " · " + esc(t("plan.freePrice")) + "</span></label>" +
-              '<label class="choice' + (wantsStore ? " is-on" : "") + '">' +
-                '<input type="radio" name="plan" value="store"' + (wantsStore ? " checked" : "") + ">" +
-                "<span>" + esc(tx(P.plans.store.name)) + " · " + esc(money(P.plans.store.price)) +
-                " " + esc(tx(P.plans.store.period)) + "</span></label>" +
+              choice("free", esc(tx(P.plans.free.name)) + " · " + esc(t("plan.freePrice"))) +
+              choice("store", esc(tx(P.plans.store.name)) + " · " + esc(money(P.plans.store.price)) +
+                     " " + esc(tx(P.plans.store.period))) +
+              choice("setup", esc(tx(P.plans.setup.name)) + " · " + esc(money(P.plans.setup.price)) +
+                     " " + esc(tx(P.plans.setup.once))) +
             "</div>" +
           "</fieldset>" +
           '<button class="btn btn--primary btn--block" type="submit">' + icon("whatsapp") +
@@ -687,7 +796,7 @@
 
     function signupText() {
       var data = new FormData(form);
-      var plan = data.get("plan") === "store" ? P.plans.store : P.plans.free;
+      var plan = P.plans[data.get("plan")] || P.plans.free;
       return [
         t("signup.request") + " · " + tx(P.name),
         "————————————",
@@ -708,7 +817,8 @@
       ev.preventDefault();
       if (!valid()) { toast(t("signup.required")); return; }
       var data = new FormData(form);
-      postHook(P.signupWebhook, {
+      // the full-setup plan is a different job, so it goes to its own workflow
+      postHook(data.get("plan") === "setup" ? (P.setupWebhook || P.signupWebhook) : P.signupWebhook, {
         name: data.get("name"),
         handle: data.get("handle"),
         phone: data.get("phone"),
@@ -983,6 +1093,7 @@
     var page = document.body.dataset.page;
     renderChrome();
     if (page === "landing") renderLanding();
+    else if (page === "setup") renderSetup();
     else if (page === "signup") renderSignup();
     else if (page === "home") renderHome();
     else if (page === "store") renderStore();

@@ -20,6 +20,7 @@ const router = `
   var ROUTES = {
     "": "landing",
     signup: "signup",
+    setup: "setup",
     demo: "home",
     store: "store",
     product: "product",

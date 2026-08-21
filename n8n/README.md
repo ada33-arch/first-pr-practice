@@ -1,7 +1,7 @@
-# The four automations
+# The five automations
 
 Everything the platform does between "someone taps a button" and "money arrives"
-runs here. Four workflows, importable into any n8n (cloud or self-hosted).
+runs here. Five workflows, importable into any n8n (cloud or self-hosted).
 
 | File | Runs when | Who it talks to |
 | --- | --- | --- |
@@ -9,6 +9,7 @@ runs here. Four workflows, importable into any n8n (cloud or self-hosted).
 | `02-store-activation.json` | A seller asks for a store, and again when Stripe confirms payment | Seller, owner |
 | `03-subscription-renewal.json` | Every morning at 09:00 Dubai | Seller, owner |
 | `04-customer-order.json` | A customer checks out on a seller's store | Seller, customer |
+| `05-setup-and-licence.json` | Someone buys the full setup, and again each time you move their case forward | Customer, owner |
 
 Each workflow carries sticky notes on the canvas explaining its own logic — open
 one in n8n and read it there.
@@ -32,6 +33,11 @@ string in the sheet URL) into every Google Sheets node — they all currently sa
 
 | created_at | name | handle | phone | email | sells | plan | status | store_status | page_url | payment_link | next_renewal | source |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+
+`setups` tab — one row per setup-and-licence case:
+
+| case_id | created_at | name | handle | phone | emirate | activity | licence_type | stage | fee | updated_at |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 `orders` tab — one row per order:
 
@@ -57,6 +63,7 @@ Type the headers exactly — the workflows map fields to columns by name.
 | `MATJARI_DOMAIN` | `matjari.ae` | Builds each seller's page URL |
 | `MATJARI_PRICE` | `29` | Monthly price, in the messages |
 | `MATJARI_GRACE_DAYS` | `7` | Days late before a store switches off |
+| `MATJARI_SETUP_FEE` | `1500` | Your one-time setup fee, in the messages |
 | `STRIPE_PRICE_ID` | `price_1AbC…` | A **recurring** monthly price in Stripe |
 
 ## Connect the website
@@ -65,9 +72,16 @@ Each workflow's Webhook node shows a Production URL. Copy them into
 `site/assets/js/data.js`:
 
 ```js
-window.PLATFORM = { signupWebhook: "https://<your-n8n>/webhook/matjari-signup", … }
-window.SITE     = { orderWebhook:  "https://<your-n8n>/webhook/matjari-order",  … }
+window.PLATFORM = {
+  signupWebhook: "https://<your-n8n>/webhook/matjari-signup",
+  setupWebhook:  "https://<your-n8n>/webhook/matjari-setup-request",
+  …
+}
+window.SITE = { orderWebhook: "https://<your-n8n>/webhook/matjari-order", … }
 ```
+
+A signup with the **full setup** plan selected goes to `setupWebhook` instead of
+`signupWebhook` — one form, two different flows behind it.
 
 Leave either empty and that form keeps working exactly as before — it just opens
 WhatsApp and skips n8n. The site never waits on the webhook, so a broken
@@ -101,9 +115,20 @@ number are unaffected.
    `store_status` flips to `active` and `next_renewal` fills in.
 3. **Renewal** — put a test row's `next_renewal` at today, yesterday-minus-3, and
    yesterday-minus-8, then Execute Workflow. Each should take a different branch.
-4. **Order** — check out on the demo store. The seller alert must carry the
+4. **Setup** — POST a name and phone to `matjari-setup-request`; a case id comes back and both
+   messages go out. Then POST `{"case_id":"…","phone":"…","stage":"filed"}` to
+   `matjari-setup-stage` and check the customer gets the matching update.
+5. **Order** — check out on the demo store. The seller alert must carry the
    customer's number; leave the cart's name and phone empty and the customer
    confirmation should be skipped, not fail.
+
+## The setup flow has a rule the others don't
+
+Workflow 5 promises the customer a **confirmed government fee before any payment**, and says
+in every message that the authority issues the licence, not you. Both lines are deliberate:
+government fees differ by emirate, licence type, and activity and change over time, and
+promising an outcome you don't control is what gets setup agents complaints. Keep both when you
+edit the copy.
 
 ## What still isn't automated
 

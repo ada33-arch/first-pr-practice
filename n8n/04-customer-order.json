@@ -259,8 +259,8 @@
         "height": 360,
         "color": 4
       },
-      "id": "note-4053",
-      "name": "Note 4053",
+      "id": "note-3759",
+      "name": "Note 3759",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
@@ -275,8 +275,8 @@
         "height": 260,
         "color": 6
       },
-      "id": "note-4431",
-      "name": "Note 4431",
+      "id": "note-3029",
+      "name": "Note 3029",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [

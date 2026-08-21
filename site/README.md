@@ -1,9 +1,10 @@
 # The platform: free profile, paid store
 
-A static, dependency-free site for a small storefront platform. Anyone signs up
-free and gets a link-in-bio page under their name; adding a store — products,
-cart, orders — is a monthly subscription. Perfume is only the example seller;
-the store doesn't care what you sell.
+A static, dependency-free site for a small storefront platform. Three ways in:
+a free link-in-bio page under your name, a monthly subscription that adds a store
+(products, cart, orders), or a one-time setup service that includes a UAE trade
+licence and a store built for you. Perfume is only the example seller; the store
+doesn't care what you sell.
 
 Bilingual Arabic/English with full RTL, dark and light themes. No build step, no
 framework, no backend — open `index.html` and it runs.
@@ -13,7 +14,8 @@ framework, no backend — open `index.html` and it runs.
 | File | What it is |
 | --- | --- |
 | `index.html` | The platform landing page: hero, what you can sell, how it works, pricing, FAQ |
-| `signup.html` | Free signup. `?plan=store` preselects the paid plan |
+| `signup.html` | Signup. `?plan=store` or `?plan=setup` preselects that plan |
+| `setup.html` | The setup-and-licence service: what's on us, what's on you, the stages, the fees, licence FAQ |
 | `demo.html` | The example seller's link page — what a customer's page looks like |
 | `store.html` | The example seller's store: search, categories, product grid |
 | `product.html?id=<id>` | One product: art, price, details, quantity, buy |
@@ -33,12 +35,19 @@ Every string is a pair — `{ ar: "…", en: "…" }`.
 name: { ar: "متجري", en: "Matjari" },   // your brand
 domain: "matjari.ae",                    // shown in the @handle preview
 whatsapp: "971508400886",                // where signups arrive
-plans: { free: {...}, store: { price: 29, ... } },
+plans: { free: {...}, store: { price: 29 }, setup: { price: 1500 } },
+setup: { ours: [...], yours: [...], steps: [...], fees: [...], faq: [...] },
 sells: [...], steps: [...], faq: [...],
 ```
 
-Change `plans.store.price` and the number updates on the landing page, the plan
-cards, and the signup form together.
+Change `plans.store.price` or `plans.setup.price` and the number updates on the
+landing page, the plan cards, the setup page, and the signup form together.
+
+`PLATFORM.setup` holds the service itself: what you do, what the customer brings,
+the stage-by-stage timeline, and the fee breakdown. Two lines in there are load
+bearing and should survive any rewrite — the licence is issued by the government
+authority and not by you, and the confirmed government fee is quoted on the first
+call, before any payment.
 
 **`window.SITE`** — the example seller (name, links, socials, products). Swapping
 this swaps the demo; the product list is where `id`, `price`, `badge`,
@@ -53,6 +62,9 @@ message and hand it off:
 
 - **Signup** → opens WhatsApp to `PLATFORM.whatsapp` with the name, handle,
   number, and chosen plan. You reply and set the page up by hand.
+- **The setup plan** → the same form, routed to `PLATFORM.setupWebhook` instead,
+  because it opens a case that runs for days rather than a signup that finishes
+  in a second.
 - **An order in the store** → opens WhatsApp to that seller's number with the
   cart contents and total.
 

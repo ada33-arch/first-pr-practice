@@ -1,0 +1,670 @@
+{
+  "name": "Matjari · 5 · Setup and trade licence",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "matjari-setup-request",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "setup-requested",
+      "name": "Setup requested",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -620,
+        300
+      ],
+      "webhookId": "matjari-setup-request"
+    },
+    {
+      "parameters": {
+        "jsCode": "// A setup request is a case that runs for days, so it gets an id and a stage.\nconst body = $json.body ?? $json;\n\nlet phone = String(body.phone ?? '').replace(/[^\\d]/g, '');\nif (phone.startsWith('00')) phone = phone.slice(2);\nif (phone.startsWith('0'))  phone = '971' + phone.slice(1);\nif (phone.length === 9)     phone = '971' + phone;\n\nconst stamp = new Date();\nconst id = 'SETUP-' + stamp.toISOString().slice(2, 10).replace(/-/g, '') + '-' +\n           String(Math.floor(Math.random() * 900) + 100);\n\nreturn [{\n  json: {\n    case_id: id,\n    created_at: stamp.toISOString(),\n    name: String(body.name ?? '').trim(),\n    handle: String(body.handle ?? '').trim().toLowerCase(),\n    phone,\n    emirate: String(body.emirate ?? '').trim(),        // filled in on the call\n    activity: String(body.sells ?? body.activity ?? '').trim(),\n    licence_type: '',                                   // decided on the call\n    stage: 'new',\n    fee: Number($env.MATJARI_SETUP_FEE || 1500),\n    valid: phone.length >= 10 && String(body.name ?? '').trim().length > 1,\n  },\n}];"
+      },
+      "id": "open-the-case",
+      "name": "Open the case",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "enough-to-act-on",
+      "name": "Enough to act on?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -180,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: false, error: 'invalid_input' }) }}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "id": "reject:-not-enough-detail",
+      "name": "Reject: not enough detail",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        40,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "setups",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "record-the-case",
+      "name": "Record the case",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        40,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{ $env.WA_PHONE_ID }}/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ messaging_product: 'whatsapp', recipient_type: 'individual', to: $json.phone, type: 'text', text: { preview_url: true, body: =`أهلاً ${$json.name} 👋\\n\\nاستلمنا طلب التأسيس (${$json.case_id}).\\n\\nالخطوة الأولى مكالمة ٢٠ دقيقة — مجانية — نحدد فيها الإمارة ونوع الرخصة، ونعطيك رقم الرسوم الحكومية المؤكد قبل ما تدفع أي شي.\\n\\nجهّز لنا إذا تقدر:\\n• صورة جواز السفر (والإقامة والهوية إن وجدت)\\n• صورة شخصية بخلفية بيضاء\\n• ٣ أسماء تجارية مقترحة بالترتيب\\n• وصف نشاطك: وش تبيع بالضبط\\n\\nرسومنا ${$json.fee} د.إ مرة واحدة وتشمل سنة اشتراك في المتجر. الرسوم الحكومية تدفعها للجهة مباشرة.` } }) }}",
+        "options": {}
+      },
+      "id": "whatsapp:-what-happens-next",
+      "name": "WhatsApp: what happens next",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        260,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{ $env.WA_PHONE_ID }}/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ messaging_product: 'whatsapp', recipient_type: 'individual', to: $env.OWNER_PHONE, type: 'text', text: { preview_url: true, body: =`🏷️ طلب تأسيس جديد ${$json.case_id}\\n\\n${$json.name} — ${$json.phone}\\nالنشاط: ${$json.activity || '—'}\\n\\nالمطلوب منك:\\n١. رتّب مكالمة الـ٢٠ دقيقة\\n٢. حدد الإمارة ونوع الرخصة\\n٣. أكّد رقم الرسوم الحكومية قبل ما يدفع\\n٤. حدّث stage في الشيت وتنرسل له الحالة تلقائياً` } }) }}",
+        "options": {}
+      },
+      "id": "whatsapp:-your-to-do-list",
+      "name": "WhatsApp: your to-do list",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        260,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true, case_id: $json.case_id }) }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "reply:-case-opened",
+      "name": "Reply: case opened",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        480,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "matjari-setup-stage",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "stage-updated",
+      "name": "Stage updated",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -620,
+        760
+      ],
+      "webhookId": "matjari-setup-stage"
+    },
+    {
+      "parameters": {
+        "jsCode": "// You move the case forward by posting its new stage; the customer hears about it.\nconst body  = $json.body ?? $json;\nconst stage = String(body.stage ?? '').trim();\nconst known = ['docs_received', 'filed', 'licence_issued', 'store_live'];\n\nreturn [{\n  json: {\n    case_id: String(body.case_id ?? '').trim(),\n    phone: String(body.phone ?? '').replace(/[^\\d]/g, ''),\n    name: String(body.name ?? '').trim(),\n    stage,\n    known: known.includes(stage),\n    note: String(body.note ?? '').trim(),\n    updated_at: new Date().toISOString(),\n  },\n}];"
+      },
+      "id": "read-the-new-stage",
+      "name": "Read the new stage",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "setups",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "matchingColumns": [
+            "case_id"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "save-the-stage",
+      "name": "Save the stage",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -180,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.stage }}",
+                    "rightValue": "docs_received",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "outputKey": "docs_received"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.stage }}",
+                    "rightValue": "filed",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "outputKey": "filed"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.stage }}",
+                    "rightValue": "licence_issued",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "outputKey": "licence_issued"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.stage }}",
+                    "rightValue": "store_live",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "outputKey": "store_live"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "which-stage",
+      "name": "Which stage?",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        260,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{ $env.WA_PHONE_ID }}/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ messaging_product: 'whatsapp', recipient_type: 'individual', to: $json.phone, type: 'text', text: { preview_url: true, body: =`وصلتنا أوراقك ✅ (${$json.case_id})\\n\\nنراجعها ونحجز الاسم التجاري، ونرجع لك إذا احتجنا شي ناقص.` } }) }}",
+        "options": {}
+      },
+      "id": "whatsapp:-documents-received",
+      "name": "WhatsApp: documents received",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        520,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{ $env.WA_PHONE_ID }}/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ messaging_product: 'whatsapp', recipient_type: 'individual', to: $json.phone, type: 'text', text: { preview_url: true, body: =`قدّمنا طلبك للجهة 📤 (${$json.case_id})\\n\\nغالباً ٣ إلى ١٠ أيام عمل، وتختلف حسب الإمارة والنشاط. أي رد أو ملاحظة من الجهة نبلغك فيها أول بأول.${$json.note ? '\\n\\n' + $json.note : ''}` } }) }}",
+        "options": {}
+      },
+      "id": "whatsapp:-filed-with-the-authority",
+      "name": "WhatsApp: filed with the authority",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        520,
+        700
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{ $env.WA_PHONE_ID }}/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ messaging_product: 'whatsapp', recipient_type: 'individual', to: $json.phone, type: 'text', text: { preview_url: true, body: =`رخصتك صدرت 🎉 (${$json.case_id})\\n\\nنرسل لك نسخة الرخصة الحين، ونبدأ فوراً تجهيز صفحتك ومتجرك ورفع منتجاتك.` } }) }}",
+        "options": {}
+      },
+      "id": "whatsapp:-licence-issued",
+      "name": "WhatsApp: licence issued",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        520,
+        840
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{ $env.WA_PHONE_ID }}/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ messaging_product: 'whatsapp', recipient_type: 'individual', to: $json.phone, type: 'text', text: { preview_url: true, body: =`متجرك فتح 🛍️ (${$json.case_id})\\n\\nكل شي جاهز: صفحتك، متجرك، ومنتجاتك.\\nباقي جلسة التدريب — قل لنا الوقت المناسب لك.\\n\\nاشتراكك في المتجر مدفوع سنة كاملة.` } }) }}",
+        "options": {}
+      },
+      "id": "whatsapp:-store-is-open",
+      "name": "WhatsApp: store is open",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        520,
+        980
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true }) }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "reply:-stage-saved",
+      "name": "Reply: stage saved",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        760,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 5 · Setup and trade licence\nThe one flow that runs for **days, not seconds** — so it is built as a case with a stage, not a single execution.\n\n**Top:** the request opens the case, tells the customer exactly what to prepare, and hands you a numbered to-do list.\n\n**Bottom:** every time you post a new stage, the customer hears about it in their own language. Four stages, four messages, no chasing you for updates.",
+        "width": 520,
+        "height": 360,
+        "color": 5
+      },
+      "id": "note-453",
+      "name": "Note 453",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### Two rules this flow protects\n**No fee number before the call.** The first message promises a confirmed government fee *before* any payment. Government fees differ by emirate, licence type and activity — never quote one from memory.\n\n**You do not issue licences.** The authority does. Every message says so, because promising an outcome you don't control is how setup agents get complaints.",
+        "width": 520,
+        "height": 320,
+        "color": 3
+      },
+      "id": "note-3884",
+      "name": "Note 3884",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        1120
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### Moving a case forward\nPOST to the `matjari-setup-stage` webhook:\n\n`{ \"case_id\": \"SETUP-260821-104\",\n  \"phone\": \"971501234567\",\n  \"stage\": \"filed\",\n  \"note\": \"optional extra line\" }`\n\nStages: `docs_received` → `filed` → `licence_issued` → `store_live`",
+        "width": 440,
+        "height": 300,
+        "color": 6
+      },
+      "id": "note-4918",
+      "name": "Note 4918",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        760,
+        940
+      ]
+    }
+  ],
+  "connections": {
+    "Setup requested": {
+      "main": [
+        [
+          {
+            "node": "Open the case",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Open the case": {
+      "main": [
+        [
+          {
+            "node": "Enough to act on?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enough to act on?": {
+      "main": [
+        [
+          {
+            "node": "Record the case",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reject: not enough detail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record the case": {
+      "main": [
+        [
+          {
+            "node": "WhatsApp: what happens next",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "WhatsApp: your to-do list",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WhatsApp: what happens next": {
+      "main": [
+        [
+          {
+            "node": "Reply: case opened",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stage updated": {
+      "main": [
+        [
+          {
+            "node": "Read the new stage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read the new stage": {
+      "main": [
+        [
+          {
+            "node": "Save the stage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save the stage": {
+      "main": [
+        [
+          {
+            "node": "Which stage?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Which stage?": {
+      "main": [
+        [
+          {
+            "node": "WhatsApp: documents received",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WhatsApp: filed with the authority",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WhatsApp: licence issued",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WhatsApp: store is open",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WhatsApp: documents received": {
+      "main": [
+        [
+          {
+            "node": "Reply: stage saved",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WhatsApp: filed with the authority": {
+      "main": [
+        [
+          {
+            "node": "Reply: stage saved",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WhatsApp: licence issued": {
+      "main": [
+        [
+          {
+            "node": "Reply: stage saved",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WhatsApp: store is open": {
+      "main": [
+        [
+          {
+            "node": "Reply: stage saved",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Dubai",
+    "saveManualExecutions": true
+  },
+  "pinData": {},
+  "tags": [
+    {
+      "name": "matjari"
+    }
+  ]
+}

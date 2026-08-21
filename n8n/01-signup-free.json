@@ -257,8 +257,8 @@
         "height": 320,
         "color": 4
       },
-      "id": "note-8314",
-      "name": "Note 8314",
+      "id": "note-7307",
+      "name": "Note 7307",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
@@ -273,8 +273,8 @@
         "height": 220,
         "color": 3
       },
-      "id": "note-8681",
-      "name": "Note 8681",
+      "id": "note-8118",
+      "name": "Note 8118",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [

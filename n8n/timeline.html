@@ -101,7 +101,7 @@
 
   /* jump nav ------------------------------------------------------------- */
   .jump { display: grid; gap: .5rem; margin-top: 2rem; }
-  @media (min-width: 720px) { .jump { grid-template-columns: repeat(4, 1fr); } }
+  @media (min-width: 720px) { .jump { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); } }
   .jump a {
     display: grid;
     gap: .15rem;
@@ -283,18 +283,20 @@
 
 <header class="top">
   <div class="wrap">
-    <div class="eyebrow">n8n · four workflows</div>
+    <div class="eyebrow">n8n · five workflows</div>
     <h1>What happens after every button</h1>
     <p class="lede">
-      Signing up, turning a store on, keeping the subscription alive, and taking an order —
-      each one traced step by step, with the exact message every person receives.
-      Import the four JSON files from <code>n8n/</code> and this is what runs.
+      Signing up, turning a store on, keeping the subscription alive, taking an order, and
+      setting someone up with a trade licence — each traced step by step, with the exact
+      message every person receives. Import the five JSON files from <code>n8n/</code> and
+      this is what runs.
     </p>
     <nav class="jump">
       <a href="#signup"><b>1 · Free signup</b><span>01-signup-free</span></a>
       <a href="#store"><b>2 · Store activation</b><span>02-store-activation</span></a>
       <a href="#renewal"><b>3 · Renewal</b><span>03-subscription-renewal</span></a>
       <a href="#order"><b>4 · Customer order</b><span>04-customer-order</span></a>
+      <a href="#setup"><b>5 · Setup + licence</b><span>05-setup-and-licence</span></a>
     </nav>
   </div>
 </header>
@@ -725,6 +727,147 @@ ahmed — متأخر ٣ أيام
   </div>
 </section>
 
+
+<section id="setup">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>5 · Full setup, licence included</h2>
+      <span class="file">05-setup-and-licence.json</span>
+    </div>
+    <div class="trigger">
+      <span class="who who--system">Two triggers</span>
+      <b>/webhook/matjari-setup-request</b>
+      <span>then, repeatedly,</span>
+      <b>/webhook/matjari-setup-stage</b>
+    </div>
+
+    <ol class="timeline">
+      <li class="step step--key">
+        <div class="step__rail"><span class="step__dot">1</span></div>
+        <div class="step__body">
+          <div class="step__title"><h3>Someone picks the full setup</h3><span class="node">Setup requested</span></div>
+          <p>The same signup form, but the full-setup plan routes to a different webhook — one form, two flows behind it. This is the only one that runs for <em>days</em>, so it opens a case with a stage rather than finishing in a second.</p>
+          <div class="msg msg--system">
+            <span class="who who--system">Becomes</span>
+            <div class="payload">{ "case_id": "SETUP-260821-104", "stage": "new",
+  "phone": "971509876543", "fee": 1500 }</div>
+          </div>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="step__rail"><span class="step__dot">2</span></div>
+        <div class="step__body">
+          <div class="step__title"><h3>The customer learns exactly what to prepare</h3><span class="node">WhatsApp: what happens next</span></div>
+          <div class="msg msg--customer">
+            <span class="who who--customer">Customer receives</span>
+            <div class="bubble">أهلاً سارة 👋
+
+استلمنا طلب التأسيس (SETUP-260821-104).
+
+الخطوة الأولى مكالمة ٢٠ دقيقة — مجانية — نحدد فيها الإمارة ونوع الرخصة، ونعطيك رقم الرسوم الحكومية المؤكد قبل ما تدفع أي شي.
+
+جهّز لنا إذا تقدر:
+• صورة جواز السفر (والإقامة والهوية إن وجدت)
+• صورة شخصية بخلفية بيضاء
+• ٣ أسماء تجارية مقترحة بالترتيب
+• وصف نشاطك: وش تبيع بالضبط
+
+رسومنا 1500 د.إ مرة واحدة وتشمل سنة اشتراك في المتجر. الرسوم الحكومية تدفعها للجهة مباشرة.</div>
+          </div>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="step__rail"><span class="step__dot">3</span></div>
+        <div class="step__body">
+          <div class="step__title"><h3>You get a numbered job, not a notification</h3><span class="node">WhatsApp: your to-do list</span></div>
+          <div class="msg msg--owner">
+            <span class="who who--owner">You receive</span>
+            <div class="bubble">🏷️ طلب تأسيس جديد SETUP-260821-104
+
+سارة — 971509876543
+النشاط: عطور
+
+المطلوب منك:
+١. رتّب مكالمة الـ٢٠ دقيقة
+٢. حدد الإمارة ونوع الرخصة
+٣. أكّد رقم الرسوم الحكومية قبل ما يدفع
+٤. حدّث stage في الشيت وتنرسل له الحالة تلقائياً</div>
+          </div>
+        </div>
+      </li>
+
+      <li class="step step--stop">
+        <div class="step__rail"><span class="step__dot">☎</span></div>
+        <div class="step__body">
+          <div class="step__title"><h3>The call, and the paperwork</h3></div>
+          <p class="when">day 1 · then 3–10 working days at the authority</p>
+          <p>This part is human, and it stays human: you agree the emirate and the licence type, quote the real government fee, collect the documents, and file through your setup partner. The automation's job is that the customer never has to ask where things stand.</p>
+        </div>
+      </li>
+
+      <li class="step step--key">
+        <div class="step__rail"><span class="step__dot">4</span></div>
+        <div class="step__body">
+          <div class="step__title"><h3>You move the case; the customer hears it</h3><span class="node">Stage updated</span></div>
+          <p>One POST per stage — <code>docs_received</code>, <code>filed</code>, <code>licence_issued</code>, <code>store_live</code> — and the matching message goes out in Arabic without you writing it.</p>
+          <div class="msg msg--system">
+            <span class="who who--system">You POST</span>
+            <div class="payload">{ "case_id": "SETUP-260821-104",
+  "phone": "971509876543", "stage": "filed" }</div>
+          </div>
+          <div class="msg msg--customer">
+            <span class="who who--customer">Customer receives</span>
+            <div class="bubble">قدّمنا طلبك للجهة 📤 (SETUP-260821-104)
+
+غالباً ٣ إلى ١٠ أيام عمل، وتختلف حسب الإمارة والنشاط. أي رد أو ملاحظة من الجهة نبلغك فيها أول بأول.</div>
+          </div>
+        </div>
+      </li>
+
+      <li class="step step--key">
+        <div class="step__rail"><span class="step__dot">5</span></div>
+        <div class="step__body">
+          <div class="step__title"><h3>Licence issued, then the store opens</h3><span class="node">WhatsApp ×2 stages</span></div>
+          <div class="msg msg--customer">
+            <span class="who who--customer">Customer receives</span>
+            <div class="bubble">رخصتك صدرت 🎉 (SETUP-260821-104)
+
+نرسل لك نسخة الرخصة الحين، ونبدأ فوراً تجهيز صفحتك ومتجرك ورفع منتجاتك.</div>
+          </div>
+          <div class="msg msg--customer">
+            <span class="who who--customer">Then, days later</span>
+            <div class="bubble">متجرك فتح 🛍️ (SETUP-260821-104)
+
+كل شي جاهز: صفحتك، متجرك، ومنتجاتك.
+باقي جلسة التدريب — قل لنا الوقت المناسب لك.
+
+اشتراكك في المتجر مدفوع سنة كاملة.</div>
+          </div>
+        </div>
+      </li>
+    </ol>
+
+    <div class="callout" style="margin-top:.5rem">
+      <h3>Two promises this flow is built to keep</h3>
+      <p><b>No fee number before the call.</b> Government fees differ by emirate, licence type, and activity, and they change. Every message says the confirmed number comes on the first call, before any payment — so never quote one from memory.</p>
+      <p><b>You do not issue licences.</b> The authority does; you prepare, file, and follow up through a licensed setup partner. Every message says so, because promising an outcome you don't control is how setup agents collect complaints.</p>
+    </div>
+
+    <div class="grid2" style="margin-top:1rem">
+      <div class="box">
+        <h3>The customer ends with</h3>
+        <ul><li>A trade licence in their own name</li><li>A built store with their products in it</li><li>A year of subscription already paid</li><li>An hour of training</li></ul>
+      </div>
+      <div class="box">
+        <h3>You end with</h3>
+        <ul><li>One fee, paid once, up front</li><li>A subscriber who cannot easily leave</li><li>Four POSTs of admin instead of a week of "any update?"</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section>
   <div class="wrap">
     <div class="section-head"><h2>Two things that will bite you</h2></div>
@@ -764,5 +907,5 @@ ahmed — متأخر ٣ أيام
 </section>
 
 <footer>
-  <div class="wrap">Four workflows in <code>n8n/</code> · storefront in <code>site/</code></div>
+  <div class="wrap">Five workflows in <code>n8n/</code> · storefront in <code>site/</code></div>
 </footer>
