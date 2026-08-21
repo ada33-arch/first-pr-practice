@@ -710,3 +710,29 @@ html[dir="rtl"] .backlink svg { transform: none; }
 
 /* handles and other Latin runs inside RTL text keep their own direction */
 .ltr { direction: ltr; unicode-bidi: isolate; display: inline-block; }
+
+/* bottle artwork — sizes itself to whatever tile it lands in */
+.bottle {
+  height: 72%;
+  width: auto;
+  filter: drop-shadow(0 14px 22px rgba(0, 0, 0, .45));
+}
+.line__art .bottle { height: 78%; filter: none; }
+.detail__art .bottle { height: 76%; }
+
+/* scent notes */
+.notes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: .5rem;
+  margin-top: .75rem;
+  font-size: .9rem;
+  color: var(--ink);
+}
+.notes__label {
+  font-size: .7rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}

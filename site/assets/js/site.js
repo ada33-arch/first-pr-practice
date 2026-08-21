@@ -81,6 +81,8 @@
     snapchat: '<path d="M12 3c2.7 0 4.3 2 4.3 4.6 0 .8-.1 1.6-.1 1.9.4.2.9.2 1.4 0 .6-.2 1.1.5.6 1-.5.4-1.5.7-1.7 1.1-.2.5 1.3 3 3.2 3.5.5.1.5.7 0 .9-.7.3-1.7.4-2 .7-.2.3-.1 1-.6 1.1-.6.2-1.7-.3-2.7 0-1 .3-1.6 1.2-2.4 1.2s-1.4-.9-2.4-1.2c-1-.3-2.1.2-2.7 0-.5-.1-.4-.8-.6-1.1-.3-.3-1.3-.4-2-.7-.5-.2-.5-.8 0-.9 1.9-.5 3.4-3 3.2-3.5-.2-.4-1.2-.7-1.7-1.1-.5-.5 0-1.2.6-1 .5.2 1 .2 1.4 0 0-.3-.1-1.1-.1-1.9C7.7 5 9.3 3 12 3z" fill="currentColor" stroke="none"/>',
     whatsapp: '<path d="M12 3a9 9 0 0 0-7.7 13.6L3 21l4.5-1.2A9 9 0 1 0 12 3z"/><path d="M9 8.6c.2-.5.4-.5.6-.5h.5c.2 0 .4 0 .6.5l.7 1.6c.1.3 0 .5-.1.7l-.4.5c-.1.2-.2.3 0 .6.5.8 1.2 1.4 2 1.8.3.1.4.1.6-.1l.5-.6c.2-.2.3-.2.6-.1l1.5.7c.3.1.4.3.4.5 0 .6-.5 1.5-1.6 1.6-1 .1-2.6-.4-4.2-2S8.6 9.6 9 8.6z" fill="currentColor" stroke="none"/>',
     mail: '<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M4 7l8 6 8-6"/>',
+    truck: '<path d="M3 7a1 1 0 0 1 1-1h9v10H4a1 1 0 0 1-1-1V7z"/><path d="M13 9h4.3l2.7 3v4h-7V9z"/><circle cx="7.5" cy="18" r="1.8"/><circle cx="16.5" cy="18" r="1.8"/>',
+    droplet: '<path d="M12 3.2C16.4 8.2 18 10.6 18 13.2A6 6 0 0 1 6 13.2C6 10.6 7.6 8.2 12 3.2z"/>',
     link: '<path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1L10.6 5"/><path d="M14 11a5 5 0 0 0-7.1 0l-2 2A5 5 0 0 0 12 20l1.3-1.3"/>',
   };
   function icon(name, cls) {
@@ -330,11 +332,35 @@
   }
 
   /* ---------------------------------------------------------- fragments -- */
+  /* a bottle drawn from the product's own oil colour — one silhouette, six scents */
+  function bottleSVG(p) {
+    var art = p.art || {};
+    var oil = art.oil || "#c9a24a";
+    var cap = art.cap || "#d8b475";
+    var gid = "oil-" + p.id;
+    return '<svg class="bottle" viewBox="0 0 120 172" fill="none" role="img" aria-label="' + esc(tx(p.title)) + '">' +
+        "<defs>" +
+          '<linearGradient id="' + gid + '" x1="0" y1="0" x2="1" y2="1">' +
+            '<stop offset="0" stop-color="' + oil + '" stop-opacity=".95"/>' +
+            '<stop offset="1" stop-color="' + oil + '" stop-opacity=".6"/>' +
+          "</linearGradient>" +
+        "</defs>" +
+        '<rect x="50" y="6" width="20" height="20" rx="6" fill="' + cap + '"/>' +
+        '<rect x="55" y="24" width="10" height="16" fill="' + cap + '" opacity=".8"/>' +
+        '<path d="M46 36h28a14 14 0 0 1 14 14v96a14 14 0 0 1-14 14H46a14 14 0 0 1-14-14V50a14 14 0 0 1 14-14z" ' +
+          'fill="url(#' + gid + ')" stroke="rgba(255,255,255,.28)" stroke-width="1.5"/>' +
+        '<rect x="39" y="58" width="6" height="56" rx="3" fill="#fff" opacity=".18"/>' +
+        '<rect x="32" y="112" width="56" height="1.5" fill="#fff" opacity=".16"/>' +
+      "</svg>";
+  }
+
   function artHTML(p, cls) {
     var bg = "background:linear-gradient(150deg," + (p.art ? p.art.from : "#2a2a35") + "," + (p.art ? p.art.to : "#101017") + ")";
     var inner = p.image
       ? '<img src="' + esc(p.image) + '" alt="' + esc(tx(p.title)) + '" loading="lazy">'
-      : '<span aria-hidden="true">' + (p.art ? p.art.emoji : "🛍️") + "</span>";
+      : (p.art && p.art.motif === "bottle")
+        ? bottleSVG(p)
+        : '<span aria-hidden="true">' + ((p.art && p.art.emoji) || "🛍️") + "</span>";
     return '<div class="' + cls + '" style="' + bg + '">' +
       (p.badge && cls === "product__art" ? '<span class="product__badge">' + esc(tx(p.badge)) + "</span>" : "") +
       inner + "</div>";
@@ -504,9 +530,9 @@
         '<h1 data-i18n="store.title"></h1>' +
         '<p data-i18n="store.sub"></p>' +
         '<div class="trust">' +
-          ['<span class="trust__item">' + icon("bolt") + '<span data-i18n="trust.instant"></span></span>',
-           '<span class="trust__item">' + icon("shield") + '<span data-i18n="trust.secure"></span></span>',
-           '<span class="trust__item">' + icon("chat") + '<span data-i18n="trust.support"></span></span>'].join("") +
+          ['<span class="trust__item">' + icon("truck") + '<span data-i18n="trust.delivery"></span></span>',
+           '<span class="trust__item">' + icon("droplet") + '<span data-i18n="trust.oil"></span></span>',
+           '<span class="trust__item">' + icon("whatsapp") + '<span data-i18n="trust.order"></span></span>'].join("") +
         "</div>" +
       "</section>" +
       '<section class="shell shell--wide">' +
@@ -582,6 +608,10 @@
             '<div class="eyebrow">' + esc(tx(p.category)) + "</div>" +
             "<h1>" + esc(tx(p.title)) + "</h1>" +
             '<p class="muted">' + esc(tx(p.desc)) + "</p>" +
+            (p.notes
+              ? '<p class="notes"><span class="notes__label">' + esc(t("product.notes")) + "</span>" +
+                "<span>" + esc(tx(p.notes)) + "</span></p>"
+              : "") +
             '<div class="detail__price">' +
               '<span class="price__now">' + esc(money(p.price)) + "</span>" +
               (p.oldPrice ? '<span class="price__was">' + esc(money(p.oldPrice)) + "</span>" : "") +
@@ -605,8 +635,8 @@
               '<button class="btn btn--ghost btn--block" data-add-detail>' + icon("cart") +
                 "<span>" + esc(t("product.add")) + "</span></button>" +
               '<div class="trust" style="justify-content:flex-start">' +
-                '<span class="trust__item">' + icon("bolt") + '<span data-i18n="trust.instant"></span></span>' +
-                '<span class="trust__item">' + icon("shield") + '<span data-i18n="trust.secure"></span></span>' +
+                '<span class="trust__item">' + icon("truck") + '<span data-i18n="trust.delivery"></span></span>' +
+                '<span class="trust__item">' + icon("droplet") + '<span data-i18n="trust.oil"></span></span>' +
               "</div>" +
             "</div>" +
           "</div>" +
