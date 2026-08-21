@@ -35,7 +35,7 @@ Every string is a pair — `{ ar: "…", en: "…" }`.
 name: { ar: "متجري", en: "Matjari" },   // your brand
 domain: "matjari.ae",                    // shown in the @handle preview
 whatsapp: "971508400886",                // where signups arrive
-plans: { free: {...}, store: { price: 29 }, setup: { price: 1500 } },
+plans: { free: {...}, store: { price: 55 }, setup: { price: 1500 } },
 setup: { ours: [...], yours: [...], steps: [...], fees: [...], faq: [...] },
 sells: [...], steps: [...], faq: [...],
 ```

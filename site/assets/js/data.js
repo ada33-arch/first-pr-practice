@@ -49,7 +49,7 @@ window.PLATFORM = {
     },
     store: {
       name: { ar: "المتجر", en: "Store" },
-      price: 29,                                  // ← your monthly price
+      price: 55,                                  // ← your monthly price
       period: { ar: "شهرياً", en: "per month" },
       note: { ar: "تقدر توقفه في أي وقت", en: "Cancel whenever you want" },
       badge: { ar: "الأكثر طلباً", en: "Most popular" },

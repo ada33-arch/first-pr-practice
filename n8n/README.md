@@ -61,7 +61,7 @@ Type the headers exactly — the workflows map fields to columns by name.
 | `WA_PHONE_ID` | `123456789012345` | WhatsApp Cloud phone number id |
 | `OWNER_PHONE` | `971508400886` | Where owner alerts go |
 | `MATJARI_DOMAIN` | `matjari.ae` | Builds each seller's page URL |
-| `MATJARI_PRICE` | `29` | Monthly price, in the messages |
+| `MATJARI_PRICE` | `55` | Monthly price, in the messages |
 | `MATJARI_GRACE_DAYS` | `7` | Days late before a store switches off |
 | `MATJARI_SETUP_FEE` | `1500` | Your one-time setup fee, in the messages |
 | `STRIPE_PRICE_ID` | `price_1AbC…` | A **recurring** monthly price in Stripe |

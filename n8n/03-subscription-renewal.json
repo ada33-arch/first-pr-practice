@@ -167,7 +167,7 @@
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ messaging_product: 'whatsapp', recipient_type: 'individual', to: $json.phone, type: 'text', text: { preview_url: true, body: =`تذكير ودّي 🗓️\\n\\nاشتراك متجرك يتجدد بعد ٣ أيام (${$json.next_renewal}) — ${$env.MATJARI_PRICE || 29} د.إ.\\n\\nما عليك سوّي شي إذا الدفع تلقائي. وإذا تبي توقف الاشتراك رد بكلمة (إيقاف) قبل التاريخ.` } }) }}",
+        "jsonBody": "={{ JSON.stringify({ messaging_product: 'whatsapp', recipient_type: 'individual', to: $json.phone, type: 'text', text: { preview_url: true, body: =`تذكير ودّي 🗓️\\n\\nاشتراك متجرك يتجدد بعد ٣ أيام (${$json.next_renewal}) — ${$env.MATJARI_PRICE || 55} د.إ.\\n\\nما عليك سوّي شي إذا الدفع تلقائي. وإذا تبي توقف الاشتراك رد بكلمة (إيقاف) قبل التاريخ.` } }) }}",
         "options": {}
       },
       "id": "whatsapp:-renewal-in-3-days",
@@ -187,7 +187,7 @@
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ messaging_product: 'whatsapp', recipient_type: 'individual', to: $json.phone, type: 'text', text: { preview_url: true, body: =`اليوم موعد تجديد متجرك 🛍️\\n\\n${$env.MATJARI_PRICE || 29} د.إ للشهر الجديد.\\nرابط الدفع: ${$json.payment_link}\\n\\nمتجرك يشتغل عادي، وعندك ${$env.MATJARI_GRACE_DAYS || 7} أيام مهلة.` } }) }}",
+        "jsonBody": "={{ JSON.stringify({ messaging_product: 'whatsapp', recipient_type: 'individual', to: $json.phone, type: 'text', text: { preview_url: true, body: =`اليوم موعد تجديد متجرك 🛍️\\n\\n${$env.MATJARI_PRICE || 55} د.إ للشهر الجديد.\\nرابط الدفع: ${$json.payment_link}\\n\\nمتجرك يشتغل عادي، وعندك ${$env.MATJARI_GRACE_DAYS || 7} أيام مهلة.` } }) }}",
         "options": {}
       },
       "id": "whatsapp:-renews-today",

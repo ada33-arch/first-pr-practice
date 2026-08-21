@@ -102,7 +102,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Turn the request into the numbers the payment link needs.\nconst seller = $json;\nconst price  = Number($env.MATJARI_PRICE || 29);\nconst today  = new Date();\nconst next   = new Date(today); next.setMonth(next.getMonth() + 1);\n\nreturn [{\n  json: {\n    ...seller,\n    price,\n    currency: 'AED',\n    requested_at: today.toISOString(),\n    next_renewal: next.toISOString().slice(0, 10),\n    store_status: 'awaiting_payment',\n  },\n}];"
+        "jsCode": "// Turn the request into the numbers the payment link needs.\nconst seller = $json;\nconst price  = Number($env.MATJARI_PRICE || 55);\nconst today  = new Date();\nconst next   = new Date(today); next.setMonth(next.getMonth() + 1);\n\nreturn [{\n  json: {\n    ...seller,\n    price,\n    currency: 'AED',\n    requested_at: today.toISOString(),\n    next_renewal: next.toISOString().slice(0, 10),\n    store_status: 'awaiting_payment',\n  },\n}];"
       },
       "id": "work-out-the-price-and-dates",
       "name": "Work out the price and dates",
