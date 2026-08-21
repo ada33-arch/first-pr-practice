@@ -1,0 +1,286 @@
+/* ==========================================================================
+   Everything you edit day-to-day lives in this file.
+   Text is bilingual: { ar: "عربي", en: "English" }.
+   ========================================================================== */
+
+window.SITE = {
+  /* ------------------------------------------------------------ profile -- */
+  handle: "Abdullrhman",
+  name: { ar: "عبدالرحمن", en: "Abdullrhman" },
+  verified: true,
+  avatar: "",              // e.g. "assets/img/avatar.jpg" — falls back to initials
+  initials: { ar: "ع", en: "A" },
+  bio: {
+    ar: "أصنع محتوى ومنتجات رقمية تساعدك تبدأ صح وتوفر وقتك. كل الروابط والمنتجات هنا.",
+    en: "I make content and digital products that save you time and get you started right. Every link and product lives here.",
+  },
+
+  /* ------------------------------------------------------------ contact -- */
+  // WhatsApp number in international format, digits only (no + and no spaces).
+  // Leave "" to fall back to copy-to-clipboard checkout.
+  whatsapp: "",
+  email: "",
+  // Newsletter form POST endpoint (Mailchimp / Buttondown / Formspree …).
+  // Empty + no email = the newsletter block and its link stay hidden.
+  newsletterAction: "",
+  currency: { ar: "ر.س", en: "SAR" },
+
+  /* ------------------------------------------------------------ socials -- */
+  socials: [
+    { icon: "instagram", label: "Instagram", url: "https://instagram.com/" },
+    { icon: "tiktok",    label: "TikTok",    url: "https://tiktok.com/" },
+    { icon: "x",         label: "X",         url: "https://x.com/" },
+    { icon: "youtube",   label: "YouTube",   url: "https://youtube.com/" },
+  ],
+
+  /* -------------------------------------------------------------- links -- */
+  links: [
+    {
+      icon: "🛍️",
+      title: { ar: "المتجر — كل المنتجات", en: "Store — all products" },
+      sub:   { ar: "منتجات رقمية وتسليم فوري", en: "Digital products, instant delivery" },
+      url: "store.html",
+      tag: { ar: "الأهم", en: "Top" },
+    },
+    {
+      icon: "🎓",
+      title: { ar: "دورة التصوير بالجوال", en: "Mobile photography course" },
+      sub:   { ar: "٣ ساعات + ملفات التمارين", en: "3 hours + practice files" },
+      url: "product.html?id=course-mobile-photo",
+    },
+    {
+      icon: "📅",
+      title: { ar: "احجز استشارة خاصة", en: "Book a 1:1 consultation" },
+      sub:   { ar: "٤٥ دقيقة أونلاين", en: "45 minutes, online" },
+      url: "product.html?id=consult-45",
+    },
+    {
+      icon: "📮",
+      title: { ar: "النشرة الأسبوعية", en: "Weekly newsletter" },
+      sub:   { ar: "فكرة واحدة كل أسبوع — مجاناً", en: "One idea every week — free" },
+      url: "#newsletter",
+    },
+    {
+      icon: "💬",
+      title: { ar: "تواصل معي واتساب", en: "Message me on WhatsApp" },
+      sub:   { ar: "للطلبات والاستفسارات", en: "Orders and questions" },
+      url: "wa",              // "wa" resolves to the WhatsApp number above
+    },
+  ],
+
+  /* ----------------------------------------------------------- products -- */
+  // art: gradient stops + emoji, used when `image` is empty.
+  products: [
+    {
+      id: "course-mobile-photo",
+      category: { ar: "دورات", en: "Courses" },
+      title: { ar: "دورة التصوير بالجوال", en: "Mobile Photography Course" },
+      desc: {
+        ar: "من الإضاءة إلى المونتاج — كل ما تحتاجه لتصوير محتوى احترافي بجوالك.",
+        en: "From lighting to editing — everything you need to shoot pro content on your phone.",
+      },
+      price: 249, oldPrice: 399,
+      badge: { ar: "الأكثر مبيعاً", en: "Bestseller" },
+      featured: true,
+      image: "",
+      art: { emoji: "📸", from: "#3a2f5f", to: "#0f0d1a" },
+      features: [
+        { ar: "٣ ساعات فيديو بجودة عالية", en: "3 hours of HD video" },
+        { ar: "ملفات تمارين وقوالب جاهزة", en: "Practice files and ready templates" },
+        { ar: "وصول مدى الحياة والتحديثات مجانية", en: "Lifetime access, free updates" },
+        { ar: "شهادة إتمام", en: "Certificate of completion" },
+      ],
+    },
+    {
+      id: "presets-warm",
+      category: { ar: "فلاتر", en: "Presets" },
+      title: { ar: "حزمة فلاتر دافئة — ١٢ فلتر", en: "Warm Presets Pack — 12 looks" },
+      desc: {
+        ar: "لوك سينمائي دافئ لصورك وفيديوهاتك بضغطة واحدة. متوافقة مع Lightroom.",
+        en: "A warm cinematic look for photos and reels in one tap. Lightroom compatible.",
+      },
+      price: 79, oldPrice: 129,
+      badge: { ar: "تسليم فوري", en: "Instant" },
+      featured: true,
+      image: "",
+      art: { emoji: "🎞️", from: "#5f4326", to: "#1a120a" },
+      features: [
+        { ar: "١٢ فلتر بصيغة DNG و XMP", en: "12 presets in DNG and XMP" },
+        { ar: "دليل استخدام مصور", en: "Illustrated usage guide" },
+        { ar: "تعمل على الجوال والكمبيوتر", en: "Works on mobile and desktop" },
+      ],
+    },
+    {
+      id: "ebook-content",
+      category: { ar: "كتب", en: "E-books" },
+      title: { ar: "كتاب: خطة محتوى ٣٠ يوم", en: "E-book: 30-Day Content Plan" },
+      desc: {
+        ar: "٣٠ فكرة جاهزة مع سكربتات وأوقات نشر مقترحة — لا تبدأ من صفحة بيضاء بعد اليوم.",
+        en: "30 ready ideas with scripts and posting times — never start from a blank page again.",
+      },
+      price: 49,
+      badge: null,
+      featured: true,
+      image: "",
+      art: { emoji: "📘", from: "#1f4a44", to: "#0b1614" },
+      features: [
+        { ar: "PDF بصيغة قابلة للطباعة", en: "Print-ready PDF" },
+        { ar: "قوالب Notion مرفقة", en: "Notion templates included" },
+        { ar: "٣٠ سكربت جاهز للريلز", en: "30 ready reel scripts" },
+      ],
+    },
+    {
+      id: "consult-45",
+      category: { ar: "استشارات", en: "Consulting" },
+      title: { ar: "استشارة خاصة — ٤٥ دقيقة", en: "1:1 Consultation — 45 min" },
+      desc: {
+        ar: "جلسة أونلاين نراجع فيها حسابك ونخرج بخطة عملية واضحة للشهر القادم.",
+        en: "An online session to review your account and leave with a clear plan for next month.",
+      },
+      price: 399,
+      badge: { ar: "مقاعد محدودة", en: "Limited" },
+      featured: false,
+      image: "",
+      art: { emoji: "🎯", from: "#4a2340", to: "#160b14" },
+      features: [
+        { ar: "٤٥ دقيقة عبر Google Meet", en: "45 minutes over Google Meet" },
+        { ar: "تقرير مكتوب بعد الجلسة", en: "Written recap after the call" },
+        { ar: "متابعة لمدة أسبوع", en: "One week of follow-up" },
+      ],
+    },
+    {
+      id: "templates-reels",
+      category: { ar: "قوالب", en: "Templates" },
+      title: { ar: "قوالب ريلز — ٢٥ قالب", en: "Reels Templates — 25 pack" },
+      desc: {
+        ar: "قوالب متحركة جاهزة للتعديل، تناسب المنتجات والخدمات والمحتوى الشخصي.",
+        en: "Editable animated templates for products, services, and personal content.",
+      },
+      price: 99, oldPrice: 149,
+      badge: null,
+      featured: false,
+      image: "",
+      art: { emoji: "✨", from: "#2b3d63", to: "#0c1120" },
+      features: [
+        { ar: "٢٥ قالب CapCut و After Effects", en: "25 CapCut and After Effects templates" },
+        { ar: "خطوط عربية مرفقة", en: "Arabic fonts included" },
+        { ar: "فيديو شرح التعديل", en: "Editing walkthrough video" },
+      ],
+    },
+    {
+      id: "bundle-all",
+      category: { ar: "باقات", en: "Bundles" },
+      title: { ar: "الباقة الكاملة — كل المنتجات", en: "The Complete Bundle" },
+      desc: {
+        ar: "الدورة + الفلاتر + الكتاب + القوالب بسعر واحد، وفّر أكثر من ٤٠٪.",
+        en: "Course + presets + e-book + templates in one price. Save over 40%.",
+      },
+      price: 349, oldPrice: 476,
+      badge: { ar: "وفّر ٤٠٪", en: "Save 40%" },
+      featured: true,
+      image: "",
+      art: { emoji: "🎁", from: "#63451f", to: "#1a1207" },
+      features: [
+        { ar: "كل المنتجات الرقمية الحالية", en: "Every current digital product" },
+        { ar: "المنتجات القادمة مجاناً لمدة سنة", en: "Upcoming releases free for a year" },
+        { ar: "أولوية في الرد على الاستفسارات", en: "Priority support" },
+      ],
+    },
+  ],
+};
+
+/* --------------------------------------------------------------- strings -- */
+window.I18N = {
+  ar: {
+    "nav.store": "المتجر",
+    "nav.links": "الروابط",
+    "profile.links": "روابطي",
+    "profile.featured": "منتجات مختارة",
+    "profile.all": "كل المنتجات",
+    "store.eyebrow": "المتجر",
+    "store.title": "منتجات تختصر عليك الطريق",
+    "store.sub": "منتجات رقمية جاهزة للتحميل فور الدفع، وخدمات محدودة المقاعد.",
+    "store.search": "ابحث عن منتج…",
+    "store.all": "الكل",
+    "store.empty": "ما لقينا منتجات بهذا البحث",
+    "store.count": "منتج",
+    "trust.instant": "تسليم فوري",
+    "trust.secure": "دفع آمن",
+    "trust.support": "دعم مباشر",
+    "product.add": "أضف للسلة",
+    "product.added": "أضيف للسلة",
+    "product.buy": "اشترِ الآن",
+    "product.details": "التفاصيل",
+    "product.includes": "المنتج يشمل",
+    "product.qty": "الكمية",
+    "product.back": "رجوع للمتجر",
+    "product.missing": "المنتج غير موجود",
+    "cart.title": "سلة المشتريات",
+    "cart.empty": "سلتك فارغة",
+    "cart.emptyHint": "تصفح المتجر وأضف ما يعجبك",
+    "cart.total": "الإجمالي",
+    "cart.checkout": "إتمام الطلب عبر واتساب",
+    "cart.copy": "نسخ تفاصيل الطلب",
+    "cart.copied": "تم نسخ الطلب — أرسله لي",
+    "cart.close": "إغلاق",
+    "cart.browse": "تصفح المتجر",
+    "order.title": "طلب جديد",
+    "order.total": "الإجمالي",
+    "newsletter.title": "النشرة الأسبوعية",
+    "newsletter.sub": "فكرة عملية واحدة كل أسبوع. بدون سبام.",
+    "newsletter.placeholder": "بريدك الإلكتروني",
+    "newsletter.cta": "اشترك",
+    "newsletter.done": "تم! راجع بريدك لتأكيد الاشتراك",
+    "footer.rights": "جميع الحقوق محفوظة",
+    "footer.built": "صُنع بحب",
+    "a11y.theme": "تبديل الوضع",
+    "a11y.lang": "تغيير اللغة",
+    "a11y.cart": "السلة",
+  },
+  en: {
+    "nav.store": "Store",
+    "nav.links": "Links",
+    "profile.links": "My links",
+    "profile.featured": "Featured products",
+    "profile.all": "See all",
+    "store.eyebrow": "Store",
+    "store.title": "Products that skip the hard part",
+    "store.sub": "Digital products delivered the moment you pay, plus limited-seat services.",
+    "store.search": "Search products…",
+    "store.all": "All",
+    "store.empty": "No products match that search",
+    "store.count": "products",
+    "trust.instant": "Instant delivery",
+    "trust.secure": "Secure payment",
+    "trust.support": "Direct support",
+    "product.add": "Add to cart",
+    "product.added": "Added to cart",
+    "product.buy": "Buy now",
+    "product.details": "Details",
+    "product.includes": "What's included",
+    "product.qty": "Quantity",
+    "product.back": "Back to store",
+    "product.missing": "Product not found",
+    "cart.title": "Your cart",
+    "cart.empty": "Your cart is empty",
+    "cart.emptyHint": "Browse the store and add something you like",
+    "cart.total": "Total",
+    "cart.checkout": "Checkout on WhatsApp",
+    "cart.copy": "Copy order details",
+    "cart.copied": "Order copied — send it to me",
+    "cart.close": "Close",
+    "cart.browse": "Browse the store",
+    "order.title": "New order",
+    "order.total": "Total",
+    "newsletter.title": "Weekly newsletter",
+    "newsletter.sub": "One practical idea every week. No spam.",
+    "newsletter.placeholder": "Your email address",
+    "newsletter.cta": "Subscribe",
+    "newsletter.done": "Done! Check your inbox to confirm",
+    "footer.rights": "All rights reserved",
+    "footer.built": "Made with care",
+    "a11y.theme": "Toggle theme",
+    "a11y.lang": "Change language",
+    "a11y.cart": "Cart",
+  },
+};
