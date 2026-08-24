@@ -15,6 +15,9 @@ it runs.
 | `index.html` | The link-in-bio page: avatar, bio, socials, link cards, featured products, optional newsletter block |
 | `store.html` | The store: search, category chips, product grid |
 | `product.html?id=<id>` | One product: art, price, what's included, quantity, buy |
+| `404.html` | Standalone not-found page — renders even if the JS fails to load |
+| `robots.txt`, `sitemap.xml` | Crawler basics. The domain in them is set by `scripts/set-domain.sh` |
+| `CNAME` | Written by `scripts/set-domain.sh`; not committed until you pick a domain |
 
 The topbar (language, theme, cart) and the cart drawer are injected by
 `assets/js/site.js`, so every page stays a few lines of HTML.
@@ -75,9 +78,21 @@ npx serve site      # or: python3 -m http.server -d site 8000
 
 ## Publishing
 
-Any static host works. For GitHub Pages: Settings → Pages → deploy from a branch,
-pick the branch and the `/site` folder. Then point your domain at it and put the
-link in your Instagram bio.
+`.github/workflows/pages.yml` deploys this folder to GitHub Pages on every push to
+`main` — set Settings → Pages → Source to **GitHub Actions** once and it's automatic.
+Any other static host works too; Cloudflare Pages is the better choice for a Gulf
+audience because it has UAE edge locations.
+
+To attach a custom domain:
+
+```bash
+scripts/set-domain.sh yourbrand.ae
+```
+
+That writes `CNAME` and fills the real domain into the canonical tags, the `og:url`
+tags, `robots.txt`, and `sitemap.xml` — all of which ship with `example.ae` as a
+placeholder. The full walkthrough, including the DNS records and where to buy a `.ae`,
+is in [`docs/ae-domain-and-launch.md`](../docs/ae-domain-and-launch.md).
 
 Two things to change before you go live:
 - the `<title>`, `description`, and `og:` tags in each HTML file
