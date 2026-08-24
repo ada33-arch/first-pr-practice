@@ -123,15 +123,16 @@ once the certificate is issued.
 
 ### Step 4 — fill in your content
 
-Everything customers see lives in **`site/assets/js/data.js`**:
+Everything customers see lives in **`site/assets/js/data.js`**, in three lists:
 
-- `whatsapp` — your number, digits only, country code first, no `+`. **Checkout does not
-  work until this is set** — it falls back to copy-to-clipboard.
-- `name`, `bio`, `handle`, `socials` — your profile.
-- `products` — the catalogue. The entries in there now are shaped for systems and books
-  but the copy is placeholder; replace the titles, descriptions, prices, and `features`
-  with the real products.
-- `currency` — set to AED for a UAE store.
+- `SITE` — your marketplace brand, bio, socials, and support `whatsapp` (digits only,
+  country code first, no `+`). Also `orderRouting`: `"vendor"` sends each seller their
+  own orders, `"owner"` sends everything to you.
+- `VENDORS` — one entry per seller, each with their own `whatsapp`. **Orders fall back
+  to your number when a seller has none**, and to copy-to-clipboard when neither is set.
+- `PRODUCTS` — the catalogue. Every product needs a `vendor` matching a store `id`. The
+  entries in there now are placeholders; replace the titles, prices, and `features`.
+- `currency` — already AED for a UAE marketplace.
 
 Then swap the `<title>` and `description` in the three HTML files for your real brand.
 
@@ -141,19 +142,29 @@ Then swap the `<title>` and `description` in the three HTML files for your real 
 npx serve site
 ```
 
-Click through: language toggle (AR/EN), theme toggle, add to cart, remove, checkout.
-Then do the same on a phone.
+Click through: language toggle (AR/EN), theme toggle, the store directory, one
+seller's storefront, then add products **from two different stores** to the cart and
+confirm it splits into one order per seller. Then do the same on a phone.
 
 ---
 
 ## 5. Taking money
 
 Checkout currently opens WhatsApp with the order pre-written, which is how most Gulf
-creator stores actually sell, and it needs no merchant account. When you want card
-payments, the swap is one function — `checkout()` in `site/assets/js/site.js` — pointed at
-a payment link. UAE-friendly options: **Stripe** (supports UAE), **Tap Payments**,
-**Telr**, **Network International**. Each gives you a hosted link you redirect to with the
-cart total.
+marketplaces actually start, and it needs no merchant account. A cart spanning several
+stores splits into one order per seller, so each one gets only their own items.
+
+When you want card payments the swap is two functions in `site/assets/js/site.js` —
+`checkout()` and `checkoutGroup()` — pointed at a payment link with the relevant total.
+UAE-friendly options: **Stripe** (supports UAE), **Tap Payments**, **Telr**, **Network
+International**.
+
+Card payments are where the marketplace model gets harder than a single store: if money
+lands in your account you are then responsible for paying each seller their share, which
+is bookkeeping plus a licensing question. The alternative is each seller holding their own
+payment link, which keeps you out of the money flow entirely — simpler legally, but you
+lose the commission and the sales record. Worth deciding before you wire up cards, not
+after.
 
 Note that selling commercially in the UAE generally needs a trade licence — that's a
 business-setup question, separate from the domain, and worth asking an accountant about

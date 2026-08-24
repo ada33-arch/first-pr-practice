@@ -19,7 +19,7 @@ A practice repository for the GitHub workflow — cloning, branching, committing
 - `scripts/slack-upload.sh` — uploads a file to Slack via the three-step external-upload flow
 - `scripts/set-domain.sh` — points `site/` at a real domain (writes `site/CNAME`, rewrites the `example.ae` placeholder in the canonical/`og:url` tags, `robots.txt`, and `sitemap.xml`)
 - `connect-apps-plugin/` — a Claude Code plugin providing `/connect-apps:setup`
-- `site/` — static bilingual (AR/EN, RTL) link-in-bio page plus a product store and product page. No build step; all content lives in `site/assets/js/data.js`. See `site/README.md`.
+- `site/` — static bilingual (AR/EN, RTL) multi-vendor marketplace: home, store directory (`vendors.html`), per-seller storefront (`vendor.html?id=`), all-products grid, and product page. Each product belongs to a vendor; a cart spanning several stores splits into one order per seller. No build step; all content lives in `site/assets/js/data.js` (`SITE`, `VENDORS`, `PRODUCTS`). See `site/README.md`.
 - `docs/ae-domain-and-launch.md` — `.ae` registrar comparison, which form of `.ae` to buy, and the runbook for taking `site/` live on a custom domain
 - `.claude/skills/ui-ux-pro-max/` — UI/UX design-guidance skill (definition only; the `search.py` CLI and CSV data it references are not vendored here)
 - `.mcp.json` — HTTP MCP servers wired up for this repo: `github` and `graphify`

@@ -1,29 +1,43 @@
 /* ==========================================================================
    Everything you edit day-to-day lives in this file.
    Text is bilingual: { ar: "عربي", en: "English" }.
+
+   Three lists, in order:
+     window.SITE     — the marketplace itself (your brand, your contact)
+     window.VENDORS  — the sellers who have a store inside the marketplace
+     window.PRODUCTS — what they sell; each one belongs to a vendor
    ========================================================================== */
 
 window.SITE = {
-  /* ------------------------------------------------------------ profile -- */
+  /* ------------------------------------------------------------- brand -- */
   handle: "Abdullrhman",
-  name: { ar: "عبدالرحمن", en: "Abdullrhman" },
+  name: { ar: "سوق عبدالرحمن", en: "Abdullrhman Market" },
   verified: true,
-  avatar: "",              // e.g. "assets/img/avatar.jpg" — falls back to initials
-  initials: { ar: "ع", en: "A" },
+  avatar: "",              // e.g. "assets/img/logo.jpg" — falls back to initials
+  initials: { ar: "س", en: "M" },
   bio: {
-    ar: "أنظمة جاهزة وكتب رقمية تشتغل من أول يوم — مصمّمة بالكامل، تسلّم فوراً.",
-    en: "Ready-made systems and digital books that work from day one — fully designed, delivered instantly.",
+    ar: "سوق واحد، متاجر كثيرة. كل بائع عنده متجره الخاص — أنظمة، كتب، تصميم، تسويق واستشارات.",
+    en: "One marketplace, many stores. Every seller gets their own storefront — systems, books, design, marketing, and consulting.",
   },
 
   /* ------------------------------------------------------------ contact -- */
-  // WhatsApp number in international format, digits only (no + and no spaces).
-  // Leave "" to fall back to copy-to-clipboard checkout.
+  // Marketplace support number, digits only, country code first (no + and no spaces).
+  // Used for support, and for orders when orderRouting is "owner" or a vendor
+  // has no number of their own.
   whatsapp: "",
   email: "",
   // Newsletter form POST endpoint (Mailchimp / Buttondown / Formspree …).
   // Empty + no email = the newsletter block and its link stay hidden.
   newsletterAction: "",
   currency: { ar: "د.إ", en: "AED" },
+
+  /* ------------------------------------------------------------ orders -- */
+  // Who receives the order when a buyer checks out:
+  //   "vendor" — each seller gets their own order on their own WhatsApp.
+  //              A cart spanning three stores becomes three orders. Default.
+  //   "owner"  — every order comes to you, and you settle with the sellers.
+  //              Pick this if you take a commission or handle fulfilment.
+  orderRouting: "vendor",
 
   /* ------------------------------------------------------------ socials -- */
   socials: [
@@ -36,202 +50,336 @@ window.SITE = {
   /* -------------------------------------------------------------- links -- */
   links: [
     {
-      icon: "🛍️",
-      title: { ar: "المتجر — كل المنتجات", en: "Store — all products" },
-      sub:   { ar: "أنظمة وكتب رقمية، تسليم فوري", en: "Systems and digital books, instant delivery" },
-      url: "store.html",
+      icon: "🏬",
+      title: { ar: "كل المتاجر", en: "All stores" },
+      sub:   { ar: "تصفّح البائعين حسب تخصصهم", en: "Browse sellers by what they do" },
+      url: "vendors.html",
       tag: { ar: "الأهم", en: "Top" },
     },
     {
+      icon: "🛍️",
+      title: { ar: "كل المنتجات", en: "All products" },
+      sub:   { ar: "من كل المتاجر في مكان واحد", en: "Every store, one grid" },
+      url: "store.html",
+    },
+    {
       icon: "🧾",
-      title: { ar: "نظام إدارة المبيعات", en: "Sales management system" },
-      sub:   { ar: "جاهز للتركيب على عملك", en: "Ready to deploy on your business" },
-      url: "product.html?id=system-sales",
+      title: { ar: "أنظمة نوفا", en: "Nova Systems" },
+      sub:   { ar: "أنظمة إدارة جاهزة للتركيب", en: "Ready-to-deploy business systems" },
+      url: "vendor.html?id=nova-systems",
     },
     {
-      icon: "📘",
-      title: { ar: "كتاب: ابدأ متجرك الرقمي", en: "Book: Start your digital store" },
-      sub:   { ar: "PDF + ملفات العمل", en: "PDF + working files" },
-      url: "product.html?id=book-digital-store",
+      icon: "📚",
+      title: { ar: "دار القلم", en: "Dar Al-Qalam" },
+      sub:   { ar: "كتب رقمية وإصدارات حصرية", en: "Digital books and exclusive editions" },
+      url: "vendor.html?id=dar-alqalam",
     },
     {
-      icon: "📅",
-      title: { ar: "جلسة تركيب وإعداد", en: "Setup and onboarding session" },
-      sub:   { ar: "٦٠ دقيقة أونلاين", en: "60 minutes, online" },
-      url: "product.html?id=setup-60",
+      icon: "🏪",
+      title: { ar: "افتح متجرك عندنا", en: "Open your store with us" },
+      sub:   { ar: "انضم كبائع وابدأ البيع", en: "Join as a seller and start selling" },
+      url: "wa",              // "wa" resolves to the marketplace WhatsApp number
     },
     {
       icon: "📮",
       title: { ar: "النشرة الأسبوعية", en: "Weekly newsletter" },
-      sub:   { ar: "فكرة واحدة كل أسبوع — مجاناً", en: "One idea every week — free" },
+      sub:   { ar: "جديد المتاجر والعروض", en: "New stores and offers" },
       url: "#newsletter",
-    },
-    {
-      icon: "💬",
-      title: { ar: "تواصل معي واتساب", en: "Message me on WhatsApp" },
-      sub:   { ar: "للطلبات والاستفسارات", en: "Orders and questions" },
-      url: "wa",              // "wa" resolves to the WhatsApp number above
-    },
-  ],
-
-  /* ----------------------------------------------------------- products -- */
-  // PLACEHOLDER COPY. The shape is right — systems, books, templates, a bundle,
-  // a service — but every title, price, and feature line below is a stand-in.
-  // Replace them with the real products before going live.
-  // art: gradient stops + emoji, used when `image` is empty.
-  products: [
-    {
-      id: "system-sales",
-      category: { ar: "أنظمة", en: "Systems" },
-      title: { ar: "نظام إدارة المبيعات", en: "Sales Management System" },
-      desc: {
-        ar: "نظام كامل لإدارة العملاء والفواتير والمخزون — مصمّم وجاهز، تركيب في نفس اليوم.",
-        en: "A complete system for customers, invoices, and stock — designed and ready, deployed the same day.",
-      },
-      price: 1499, oldPrice: 2200,
-      badge: { ar: "الأكثر مبيعاً", en: "Bestseller" },
-      featured: true,
-      image: "",
-      art: { emoji: "🧾", from: "#3a2f5f", to: "#0f0d1a" },
-      features: [
-        { ar: "لوحة تحكم كاملة بالعربي والإنجليزي", en: "Full dashboard in Arabic and English" },
-        { ar: "فواتير وتقارير جاهزة للطباعة", en: "Print-ready invoices and reports" },
-        { ar: "تركيب وإعداد أولي مشمول", en: "Installation and initial setup included" },
-        { ar: "تحديثات مجانية لمدة سنة", en: "Free updates for one year" },
-      ],
-    },
-    {
-      id: "system-inventory",
-      category: { ar: "أنظمة", en: "Systems" },
-      title: { ar: "نظام المخزون والمستودعات", en: "Inventory & Warehouse System" },
-      desc: {
-        ar: "تتبّع الكميات والحركة والتنبيهات — يشتغل لوحده ويقول لك متى تطلب.",
-        en: "Track quantities, movement, and alerts — it tells you when to reorder.",
-      },
-      price: 1199,
-      badge: null,
-      featured: true,
-      image: "",
-      art: { emoji: "📦", from: "#1f4a44", to: "#0b1614" },
-      features: [
-        { ar: "جرد فوري وتنبيهات نفاد", en: "Live stock counts and low-stock alerts" },
-        { ar: "باركود ودعم أكثر من مستودع", en: "Barcode support, multiple warehouses" },
-        { ar: "تصدير Excel لكل التقارير", en: "Excel export on every report" },
-      ],
-    },
-    {
-      id: "book-digital-store",
-      category: { ar: "كتب", en: "Books" },
-      title: { ar: "كتاب: ابدأ متجرك الرقمي", en: "Book: Start Your Digital Store" },
-      desc: {
-        ar: "من الفكرة إلى أول عملية بيع — خطوات عملية بدون حشو، مع ملفات جاهزة.",
-        en: "From idea to first sale — practical steps with no filler, plus ready-to-use files.",
-      },
-      price: 89, oldPrice: 149,
-      badge: { ar: "تسليم فوري", en: "Instant" },
-      featured: true,
-      image: "",
-      art: { emoji: "📘", from: "#63451f", to: "#1a1207" },
-      features: [
-        { ar: "PDF بصيغة قابلة للطباعة", en: "Print-ready PDF" },
-        { ar: "قوالب تسعير وحساب أرباح", en: "Pricing and margin templates" },
-        { ar: "تحديثات الإصدارات القادمة مجاناً", en: "Future editions free" },
-      ],
-    },
-    {
-      id: "book-operations",
-      category: { ar: "كتب", en: "Books" },
-      title: { ar: "كتاب: تشغيل بلا فوضى", en: "Book: Operations Without Chaos" },
-      desc: {
-        ar: "كيف تبني إجراءات تشغيل واضحة لفريقك، حتى لو كنت لوحدك اليوم.",
-        en: "How to build clear operating procedures for your team — even if today it's just you.",
-      },
-      price: 79,
-      badge: null,
-      featured: false,
-      image: "",
-      art: { emoji: "📗", from: "#2b3d63", to: "#0c1120" },
-      features: [
-        { ar: "١٢ إجراء تشغيل جاهز للتعديل", en: "12 editable standard procedures" },
-        { ar: "قوائم فحص للتسليم اليومي", en: "Daily handover checklists" },
-        { ar: "أمثلة واقعية من السوق الخليجي", en: "Real examples from the Gulf market" },
-      ],
-    },
-    {
-      id: "templates-admin",
-      category: { ar: "قوالب", en: "Templates" },
-      title: { ar: "حزمة قوالب إدارية — ٢٥ قالب", en: "Admin Templates Pack — 25 files" },
-      desc: {
-        ar: "عقود، عروض أسعار، فواتير وتقارير — مصمّمة بالعربي والإنجليزي وجاهزة للتعبئة.",
-        en: "Contracts, quotes, invoices, and reports — designed in Arabic and English, ready to fill.",
-      },
-      price: 199, oldPrice: 299,
-      badge: null,
-      featured: false,
-      image: "",
-      art: { emoji: "✨", from: "#4a2340", to: "#160b14" },
-      features: [
-        { ar: "٢٥ ملف بصيغة Word و Excel", en: "25 files in Word and Excel" },
-        { ar: "خطوط عربية مرفقة", en: "Arabic fonts included" },
-        { ar: "نسخ RTL و LTR لكل قالب", en: "RTL and LTR versions of every template" },
-      ],
-    },
-    {
-      id: "setup-60",
-      category: { ar: "خدمات", en: "Services" },
-      title: { ar: "جلسة تركيب وإعداد — ٦٠ دقيقة", en: "Setup & Onboarding — 60 min" },
-      desc: {
-        ar: "نركّب النظام على عملك ونضبطه معك خطوة بخطوة حتى يشتغل بالكامل.",
-        en: "We install the system on your business and configure it with you until it runs.",
-      },
-      price: 499,
-      badge: { ar: "مقاعد محدودة", en: "Limited" },
-      featured: false,
-      image: "",
-      art: { emoji: "🎯", from: "#5f4326", to: "#1a120a" },
-      features: [
-        { ar: "٦٠ دقيقة عبر Google Meet", en: "60 minutes over Google Meet" },
-        { ar: "ضبط النظام على بياناتك", en: "Configured against your own data" },
-        { ar: "متابعة لمدة أسبوع", en: "One week of follow-up" },
-      ],
-    },
-    {
-      id: "bundle-all",
-      category: { ar: "باقات", en: "Bundles" },
-      title: { ar: "الباقة الكاملة — كل المنتجات", en: "The Complete Bundle" },
-      desc: {
-        ar: "الأنظمة + الكتب + القوالب بسعر واحد، وفّر أكثر من ٤٠٪.",
-        en: "Systems + books + templates in one price. Save over 40%.",
-      },
-      price: 1999, oldPrice: 3564,
-      badge: { ar: "وفّر ٤٠٪", en: "Save 40%" },
-      featured: true,
-      image: "",
-      art: { emoji: "🎁", from: "#63451f", to: "#1a1207" },
-      features: [
-        { ar: "كل المنتجات الرقمية الحالية", en: "Every current digital product" },
-        { ar: "المنتجات القادمة مجاناً لمدة سنة", en: "Upcoming releases free for a year" },
-        { ar: "أولوية في الرد على الاستفسارات", en: "Priority support" },
-      ],
     },
   ],
 };
 
+/* ============================================================== vendors == */
+/* Each vendor gets their own storefront at vendor.html?id=<id>.
+   `whatsapp` is that seller's own number — orders for their products go
+   straight to them. Leave it empty and the order falls back to the
+   marketplace number in SITE above.                                        */
+
+window.VENDORS = [
+  {
+    id: "nova-systems",
+    name:     { ar: "أنظمة نوفا", en: "Nova Systems" },
+    tagline:  { ar: "أنظمة إدارة جاهزة، تركيب في نفس اليوم", en: "Ready-made business systems, deployed same day" },
+    category: { ar: "أنظمة", en: "Systems" },
+    initials: { ar: "ن", en: "N" },
+    whatsapp: "",
+    verified: true,
+    featured: true,
+    since: 2023,
+    art: { emoji: "🧾", from: "#3a2f5f", to: "#0f0d1a" },
+  },
+  {
+    id: "dar-alqalam",
+    name:     { ar: "دار القلم", en: "Dar Al-Qalam" },
+    tagline:  { ar: "كتب رقمية تُقرأ مرة وتُستخدم كل يوم", en: "Digital books you read once and use daily" },
+    category: { ar: "كتب", en: "Books" },
+    initials: { ar: "ق", en: "D" },
+    whatsapp: "",
+    verified: true,
+    featured: true,
+    since: 2022,
+    art: { emoji: "📚", from: "#1f4a44", to: "#0b1614" },
+  },
+  {
+    id: "pixel-craft",
+    name:     { ar: "بيكسل كرافت", en: "Pixel Craft" },
+    tagline:  { ar: "قوالب وهويات بصرية جاهزة للتعديل", en: "Editable templates and brand kits" },
+    category: { ar: "تصميم", en: "Design" },
+    initials: { ar: "ب", en: "P" },
+    whatsapp: "",
+    verified: false,
+    featured: true,
+    since: 2024,
+    art: { emoji: "🎨", from: "#4a2340", to: "#160b14" },
+  },
+  {
+    id: "rise-marketing",
+    name:     { ar: "رايز للتسويق", en: "Rise Marketing" },
+    tagline:  { ar: "خطط ومحتوى تسويقي يشتغل من أول شهر", en: "Marketing plans and content that work from month one" },
+    category: { ar: "تسويق", en: "Marketing" },
+    initials: { ar: "ر", en: "R" },
+    whatsapp: "",
+    verified: false,
+    featured: false,
+    since: 2024,
+    art: { emoji: "📣", from: "#63451f", to: "#1a1207" },
+  },
+  {
+    id: "sanad-consulting",
+    name:     { ar: "سند للاستشارات", en: "Sanad Consulting" },
+    tagline:  { ar: "استشارات تشغيل وتأسيس للأعمال الصغيرة", en: "Operations and setup consulting for small business" },
+    category: { ar: "استشارات", en: "Consulting" },
+    initials: { ar: "س", en: "S" },
+    whatsapp: "",
+    verified: true,
+    featured: false,
+    since: 2021,
+    art: { emoji: "🎯", from: "#2b3d63", to: "#0c1120" },
+  },
+];
+
+/* ============================================================= products == */
+/* PLACEHOLDER COPY. The shape is right — every product belongs to a vendor
+   via `vendor`, which must match an id in VENDORS above — but the titles,
+   prices, and feature lines are stand-ins. Replace them with real ones.
+   art: gradient stops + emoji, used when `image` is empty.                  */
+
+window.PRODUCTS = [
+  {
+    id: "system-sales",
+    vendor: "nova-systems",
+    category: { ar: "أنظمة", en: "Systems" },
+    title: { ar: "نظام إدارة المبيعات", en: "Sales Management System" },
+    desc: {
+      ar: "نظام كامل لإدارة العملاء والفواتير والمخزون — مصمّم وجاهز، تركيب في نفس اليوم.",
+      en: "A complete system for customers, invoices, and stock — designed and ready, deployed the same day.",
+    },
+    price: 1499, oldPrice: 2200,
+    badge: { ar: "الأكثر مبيعاً", en: "Bestseller" },
+    featured: true,
+    image: "",
+    art: { emoji: "🧾", from: "#3a2f5f", to: "#0f0d1a" },
+    features: [
+      { ar: "لوحة تحكم كاملة بالعربي والإنجليزي", en: "Full dashboard in Arabic and English" },
+      { ar: "فواتير وتقارير جاهزة للطباعة", en: "Print-ready invoices and reports" },
+      { ar: "تركيب وإعداد أولي مشمول", en: "Installation and initial setup included" },
+      { ar: "تحديثات مجانية لمدة سنة", en: "Free updates for one year" },
+    ],
+  },
+  {
+    id: "system-inventory",
+    vendor: "nova-systems",
+    category: { ar: "أنظمة", en: "Systems" },
+    title: { ar: "نظام المخزون والمستودعات", en: "Inventory & Warehouse System" },
+    desc: {
+      ar: "تتبّع الكميات والحركة والتنبيهات — يشتغل لوحده ويقول لك متى تطلب.",
+      en: "Track quantities, movement, and alerts — it tells you when to reorder.",
+    },
+    price: 1199,
+    badge: null,
+    featured: true,
+    image: "",
+    art: { emoji: "📦", from: "#1f4a44", to: "#0b1614" },
+    features: [
+      { ar: "جرد فوري وتنبيهات نفاد", en: "Live stock counts and low-stock alerts" },
+      { ar: "باركود ودعم أكثر من مستودع", en: "Barcode support, multiple warehouses" },
+      { ar: "تصدير Excel لكل التقارير", en: "Excel export on every report" },
+    ],
+  },
+  {
+    id: "book-digital-store",
+    vendor: "dar-alqalam",
+    category: { ar: "كتب", en: "Books" },
+    title: { ar: "كتاب: ابدأ متجرك الرقمي", en: "Book: Start Your Digital Store" },
+    desc: {
+      ar: "من الفكرة إلى أول عملية بيع — خطوات عملية بدون حشو، مع ملفات جاهزة.",
+      en: "From idea to first sale — practical steps with no filler, plus ready-to-use files.",
+    },
+    price: 89, oldPrice: 149,
+    badge: { ar: "تسليم فوري", en: "Instant" },
+    featured: true,
+    image: "",
+    art: { emoji: "📘", from: "#63451f", to: "#1a1207" },
+    features: [
+      { ar: "PDF بصيغة قابلة للطباعة", en: "Print-ready PDF" },
+      { ar: "قوالب تسعير وحساب أرباح", en: "Pricing and margin templates" },
+      { ar: "تحديثات الإصدارات القادمة مجاناً", en: "Future editions free" },
+    ],
+  },
+  {
+    id: "book-operations",
+    vendor: "dar-alqalam",
+    category: { ar: "كتب", en: "Books" },
+    title: { ar: "كتاب: تشغيل بلا فوضى", en: "Book: Operations Without Chaos" },
+    desc: {
+      ar: "كيف تبني إجراءات تشغيل واضحة لفريقك، حتى لو كنت لوحدك اليوم.",
+      en: "How to build clear operating procedures for your team — even if today it's just you.",
+    },
+    price: 79,
+    badge: null,
+    featured: false,
+    image: "",
+    art: { emoji: "📗", from: "#2b3d63", to: "#0c1120" },
+    features: [
+      { ar: "١٢ إجراء تشغيل جاهز للتعديل", en: "12 editable standard procedures" },
+      { ar: "قوائم فحص للتسليم اليومي", en: "Daily handover checklists" },
+      { ar: "أمثلة واقعية من السوق الخليجي", en: "Real examples from the Gulf market" },
+    ],
+  },
+  {
+    id: "templates-admin",
+    vendor: "pixel-craft",
+    category: { ar: "قوالب", en: "Templates" },
+    title: { ar: "حزمة قوالب إدارية — ٢٥ قالب", en: "Admin Templates Pack — 25 files" },
+    desc: {
+      ar: "عقود، عروض أسعار، فواتير وتقارير — مصمّمة بالعربي والإنجليزي وجاهزة للتعبئة.",
+      en: "Contracts, quotes, invoices, and reports — designed in Arabic and English, ready to fill.",
+    },
+    price: 199, oldPrice: 299,
+    badge: null,
+    featured: true,
+    image: "",
+    art: { emoji: "✨", from: "#4a2340", to: "#160b14" },
+    features: [
+      { ar: "٢٥ ملف بصيغة Word و Excel", en: "25 files in Word and Excel" },
+      { ar: "خطوط عربية مرفقة", en: "Arabic fonts included" },
+      { ar: "نسخ RTL و LTR لكل قالب", en: "RTL and LTR versions of every template" },
+    ],
+  },
+  {
+    id: "brand-kit",
+    vendor: "pixel-craft",
+    category: { ar: "هويات", en: "Branding" },
+    title: { ar: "هوية بصرية جاهزة", en: "Ready Brand Kit" },
+    desc: {
+      ar: "شعار وألوان وخطوط وقوالب سوشيال — هوية كاملة تعدّلها باسمك في ساعة.",
+      en: "Logo, colors, fonts, and social templates — a full identity you rebrand in an hour.",
+    },
+    price: 349, oldPrice: 599,
+    badge: { ar: "جديد", en: "New" },
+    featured: false,
+    image: "",
+    art: { emoji: "🎨", from: "#5f4326", to: "#1a120a" },
+    features: [
+      { ar: "ملفات مفتوحة بصيغة Figma و AI", en: "Editable Figma and AI files" },
+      { ar: "٣٠ قالب سوشيال ميديا", en: "30 social media templates" },
+      { ar: "دليل استخدام الهوية", en: "Brand usage guide" },
+    ],
+  },
+  {
+    id: "marketing-plan",
+    vendor: "rise-marketing",
+    category: { ar: "تسويق", en: "Marketing" },
+    title: { ar: "خطة تسويق ٩٠ يوم", en: "90-Day Marketing Plan" },
+    desc: {
+      ar: "خطة مكتوبة لثلاثة أشهر: القنوات، المحتوى، الميزانية، ومؤشرات القياس.",
+      en: "A written three-month plan: channels, content, budget, and the metrics to watch.",
+    },
+    price: 899,
+    badge: { ar: "مقاعد محدودة", en: "Limited" },
+    featured: true,
+    image: "",
+    art: { emoji: "📣", from: "#63451f", to: "#1a1207" },
+    features: [
+      { ar: "تحليل السوق والمنافسين", en: "Market and competitor analysis" },
+      { ar: "تقويم محتوى ٩٠ يوم", en: "90-day content calendar" },
+      { ar: "جلسة تسليم ومراجعة", en: "Handover and review session" },
+    ],
+  },
+  {
+    id: "setup-60",
+    vendor: "sanad-consulting",
+    category: { ar: "استشارات", en: "Consulting" },
+    title: { ar: "جلسة تركيب وإعداد — ٦٠ دقيقة", en: "Setup & Onboarding — 60 min" },
+    desc: {
+      ar: "نركّب النظام على عملك ونضبطه معك خطوة بخطوة حتى يشتغل بالكامل.",
+      en: "We install the system on your business and configure it with you until it runs.",
+    },
+    price: 499,
+    badge: null,
+    featured: false,
+    image: "",
+    art: { emoji: "🎯", from: "#2b3d63", to: "#0c1120" },
+    features: [
+      { ar: "٦٠ دقيقة عبر Google Meet", en: "60 minutes over Google Meet" },
+      { ar: "ضبط النظام على بياناتك", en: "Configured against your own data" },
+      { ar: "متابعة لمدة أسبوع", en: "One week of follow-up" },
+    ],
+  },
+  {
+    id: "audit-ops",
+    vendor: "sanad-consulting",
+    category: { ar: "استشارات", en: "Consulting" },
+    title: { ar: "مراجعة تشغيلية شاملة", en: "Full Operations Audit" },
+    desc: {
+      ar: "نراجع عملياتك من الطلب حتى التسليم ونطلع بتقرير فيه ما يجب إصلاحه أولاً.",
+      en: "We review your flow from order to delivery and report what to fix first.",
+    },
+    price: 1899, oldPrice: 2400,
+    badge: null,
+    featured: false,
+    image: "",
+    art: { emoji: "🔍", from: "#3a2f5f", to: "#0f0d1a" },
+    features: [
+      { ar: "مقابلات مع الفريق", en: "Interviews with your team" },
+      { ar: "تقرير مكتوب بأولويات واضحة", en: "Written report with clear priorities" },
+      { ar: "متابعة بعد ٣٠ يوم", en: "30-day follow-up" },
+    ],
+  },
+];
+
 /* --------------------------------------------------------------- strings -- */
 window.I18N = {
   ar: {
-    "nav.store": "المتجر",
-    "nav.links": "الروابط",
-    "profile.links": "روابطي",
+    "nav.store": "المنتجات",
+    "nav.vendors": "المتاجر",
+    "nav.links": "الرئيسية",
+    "profile.links": "روابط سريعة",
     "profile.featured": "منتجات مختارة",
-    "profile.all": "كل المنتجات",
-    "store.eyebrow": "المتجر",
-    "store.title": "منتجات تختصر عليك الطريق",
-    "store.sub": "منتجات رقمية جاهزة للتحميل فور الدفع، وخدمات محدودة المقاعد.",
-    "store.search": "ابحث عن منتج…",
+    "profile.stores": "متاجر مختارة",
+    "profile.all": "عرض الكل",
+    "store.eyebrow": "كل المنتجات",
+    "store.title": "كل المتاجر في مكان واحد",
+    "store.sub": "تصفّح منتجات كل البائعين، أو ادخل متجر بائع معيّن.",
+    "store.search": "ابحث عن منتج أو متجر…",
     "store.all": "الكل",
+    "store.allVendors": "كل المتاجر",
     "store.empty": "ما لقينا منتجات بهذا البحث",
     "store.count": "منتج",
+    "vendors.eyebrow": "المتاجر",
+    "vendors.title": "بائعون، كل واحد بمتجره",
+    "vendors.sub": "كل متجر مستقل بمنتجاته وطلباته. اختر المتجر الذي يناسبك.",
+    "vendors.search": "ابحث عن متجر…",
+    "vendors.empty": "ما لقينا متاجر بهذا البحث",
+    "vendors.count": "متجر",
+    "vendors.products": "منتج",
+    "vendors.visit": "زيارة المتجر",
+    "vendor.back": "كل المتاجر",
+    "vendor.by": "البائع",
+    "vendor.since": "بائع منذ",
+    "vendor.contact": "تواصل مع المتجر",
+    "vendor.missing": "المتجر غير موجود",
+    "vendor.otherStores": "متاجر أخرى",
     "trust.instant": "تسليم فوري",
     "trust.secure": "دفع آمن",
     "trust.support": "دعم مباشر",
@@ -241,21 +389,26 @@ window.I18N = {
     "product.details": "التفاصيل",
     "product.includes": "المنتج يشمل",
     "product.qty": "الكمية",
-    "product.back": "رجوع للمتجر",
+    "product.back": "رجوع للمنتجات",
     "product.missing": "المنتج غير موجود",
+    "product.more": "منتجات أخرى من نفس المتجر",
     "cart.title": "سلة المشتريات",
     "cart.empty": "سلتك فارغة",
-    "cart.emptyHint": "تصفح المتجر وأضف ما يعجبك",
+    "cart.emptyHint": "تصفح المتاجر وأضف ما يعجبك",
     "cart.total": "الإجمالي",
+    "cart.subtotal": "إجمالي المتجر",
+    "cart.split": "طلبك موزّع على أكثر من متجر — كل متجر يستلم طلبه بنفسه",
+    "cart.sendTo": "أرسل الطلب إلى",
     "cart.checkout": "إتمام الطلب عبر واتساب",
     "cart.copy": "نسخ تفاصيل الطلب",
-    "cart.copied": "تم نسخ الطلب — أرسله لي",
+    "cart.copied": "تم نسخ الطلب — أرسله للمتجر",
     "cart.close": "إغلاق",
-    "cart.browse": "تصفح المتجر",
+    "cart.browse": "تصفح المتاجر",
     "order.title": "طلب جديد",
     "order.total": "الإجمالي",
+    "order.via": "عبر",
     "newsletter.title": "النشرة الأسبوعية",
-    "newsletter.sub": "فكرة عملية واحدة كل أسبوع. بدون سبام.",
+    "newsletter.sub": "جديد المتاجر والعروض كل أسبوع. بدون سبام.",
     "newsletter.placeholder": "بريدك الإلكتروني",
     "newsletter.cta": "اشترك",
     "newsletter.done": "تم! راجع بريدك لتأكيد الاشتراك",
@@ -266,18 +419,35 @@ window.I18N = {
     "a11y.cart": "السلة",
   },
   en: {
-    "nav.store": "Store",
-    "nav.links": "Links",
-    "profile.links": "My links",
+    "nav.store": "Products",
+    "nav.vendors": "Stores",
+    "nav.links": "Home",
+    "profile.links": "Quick links",
     "profile.featured": "Featured products",
+    "profile.stores": "Featured stores",
     "profile.all": "See all",
-    "store.eyebrow": "Store",
-    "store.title": "Products that skip the hard part",
-    "store.sub": "Digital products delivered the moment you pay, plus limited-seat services.",
-    "store.search": "Search products…",
+    "store.eyebrow": "All products",
+    "store.title": "Every store in one place",
+    "store.sub": "Browse products from every seller, or step into one seller's store.",
+    "store.search": "Search a product or store…",
     "store.all": "All",
+    "store.allVendors": "All stores",
     "store.empty": "No products match that search",
     "store.count": "products",
+    "vendors.eyebrow": "Stores",
+    "vendors.title": "Sellers, each with their own store",
+    "vendors.sub": "Every store is independent — its own products, its own orders. Pick the one you need.",
+    "vendors.search": "Search stores…",
+    "vendors.empty": "No stores match that search",
+    "vendors.count": "stores",
+    "vendors.products": "products",
+    "vendors.visit": "Visit store",
+    "vendor.back": "All stores",
+    "vendor.by": "Sold by",
+    "vendor.since": "Selling since",
+    "vendor.contact": "Contact this store",
+    "vendor.missing": "Store not found",
+    "vendor.otherStores": "Other stores",
     "trust.instant": "Instant delivery",
     "trust.secure": "Secure payment",
     "trust.support": "Direct support",
@@ -287,21 +457,26 @@ window.I18N = {
     "product.details": "Details",
     "product.includes": "What's included",
     "product.qty": "Quantity",
-    "product.back": "Back to store",
+    "product.back": "Back to products",
     "product.missing": "Product not found",
+    "product.more": "More from this store",
     "cart.title": "Your cart",
     "cart.empty": "Your cart is empty",
-    "cart.emptyHint": "Browse the store and add something you like",
+    "cart.emptyHint": "Browse the stores and add something you like",
     "cart.total": "Total",
+    "cart.subtotal": "Store subtotal",
+    "cart.split": "Your cart spans more than one store — each store receives its own order",
+    "cart.sendTo": "Send order to",
     "cart.checkout": "Checkout on WhatsApp",
     "cart.copy": "Copy order details",
-    "cart.copied": "Order copied — send it to me",
+    "cart.copied": "Order copied — send it to the store",
     "cart.close": "Close",
-    "cart.browse": "Browse the store",
+    "cart.browse": "Browse stores",
     "order.title": "New order",
     "order.total": "Total",
+    "order.via": "via",
     "newsletter.title": "Weekly newsletter",
-    "newsletter.sub": "One practical idea every week. No spam.",
+    "newsletter.sub": "New stores and offers every week. No spam.",
     "newsletter.placeholder": "Your email address",
     "newsletter.cta": "Subscribe",
     "newsletter.done": "Done! Check your inbox to confirm",

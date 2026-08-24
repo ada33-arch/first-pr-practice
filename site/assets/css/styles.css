@@ -710,3 +710,182 @@ html[dir="rtl"] .backlink svg { transform: none; }
 
 /* handles and other Latin runs inside RTL text keep their own direction */
 .ltr { direction: ltr; unicode-bidi: isolate; display: inline-block; }
+
+/* ==========================================================================
+   Marketplace: store cards, storefront header, seller byline, split cart
+   ========================================================================== */
+
+/* ------------------------------------------------------- store directory -- */
+.vendors {
+  display: grid;
+  gap: .75rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+}
+
+.vendor-card {
+  display: flex;
+  align-items: center;
+  gap: .9rem;
+  padding: .9rem 1rem;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  transition: background .2s var(--ease), border-color .2s var(--ease), transform .2s var(--ease);
+}
+.vendor-card:hover {
+  background: var(--surface-hover);
+  border-color: var(--accent-glow);
+  transform: translateY(-2px);
+}
+.vendor-card__art {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: var(--r-sm);
+  font-size: 1.5rem;
+}
+.vendor-card__body { flex: 1 1 auto; min-width: 0; }
+.vendor-card__cat {
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.vendor-card__title {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  margin-top: .1rem;
+  font-weight: 700;
+}
+.vendor-card__sub {
+  margin-top: .15rem;
+  font-size: .85rem;
+  color: var(--ink-soft);
+  /* Taglines vary in length; keep every card the same height. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.vendor-card__meta {
+  margin-top: .35rem;
+  font-size: .75rem;
+  color: var(--ink-mute);
+}
+
+/* ---------------------------------------------------- one seller's store -- */
+.storefront {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  padding: 1.5rem;
+  margin-top: .5rem;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+.storefront__art {
+  display: grid;
+  place-items: center;
+  width: 88px;
+  height: 88px;
+  border-radius: var(--r-md);
+  font-size: 2.4rem;
+}
+.storefront__body { flex: 1 1 16rem; }
+.storefront__body h1 {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  margin: .15rem 0 .35rem;
+  font-size: clamp(1.4rem, 4vw, 1.9rem);
+}
+.storefront__meta {
+  display: flex;
+  gap: .4rem;
+  margin: .6rem 0 .9rem;
+  font-size: .8rem;
+  color: var(--ink-mute);
+}
+
+/* -------------------------------------------------------- seller bylines -- */
+.product__vendor {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  margin-top: .25rem;
+  font-size: .78rem;
+  color: var(--ink-soft);
+}
+.product__vendor:hover { color: var(--accent); }
+.product__vendor-mark { font-size: .9rem; }
+
+.seller {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  margin: .9rem 0;
+  padding: .6rem .75rem;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  transition: background .2s var(--ease), border-color .2s var(--ease);
+}
+.seller:hover { background: var(--surface-hover); border-color: var(--accent-glow); }
+.seller__art {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  font-size: 1.15rem;
+}
+.seller__body { display: flex; flex-direction: column; flex: 1 1 auto; }
+.seller__label { font-size: .7rem; color: var(--ink-mute); }
+.seller__name { display: flex; align-items: center; gap: .3rem; font-weight: 700; }
+
+.verified--sm { width: 14px; height: 14px; }
+
+/* ---------------------------------------------------------- store filter -- */
+.vendor-filter select {
+  padding: .55rem .8rem;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 600;
+  cursor: pointer;
+}
+.vendor-filter select:hover { background: var(--surface-hover); }
+
+/* ------------------------------------------- cart split across the stores -- */
+.cart-note {
+  margin-bottom: .85rem;
+  padding: .6rem .75rem;
+  border-radius: var(--r-sm);
+  background: var(--accent-glow);
+  color: var(--ink);
+  font-size: .78rem;
+}
+.cart-group + .cart-group {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--hairline-soft);
+}
+.cart-group__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: .5rem;
+  margin-bottom: .5rem;
+  font-size: .8rem;
+  font-weight: 700;
+}
+.cart-group__head a:hover { color: var(--accent); }
+.cart-group__head span:last-child { color: var(--ink-soft); font-weight: 500; }
+.cart-group .btn { margin-top: .6rem; }

@@ -6,6 +6,8 @@
   "use strict";
 
   var S = window.SITE || {};
+  var V = window.VENDORS || [];
+  var P = window.PRODUCTS || [];
   var DICT = window.I18N || { ar: {}, en: {} };
 
   var KEY = { lang: "nzm.lang", theme: "nzm.theme", cart: "nzm.cart" };
@@ -34,7 +36,22 @@
       .map(function (l) { return { id: l.id, qty: Math.min(99, Math.max(1, parseInt(l.qty, 10) || 1)) }; });
   }
   function findProduct(id) {
-    return (S.products || []).filter(function (p) { return p.id === id; })[0];
+    return P.filter(function (p) { return p.id === id; })[0];
+  }
+  function findVendor(id) {
+    return V.filter(function (v) { return v.id === id; })[0];
+  }
+  function vendorOf(product) {
+    return product ? findVendor(product.vendor) : undefined;
+  }
+  function productsOf(vendorId) {
+    return P.filter(function (p) { return p.vendor === vendorId; });
+  }
+  // A vendor sells through their own number. Fall back to the marketplace
+  // number so an order is never dropped just because a seller hasn't given one.
+  function vendorNumber(vendor) {
+    if (S.orderRouting === "owner") return S.whatsapp || "";
+    return (vendor && vendor.whatsapp) || S.whatsapp || "";
   }
   function t(key) { return (DICT[lang] && DICT[lang][key]) || (DICT.ar && DICT.ar[key]) || key; }
   function tx(value) {
@@ -52,10 +69,11 @@
     var cur = tx(S.currency) || "SAR";
     return lang === "ar" ? num + " " + cur : cur + " " + num;
   }
-  function waLink(text) {
-    if (!S.whatsapp) return "";
-    return "https://wa.me/" + String(S.whatsapp).replace(/\D/g, "") + "?text=" + encodeURIComponent(text);
+  function waLinkFor(number, text) {
+    if (!number) return "";
+    return "https://wa.me/" + String(number).replace(/\D/g, "") + "?text=" + encodeURIComponent(text);
   }
+  function waLink(text) { return waLinkFor(S.whatsapp, text); }
   function qs(sel, root) { return (root || document).querySelector(sel); }
   function qsa(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
 
@@ -151,23 +169,63 @@
   }
   function removeFromCart(id) { setQty(id, 0); }
 
+  // A cart can span several stores. Group it so each seller gets their own
+  // order rather than one order nobody owns. Order of first appearance is kept.
+  function cartGroups() {
+    var groups = [];
+    var byId = {};
+    cart.forEach(function (l) {
+      var product = findProduct(l.id);
+      if (!product) return;
+      var key = product.vendor || "";
+      if (!byId[key]) {
+        byId[key] = { vendorId: key, vendor: findVendor(key), lines: [], total: 0 };
+        groups.push(byId[key]);
+      }
+      byId[key].lines.push({ product: product, qty: l.qty });
+      byId[key].total += product.price * l.qty;
+    });
+    return groups;
+  }
+
+  function lineText(entry) {
+    return entry.qty + "× " + tx(entry.product.title) + " — " + money(entry.product.price * entry.qty);
+  }
+
+  // One store's order.
+  function groupOrderText(group) {
+    var who = group.vendor ? tx(group.vendor.name) : tx(S.name);
+    return [
+      t("order.title") + " · " + who,
+      "————————————",
+      group.lines.map(lineText).join("\n"),
+      "————————————",
+      t("order.total") + ": " + money(group.total),
+      t("order.via") + " " + tx(S.name),
+    ].join("\n");
+  }
+
+  // The whole cart as one order, labelled by store. Used when orderRouting
+  // is "owner" — you receive everything and settle with the sellers yourself.
   function orderText() {
-    var lines = cart.map(function (l) {
-      var p = findProduct(l.id);
-      return l.qty + "× " + tx(p.title) + " — " + money(p.price * l.qty);
+    var groups = cartGroups();
+    if (groups.length === 1) return groupOrderText(groups[0]);
+    var blocks = groups.map(function (g) {
+      var who = g.vendor ? tx(g.vendor.name) : tx(S.name);
+      return "▸ " + who + "\n" + g.lines.map(lineText).join("\n") +
+        "\n" + t("cart.subtotal") + ": " + money(g.total);
     });
     return [
       t("order.title") + " · " + tx(S.name),
       "————————————",
-      lines.join("\n"),
+      blocks.join("\n\n"),
       "————————————",
       t("order.total") + ": " + money(cartTotal()),
     ].join("\n");
   }
-  function checkout() {
-    if (!cart.length) return;
-    var text = orderText();
-    var url = waLink(text);
+
+  function send(number, text) {
+    var url = waLinkFor(number, text);
     if (url) { window.open(url, "_blank", "noopener"); return; }
     if (S.email) {
       window.location.href = "mailto:" + S.email + "?subject=" +
@@ -175,6 +233,23 @@
       return;
     }
     copy(text).then(function () { toast(t("cart.copied")); });
+  }
+
+  // One store's order goes to that store.
+  function checkoutGroup(vendorId) {
+    var group = cartGroups().filter(function (g) { return g.vendorId === vendorId; })[0];
+    if (!group) return;
+    send(vendorNumber(group.vendor), groupOrderText(group));
+  }
+
+  // Whole-cart checkout: only meaningful when everything routes to one number
+  // (owner routing, or a cart that happens to hold a single store).
+  function checkout() {
+    if (!cart.length) return;
+    var groups = cartGroups();
+    if (S.orderRouting === "owner") { send(S.whatsapp, orderText()); return; }
+    if (groups.length === 1) { checkoutGroup(groups[0].vendorId); return; }
+    copy(orderText()).then(function () { toast(t("cart.copied")); });
   }
   function copy(text) {
     if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
@@ -216,9 +291,8 @@
           "<span data-brand-name></span>" +
         "</a>" +
         '<div class="topbar__tools">' +
-          (page === "home"
-            ? '<a class="icon-btn icon-btn--text" href="store.html" data-i18n="nav.store"></a>'
-            : '<a class="icon-btn icon-btn--text" href="index.html" data-i18n="nav.links"></a>') +
+          '<a class="icon-btn icon-btn--text" href="vendors.html" data-i18n="nav.vendors"></a>' +
+          '<a class="icon-btn icon-btn--text" href="store.html" data-i18n="nav.store"></a>' +
           '<button class="icon-btn icon-btn--text" data-lang-toggle data-i18n-aria="a11y.lang"></button>' +
           '<button class="icon-btn" data-theme-toggle data-i18n-aria="a11y.theme"></button>' +
           '<button class="icon-btn" data-cart-open data-i18n-aria="a11y.cart">' + icon("cart") +
@@ -243,13 +317,14 @@
     while (extras.firstChild) document.body.appendChild(extras.firstChild);
 
     document.addEventListener("click", function (ev) {
-      var el = ev.target.closest("[data-cart-open],[data-cart-close],[data-theme-toggle],[data-lang-toggle],[data-checkout],[data-copy-order]");
+      var el = ev.target.closest("[data-cart-open],[data-cart-close],[data-theme-toggle],[data-lang-toggle],[data-checkout],[data-checkout-vendor],[data-copy-order]");
       if (!el) return;
       if (el.hasAttribute("data-cart-open")) openCart(true);
       else if (el.hasAttribute("data-cart-close")) openCart(false);
       else if (el.hasAttribute("data-theme-toggle")) setTheme(theme === "dark" ? "light" : "dark");
       else if (el.hasAttribute("data-lang-toggle")) setLang(lang === "ar" ? "en" : "ar");
       else if (el.hasAttribute("data-checkout")) checkout();
+      else if (el.hasAttribute("data-checkout-vendor")) checkoutGroup(el.getAttribute("data-checkout-vendor"));
       else if (el.hasAttribute("data-copy-order")) copy(orderText()).then(function () { toast(t("cart.copied")); });
     });
     document.addEventListener("keydown", function (ev) {
@@ -290,31 +365,62 @@
       return;
     }
 
-    body.innerHTML = cart.map(function (l) {
-      var p = findProduct(l.id);
-      return '<div class="line">' +
-          artHTML(p, "line__art") +
-          '<div class="line__body">' +
-            '<div class="line__title">' + esc(tx(p.title)) + "</div>" +
-            '<div class="line__meta">' + l.qty + " × " + esc(money(p.price)) + "</div>" +
-          "</div>" +
-          '<div class="stepper">' +
-            '<button data-qty="' + esc(p.id) + '" data-delta="-1" aria-label="-">−</button>' +
-            "<span>" + l.qty + "</span>" +
-            '<button data-qty="' + esc(p.id) + '" data-delta="1" aria-label="+">+</button>' +
-          "</div>" +
-          '<button class="line__remove" data-remove="' + esc(p.id) + '" aria-label="remove">✕</button>' +
-        "</div>";
-    }).join("");
+    var groups = cartGroups();
+    var perVendor = S.orderRouting !== "owner" && groups.length > 1;
 
-    var waReady = !!S.whatsapp;
+    body.innerHTML =
+      (perVendor ? '<p class="cart-note">' + esc(t("cart.split")) + "</p>" : "") +
+      groups.map(function (g) {
+        var who = g.vendor ? tx(g.vendor.name) : tx(S.name);
+        return '<section class="cart-group">' +
+            '<header class="cart-group__head">' +
+              (g.vendor
+                ? '<a href="vendor.html?id=' + encodeURIComponent(g.vendorId) + '">' + esc(who) + "</a>"
+                : "<span>" + esc(who) + "</span>") +
+              "<span>" + esc(money(g.total)) + "</span>" +
+            "</header>" +
+            g.lines.map(function (entry) {
+              var p = entry.product;
+              return '<div class="line">' +
+                  artHTML(p, "line__art") +
+                  '<div class="line__body">' +
+                    '<div class="line__title">' + esc(tx(p.title)) + "</div>" +
+                    '<div class="line__meta">' + entry.qty + " × " + esc(money(p.price)) + "</div>" +
+                  "</div>" +
+                  '<div class="stepper">' +
+                    '<button data-qty="' + esc(p.id) + '" data-delta="-1" aria-label="-">−</button>' +
+                    "<span>" + entry.qty + "</span>" +
+                    '<button data-qty="' + esc(p.id) + '" data-delta="1" aria-label="+">+</button>' +
+                  "</div>" +
+                  '<button class="line__remove" data-remove="' + esc(p.id) + '" aria-label="remove">✕</button>' +
+                "</div>";
+            }).join("") +
+            (perVendor
+              ? '<button class="btn btn--sm btn--block ' + (vendorNumber(g.vendor) ? "btn--wa" : "btn--ghost") + '" ' +
+                  'data-checkout-vendor="' + esc(g.vendorId) + '">' +
+                  (vendorNumber(g.vendor) ? icon("whatsapp") : icon("bolt")) +
+                  "<span>" + esc(t("cart.sendTo") + " " + who) + "</span>" +
+                "</button>"
+              : "") +
+          "</section>";
+      }).join("");
+
+    // With several stores the per-store buttons above are the checkout, so the
+    // footer only carries the grand total and a copy-everything fallback.
+    var waReady = !!(S.orderRouting === "owner"
+      ? S.whatsapp
+      : groups.length === 1 && vendorNumber(groups[0].vendor));
     foot.innerHTML =
       '<div class="totals"><span>' + esc(t("cart.total")) + "</span><span>" + esc(money(cartTotal())) + "</span></div>" +
-      '<button class="btn btn--block ' + (waReady ? "btn--wa" : "btn--primary") + '" data-checkout>' +
-        (waReady ? icon("whatsapp") : icon("bolt")) +
-        "<span>" + esc(waReady ? t("cart.checkout") : t("cart.copy")) + "</span>" +
-      "</button>" +
-      (waReady ? '<button class="btn btn--ghost btn--block btn--sm" data-copy-order>' + esc(t("cart.copy")) + "</button>" : "");
+      (perVendor
+        ? ""
+        : '<button class="btn btn--block ' + (waReady ? "btn--wa" : "btn--primary") + '" data-checkout>' +
+            (waReady ? icon("whatsapp") : icon("bolt")) +
+            "<span>" + esc(waReady ? t("cart.checkout") : t("cart.copy")) + "</span>" +
+          "</button>") +
+      (waReady || perVendor
+        ? '<button class="btn btn--ghost btn--block btn--sm" data-copy-order>' + esc(t("cart.copy")) + "</button>"
+        : "");
 
     qsa("[data-qty]", body).forEach(function (btn) {
       btn.addEventListener("click", function () {
@@ -340,6 +446,39 @@
       inner + "</div>";
   }
 
+  // The "sold by <store>" line under a product. Silent if the product has no
+  // vendor, so a single-seller catalogue still renders cleanly.
+  function vendorLineHTML(p) {
+    var v = vendorOf(p);
+    if (!v) return "";
+    return '<a class="product__vendor" href="vendor.html?id=' + encodeURIComponent(v.id) + '">' +
+      '<span class="product__vendor-mark" aria-hidden="true">' + (v.art ? v.art.emoji : "🏬") + "</span>" +
+      "<span>" + esc(tx(v.name)) + "</span>" +
+      (v.verified ? icon("verified", "verified verified--sm") : "") +
+    "</a>";
+  }
+
+  function vendorAvatar(v, cls) {
+    var bg = "background:linear-gradient(150deg," + (v.art ? v.art.from : "#2a2a35") + "," + (v.art ? v.art.to : "#101017") + ")";
+    return '<div class="' + cls + '" style="' + bg + '"><span aria-hidden="true">' +
+      (v.art ? v.art.emoji : esc(tx(v.initials))) + "</span></div>";
+  }
+
+  function vendorCard(v) {
+    var count = productsOf(v.id).length;
+    return '<a class="vendor-card reveal" href="vendor.html?id=' + encodeURIComponent(v.id) + '">' +
+        vendorAvatar(v, "vendor-card__art") +
+        '<div class="vendor-card__body">' +
+          '<div class="vendor-card__cat">' + esc(tx(v.category)) + "</div>" +
+          '<div class="vendor-card__title">' + esc(tx(v.name)) +
+            (v.verified ? icon("verified", "verified verified--sm") : "") + "</div>" +
+          '<p class="vendor-card__sub">' + esc(tx(v.tagline)) + "</p>" +
+          '<div class="vendor-card__meta">' + count + " " + esc(t("vendors.products")) + "</div>" +
+        "</div>" +
+        icon("chevron", "link-card__arrow") +
+      "</a>";
+  }
+
   function productCard(p) {
     return '<article class="product reveal">' +
         '<a href="product.html?id=' + encodeURIComponent(p.id) + '" aria-label="' + esc(tx(p.title)) + '">' +
@@ -347,6 +486,7 @@
         "</a>" +
         '<div class="product__body">' +
           '<div class="product__cat">' + esc(tx(p.category)) + "</div>" +
+          vendorLineHTML(p) +
           '<a class="product__title" href="product.html?id=' + encodeURIComponent(p.id) + '">' + esc(tx(p.title)) + "</a>" +
           '<p class="product__desc">' + esc(tx(p.desc)) + "</p>" +
           '<div class="product__foot">' +
@@ -407,7 +547,9 @@
       return true;
     });
 
-    var featured = (S.products || []).filter(function (p) { return p.featured; });
+    var featured = P.filter(function (p) { return p.featured; });
+    var stores = V.filter(function (v) { return v.featured; });
+    if (!stores.length) stores = V.slice(0, 3);
 
     root.innerHTML =
       '<section class="profile shell">' +
@@ -445,6 +587,16 @@
           }).join("") +
         "</div>" +
       "</section>" +
+
+      (stores.length
+        ? '<section class="section shell">' +
+            '<div class="section__head">' +
+              '<h2 class="section__title" data-i18n="profile.stores"></h2>' +
+              '<a class="section__link" href="vendors.html" data-i18n="profile.all"></a>' +
+            "</div>" +
+            '<div class="vendors">' + stores.map(vendorCard).join("") + "</div>" +
+          "</section>"
+        : "") +
 
       (featured.length
         ? '<section class="section shell">' +
@@ -491,7 +643,7 @@
   function renderStore() {
     var root = qs("[data-page-root]");
     if (!root) return;
-    var products = S.products || [];
+    var products = P;
     var categories = [];
     products.forEach(function (p) {
       var c = tx(p.category);
@@ -521,18 +673,34 @@
               return '<button class="chip" data-cat="' + esc(c) + '">' + esc(c) + "</button>";
             }).join("") +
           "</div>" +
+          (V.length > 1
+            ? '<label class="vendor-filter">' +
+                '<span class="sr-only">' + esc(t("store.allVendors")) + "</span>" +
+                '<select data-vendor-filter>' +
+                  '<option value="">' + esc(t("store.allVendors")) + "</option>" +
+                  V.map(function (v) {
+                    return '<option value="' + esc(v.id) + '">' + esc(tx(v.name)) + "</option>";
+                  }).join("") +
+                "</select>" +
+              "</label>"
+            : "") +
         "</div>" +
         '<div class="grid" data-grid></div>' +
       "</section>" +
       footerHTML();
 
-    var state = { cat: "", q: "" };
+    // Preselect a store when arriving from a vendor page (?vendor=<id>).
+    var preset = new URLSearchParams(window.location.search).get("vendor") || "";
+    var state = { cat: "", q: "", vendor: findVendor(preset) ? preset : "" };
     function paint() {
       var list = products.filter(function (p) {
-        var haystack = (tx(p.title) + " " + tx(p.desc) + " " + tx(p.category)).toLowerCase();
+        var v = vendorOf(p);
+        var haystack = (tx(p.title) + " " + tx(p.desc) + " " + tx(p.category) +
+          " " + (v ? tx(v.name) : "")).toLowerCase();
         var matchQ = !state.q || haystack.indexOf(state.q.toLowerCase()) !== -1;
         var matchC = !state.cat || tx(p.category) === state.cat;
-        return matchQ && matchC;
+        var matchV = !state.vendor || p.vendor === state.vendor;
+        return matchQ && matchC && matchV;
       });
       var grid = qs("[data-grid]");
       grid.innerHTML = list.length
@@ -553,6 +721,14 @@
         paint();
       });
     });
+    var vendorFilter = qs("[data-vendor-filter]");
+    if (vendorFilter) {
+      vendorFilter.value = state.vendor;
+      vendorFilter.addEventListener("change", function (ev) {
+        state.vendor = ev.target.value;
+        paint();
+      });
+    }
     paint();
   }
 
@@ -560,7 +736,7 @@
     var root = qs("[data-page-root]");
     if (!root) return;
     var id = new URLSearchParams(window.location.search).get("id");
-    var p = findProduct(id) || (S.products || [])[0];
+    var p = findProduct(id) || P[0];
 
     if (!p) {
       root.innerHTML = '<section class="shell empty"><span>🔍</span><strong>' + esc(t("product.missing")) +
@@ -569,7 +745,9 @@
     }
     document.title = tx(p.title) + " · " + tx(S.name);
 
-    var others = (S.products || []).filter(function (o) { return o.id !== p.id; }).slice(0, 3);
+    var v = vendorOf(p);
+    // Cross-sell within the same store first — that's the seller's shelf.
+    var others = productsOf(p.vendor).filter(function (o) { return o.id !== p.id; }).slice(0, 3);
 
     root.innerHTML =
       '<div class="shell shell--wide">' +
@@ -579,6 +757,17 @@
           '<div class="detail__buy reveal">' +
             '<div class="eyebrow">' + esc(tx(p.category)) + "</div>" +
             "<h1>" + esc(tx(p.title)) + "</h1>" +
+            (v
+              ? '<a class="seller" href="vendor.html?id=' + encodeURIComponent(v.id) + '">' +
+                  vendorAvatar(v, "seller__art") +
+                  '<span class="seller__body">' +
+                    '<span class="seller__label">' + esc(t("vendor.by")) + "</span>" +
+                    '<span class="seller__name">' + esc(tx(v.name)) +
+                      (v.verified ? icon("verified", "verified verified--sm") : "") + "</span>" +
+                  "</span>" +
+                  icon("chevron", "link-card__arrow") +
+                "</a>"
+              : "") +
             '<p class="muted">' + esc(tx(p.desc)) + "</p>" +
             '<div class="detail__price">' +
               '<span class="price__now">' + esc(money(p.price)) + "</span>" +
@@ -611,8 +800,8 @@
         "</div>" +
         (others.length
           ? '<section class="section">' +
-              '<div class="section__head"><h2 class="section__title" data-i18n="profile.featured"></h2>' +
-              '<a class="section__link" href="store.html" data-i18n="profile.all"></a></div>' +
+              '<div class="section__head"><h2 class="section__title" data-i18n="product.more"></h2>' +
+              '<a class="section__link" href="vendor.html?id=' + encodeURIComponent(p.vendor) + '" data-i18n="profile.all"></a></div>' +
               '<div class="grid">' + others.map(productCard).join("") + "</div>" +
             "</section>"
           : "") +
@@ -635,10 +824,134 @@
     bindAddButtons(root);
   }
 
+  /* The directory of every store in the marketplace. */
+  function renderVendors() {
+    var root = qs("[data-page-root]");
+    if (!root) return;
+
+    var categories = [];
+    V.forEach(function (v) {
+      var c = tx(v.category);
+      if (categories.indexOf(c) === -1) categories.push(c);
+    });
+
+    root.innerHTML =
+      '<section class="hero shell--wide shell">' +
+        '<div class="eyebrow" data-i18n="vendors.eyebrow"></div>' +
+        '<h1 data-i18n="vendors.title"></h1>' +
+        '<p data-i18n="vendors.sub"></p>' +
+      "</section>" +
+      '<section class="shell shell--wide">' +
+        '<div class="toolbar">' +
+          '<label class="search">' + icon("search") +
+            '<input type="search" data-search data-i18n-ph="vendors.search">' +
+            '<span class="sr-only">search</span>' +
+          "</label>" +
+          '<div class="chips">' +
+            '<button class="chip is-active" data-cat="">' + esc(t("store.all")) + "</button>" +
+            categories.map(function (c) {
+              return '<button class="chip" data-cat="' + esc(c) + '">' + esc(c) + "</button>";
+            }).join("") +
+          "</div>" +
+        "</div>" +
+        '<div class="vendors" data-vendor-grid></div>' +
+      "</section>" +
+      footerHTML();
+
+    var state = { cat: "", q: "" };
+    function paint() {
+      var list = V.filter(function (v) {
+        var haystack = (tx(v.name) + " " + tx(v.tagline) + " " + tx(v.category)).toLowerCase();
+        var matchQ = !state.q || haystack.indexOf(state.q.toLowerCase()) !== -1;
+        var matchC = !state.cat || tx(v.category) === state.cat;
+        return matchQ && matchC;
+      });
+      var grid = qs("[data-vendor-grid]");
+      grid.innerHTML = list.length
+        ? list.map(vendorCard).join("")
+        : '<div class="empty" style="grid-column:1/-1"><span>🔍</span><strong>' + esc(t("vendors.empty")) + "</strong></div>";
+      revealAll();
+    }
+    qs("[data-search]").addEventListener("input", function (ev) {
+      state.q = ev.target.value.trim();
+      paint();
+    });
+    qsa(".chip").forEach(function (chip) {
+      chip.addEventListener("click", function () {
+        qsa(".chip").forEach(function (c) { c.classList.remove("is-active"); });
+        chip.classList.add("is-active");
+        state.cat = chip.getAttribute("data-cat");
+        paint();
+      });
+    });
+    paint();
+  }
+
+  /* One seller's storefront inside the marketplace. */
+  function renderVendor() {
+    var root = qs("[data-page-root]");
+    if (!root) return;
+    var id = new URLSearchParams(window.location.search).get("id");
+    var v = findVendor(id);
+
+    if (!v) {
+      root.innerHTML = '<section class="shell empty"><span>🏬</span><strong>' + esc(t("vendor.missing")) +
+        '</strong><a class="btn btn--ghost btn--sm" href="vendors.html">' + esc(t("vendor.back")) + "</a></section>" +
+        footerHTML();
+      return;
+    }
+    document.title = tx(v.name) + " · " + tx(S.name);
+
+    var mine = productsOf(v.id);
+    var others = V.filter(function (o) { return o.id !== v.id; }).slice(0, 3);
+    var contact = waLinkFor(vendorNumber(v), t("order.title") + " · " + tx(v.name));
+
+    root.innerHTML =
+      '<div class="shell shell--wide">' +
+        '<a class="section__link backlink" href="vendors.html">' + icon("chevron") +
+          "<span>" + esc(t("vendor.back")) + "</span></a>" +
+        '<section class="storefront reveal">' +
+          vendorAvatar(v, "storefront__art") +
+          '<div class="storefront__body">' +
+            '<div class="eyebrow">' + esc(tx(v.category)) + "</div>" +
+            "<h1>" + esc(tx(v.name)) + (v.verified ? icon("verified", "verified") : "") + "</h1>" +
+            '<p class="muted">' + esc(tx(v.tagline)) + "</p>" +
+            '<div class="storefront__meta">' +
+              "<span>" + mine.length + " " + esc(t("vendors.products")) + "</span>" +
+              (v.since ? '<span class="ltr">· ' + esc(t("vendor.since")) + " " + esc(v.since) + "</span>" : "") +
+            "</div>" +
+            (contact
+              ? '<a class="btn btn--wa btn--sm" href="' + esc(contact) + '" target="_blank" rel="noopener">' +
+                  icon("whatsapp") + "<span>" + esc(t("vendor.contact")) + "</span></a>"
+              : "") +
+          "</div>" +
+        "</section>" +
+        '<section class="section">' +
+          '<div class="grid">' +
+            (mine.length
+              ? mine.map(productCard).join("")
+              : '<div class="empty" style="grid-column:1/-1"><span>📭</span><strong>' + esc(t("store.empty")) + "</strong></div>") +
+          "</div>" +
+        "</section>" +
+        (others.length
+          ? '<section class="section">' +
+              '<div class="section__head"><h2 class="section__title" data-i18n="vendor.otherStores"></h2>' +
+              '<a class="section__link" href="vendors.html" data-i18n="profile.all"></a></div>' +
+              '<div class="vendors">' + others.map(vendorCard).join("") + "</div>" +
+            "</section>"
+          : "") +
+      "</div>" +
+      footerHTML();
+
+    bindAddButtons(root);
+  }
+
   function renderPage() {
     var page = document.body.dataset.page;
     if (page === "home") renderHome();
     else if (page === "store") renderStore();
+    else if (page === "vendors") renderVendors();
+    else if (page === "vendor") renderVendor();
     else if (page === "product") renderProduct();
     applyLang();
     revealAll();
