@@ -1,5 +1,10 @@
 # The idea
 
+> Every path through this — merchant, shopper, licence customer, and your own week —
+> is drawn step by step in [`idea-map.html`](idea-map.html), with the twenty
+> assumptions I made numbered for correction. Read that first if you want to
+> check the idea rather than the plan.
+
 ## In one paragraph
 
 An Arabic-first UAE marketplace. Shoppers land on one website and browse many

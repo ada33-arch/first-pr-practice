@@ -37,6 +37,7 @@ projects/matjari/
 │   └── README.md      credentials, sheet schema, the WhatsApp 24-hour rule
 └── docs/            THE THINKING
     ├── idea.md        the business: offerings, promises, roadmap, open decisions
+    ├── idea-map.html  every path through the idea, numbered for correction
     └── timeline.html  every workflow traced step by step
 ```
 
