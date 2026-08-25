@@ -3,7 +3,8 @@
    CSS and JS and swaps page navigation for hash routes, so the whole site can
    be hosted, shared, or previewed as a single file.
 
-   Usage: node site/bundle.mjs [outfile]     (default: site/standalone.html)   */
+   Usage: node projects/matjari/code/bundle.mjs [outfile]
+              (default: projects/matjari/standalone.html)   */
 
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
@@ -11,7 +12,7 @@ import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const read = (p) => readFileSync(resolve(here, p), "utf8");
-const out = process.argv[2] ? resolve(process.cwd(), process.argv[2]) : resolve(here, "standalone.html");
+const out = process.argv[2] ? resolve(process.cwd(), process.argv[2]) : resolve(here, "../standalone.html");
 
 const router = `
 /* hash router: index.html -> #/ , demo.html -> #/demo , product.html?id=x -> #/product?id=x */
@@ -58,7 +59,7 @@ const html = `<title>Matjari</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-${read("assets/css/styles.css")}
+${read("../design/styles.css")}
 </style>
 <script>
   /* the site carries its own theme + language switch, applied before first paint */
@@ -74,10 +75,10 @@ ${read("assets/css/styles.css")}
 <div class="page" data-page-root></div>
 
 <script>
-${read("assets/js/data.js")}
+${read("../content/data.js")}
 </script>
 <script>
-${read("assets/js/site.js")}
+${read("./site.js")}
 </script>
 <script>
 ${router}

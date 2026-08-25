@@ -193,7 +193,7 @@ window.SITE = {
   handle: "_ys",
   name: { ar: "احمد العامري", en: "Ahmed Alameri" },
   verified: true,
-  avatar: "",              // e.g. "assets/img/avatar.jpg" — falls back to initials
+  avatar: "",              // e.g. "../design/img/avatar.jpg" — falls back to initials
   initials: { ar: "أ", en: "A" },
   bio: {
     ar: "زيوت عطرية مركّزة، تُخلط وتُعبّأ بعناية. اختر عطرك واطلبه مباشرة على واتساب.",

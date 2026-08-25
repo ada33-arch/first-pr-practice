@@ -69,7 +69,7 @@ Type the headers exactly — the workflows map fields to columns by name.
 ## Connect the website
 
 Each workflow's Webhook node shows a Production URL. Copy them into
-`site/assets/js/data.js`:
+`../content/data.js`:
 
 ```js
 window.PLATFORM = {
@@ -134,4 +134,4 @@ edit the copy.
 
 Creating the seller's actual page. Workflow 1 records them and welcomes them; you
 build the page by hand from the row. Automating that means a real backend with
-per-seller storage — see the note at the end of `site/README.md`.
+per-seller storage — see the note at the end of `../docs/idea.md`.

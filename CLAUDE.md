@@ -17,8 +17,7 @@ A practice repository for the GitHub workflow — cloning, branching, committing
 - `.github/workflows/ci.yml` — runs the composite and docker actions on push to `main` and on every PR
 - `scripts/slack-upload.sh` — uploads a file to Slack via the three-step external-upload flow
 - `connect-apps-plugin/` — a Claude Code plugin providing `/connect-apps:setup`
-- `site/` — static bilingual (AR/EN, RTL) storefront platform: a landing page and free signup, plus an example seller's link page, store, and product pages. No build step; all content lives in `site/assets/js/data.js` (`PLATFORM` for the business, `SITE` for the demo seller). `node site/bundle.mjs` emits a single-file build. See `site/README.md`.
-- `n8n/` — the four automations behind the platform, as importable n8n workflow JSON: signup, store activation and payment, renewal and suspension, customer order. `n8n/timeline.html` is a standalone read-through of all four; `n8n/README.md` covers credentials, the Google Sheet schema, and the WhatsApp 24-hour rule.
+- `projects/matjari/` — the marketplace project, and the pattern every project here follows: `content/data.js` (all words, prices, stores), `design/styles.css`, `pages/*.html`, `code/site.js` + `code/bundle.mjs`, `automation/*.json` (n8n), `docs/idea.md` + `docs/timeline.html`. No build step; `node projects/matjari/code/bundle.mjs` emits a single-file build.
 - `.claude/skills/ui-ux-pro-max/` — UI/UX design-guidance skill (definition only; the `search.py` CLI and CSV data it references are not vendored here)
 - `.mcp.json` — HTTP MCP servers wired up for this repo: `github` and `graphify`
 
@@ -36,7 +35,7 @@ There is no test suite. `npm run typecheck` is the closest thing to one — run 
 ## Verifying Other Changes
 
 - **Docs and content** — verified by reading.
-- **`site/`** — open the pages in a browser (`npx serve site`) and click through: signup validation, the language and theme toggles, cart add/remove, and checkout. There is nothing to compile.
+- **`projects/matjari/`** — open the pages in a browser (`npx serve projects/matjari/pages`) and click through: signup validation, the language and theme toggles, cart add/remove, and checkout. There is nothing to compile.
 - **Actions and workflow** — CI exercises these on every PR. To check locally first, emulate the runner contract: inputs arrive as `INPUT_<NAME>`, and outputs/state are *appended* to the files named by `$GITHUB_OUTPUT` / `$GITHUB_STATE`.
 
   ```bash
