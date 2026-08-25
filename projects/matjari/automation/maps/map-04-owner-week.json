@@ -1,0 +1,247 @@
+{
+  "name": "MAP · Your week",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "start",
+      "name": "Your week starts",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -940,
+        0
+      ],
+      "notes": "Press Execute to walk this path. Nothing is sent — every node is a No-Op.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "o1",
+      "name": "O1 · Signups land on your phone",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -700,
+        0
+      ],
+      "notes": "You build each free page from the sheet row. Minutes each.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "o2",
+      "name": "O2 · Store requests handle themselves",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -440,
+        0
+      ],
+      "notes": "The payment link goes out automatically. You do nothing until money lands.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "o3",
+      "name": "O3 · You build the paid store",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -180,
+        0
+      ],
+      "notes": "THE REAL WORK. Hours per merchant, and the reason they pay you instead of doing it themselves.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "o4",
+      "name": "O4 · Setup cases",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        80,
+        0
+      ],
+      "notes": "The call, the documents, the filing, and four stage updates that send themselves once you post each stage.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "o5",
+      "name": "O5 · Marketing",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        340,
+        0
+      ],
+      "notes": "Rotate who is featured, post each new store, run the seasonal campaigns.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "o6",
+      "name": "O6 · Support",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        340,
+        300
+      ],
+      "notes": "Order questions, product help, pricing advice — in working hours, which is what we promise.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "o7",
+      "name": "O7 · Renewals run without you",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        80,
+        300
+      ],
+      "notes": "Reminders, warnings and suspensions are automatic. You step in only for the ones that go quiet.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "content": "## ⚠️ This is a map, not an automation\n\nEvery node here is a **No-Op**: it does nothing, sends nothing, and charges nobody. It exists so the business can be read on a canvas instead of in a document.\n\nPress **Execute Workflow** to walk the path — each step lights up in order, and clicking one shows its description.\n\n**Never set these Active.** The workflows that actually run are the numbered ones in the folder above (01–05).",
+        "width": 520,
+        "height": 280,
+        "color": 3
+      },
+      "id": "note-47793",
+      "name": "Note 47793",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -960,
+        -320
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### The one that does not scale\n\n**O3 is the bottleneck.** Every paid store costs you hours of hand-building. Ten merchants is a good week; fifty is not a person's job.\n\nThat single node is the argument for building the real backend — not features, not design. When O3 stops fitting in your week, self-serve editing pays for itself.",
+        "width": 460,
+        "height": 260,
+        "color": 4
+      },
+      "id": "note-58019",
+      "name": "Note 58019",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -180,
+        -320
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### What the automations already carry\n\nO2 and O7 are done by workflows 02 and 03. You are not chasing payments or watching dates — you are building stores and answering merchants.",
+        "width": 440,
+        "height": 220,
+        "color": 5
+      },
+      "id": "note-27445",
+      "name": "Note 27445",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -440,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Your week starts": {
+      "main": [
+        [
+          {
+            "node": "O1 · Signups land on your phone",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "O1 · Signups land on your phone": {
+      "main": [
+        [
+          {
+            "node": "O2 · Store requests handle themselves",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "O2 · Store requests handle themselves": {
+      "main": [
+        [
+          {
+            "node": "O3 · You build the paid store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "O3 · You build the paid store": {
+      "main": [
+        [
+          {
+            "node": "O4 · Setup cases",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "O4 · Setup cases": {
+      "main": [
+        [
+          {
+            "node": "O5 · Marketing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "O5 · Marketing": {
+      "main": [
+        [
+          {
+            "node": "O6 · Support",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "O6 · Support": {
+      "main": [
+        [
+          {
+            "node": "O7 · Renewals run without you",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Dubai"
+  },
+  "pinData": {},
+  "tags": [
+    {
+      "name": "matjari-map"
+    }
+  ]
+}

@@ -34,7 +34,8 @@ projects/matjari/
 │   ├── 03-subscription-renewal.json
 │   ├── 04-customer-order.json
 │   ├── 05-setup-and-licence.json
-│   └── README.md      credentials, sheet schema, the WhatsApp 24-hour rule
+│   ├── README.md      credentials, sheet schema, the WhatsApp 24-hour rule
+│   └── maps/          the business drawn on an n8n canvas — maps, not automations
 └── docs/            THE THINKING
     ├── idea.md        the business: offerings, promises, roadmap, open decisions
     ├── idea-map.html  every path through the idea, numbered for correction

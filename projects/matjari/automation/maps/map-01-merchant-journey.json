@@ -1,0 +1,383 @@
+{
+  "name": "MAP · The merchant's journey",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "start",
+      "name": "A merchant appears",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -940,
+        0
+      ],
+      "notes": "Press Execute to walk this path. Nothing is sent — every node is a No-Op.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "m1",
+      "name": "M1 · They hear about us",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -700,
+        0
+      ],
+      "notes": "An ad, another merchant's referral, a QR sticker on a shop or a delivery bag.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "m2",
+      "name": "M2 · They see a real souq",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -440,
+        0
+      ],
+      "notes": "The homepage shows working stores like theirs. Proof before any pitch.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "m3",
+      "name": "M3 · They tap افتح متجرك",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -180,
+        0
+      ],
+      "notes": "The merchant page: build, market, secure, support — and what it costs.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "m4",
+      "name": "M4 · They register free",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        80,
+        0
+      ],
+      "notes": "Name, handle, WhatsApp number. No card, no commitment.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "m5",
+      "name": "M5 · Their page exists",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        340,
+        0
+      ],
+      "notes": "matjari.ae/@handle — links, socials, WhatsApp button. Ready for their bio today.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "m6",
+      "name": "M6 · We message them",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        340,
+        300
+      ],
+      "notes": "Welcome, their link, and exactly what to send us to finish the page.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "m7",
+      "name": "M7 · They decide to sell",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        80,
+        300
+      ],
+      "notes": "They pick المتجر. A payment link arrives on WhatsApp: 55 AED / month, cancel any time.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "m8",
+      "name": "M8 · Payment clears",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -180,
+        300
+      ],
+      "notes": "ONLY NOW does the store switch on and enter the marketplace directory. Asking is never paying.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "m9",
+      "name": "M9 · We build their store",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -440,
+        300
+      ],
+      "notes": "Products, photos, categories, prices — done by us in days. This is what they are buying.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "m10",
+      "name": "M10 · Featured 14 days",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -700,
+        300
+      ],
+      "notes": "Front page placement, and their store goes out on our social accounts.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "m11",
+      "name": "M11 · Orders reach their phone",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -700,
+        600
+      ],
+      "notes": "Items, total, and the customer's number on WhatsApp. They deliver and are paid directly.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "m12",
+      "name": "M12 · Month two onward",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -440,
+        600
+      ],
+      "notes": "Reminder 3 days before, link on the day, warning if late. Unpaid = store off, page and products stay.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "content": "## ⚠️ This is a map, not an automation\n\nEvery node here is a **No-Op**: it does nothing, sends nothing, and charges nobody. It exists so the business can be read on a canvas instead of in a document.\n\nPress **Execute Workflow** to walk the path — each step lights up in order, and clicking one shows its description.\n\n**Never set these Active.** The workflows that actually run are the numbered ones in the folder above (01–05).",
+        "width": 520,
+        "height": 280,
+        "color": 3
+      },
+      "id": "note-31104",
+      "name": "Note 31104",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -960,
+        -320
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### Free, and useful immediately\n\nM1–M6 cost the merchant nothing. They walk away with a page they can use in their Instagram bio the same day.\n\n**Why give it away:** a free page keeps them somewhere we can reach them, and it is the cheapest proof that we do what we say.",
+        "width": 420,
+        "height": 250,
+        "color": 5
+      },
+      "id": "note-83574",
+      "name": "Note 83574",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        140,
+        -320
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### Where the money starts\n\nM7–M10 is the whole business: they pay, we build, we feature them.\n\n**The rule that protects you:** the store only opens on a cleared payment, never on a request.",
+        "width": 420,
+        "height": 250,
+        "color": 4
+      },
+      "id": "note-49619",
+      "name": "Note 49619",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        -20
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### What keeps them\n\nM11–M12: orders arriving on their phone is the habit. The renewal cycle runs itself, and suspension takes the store — never the page, the links, or the products.",
+        "width": 420,
+        "height": 230,
+        "color": 6
+      },
+      "id": "note-53819",
+      "name": "Note 53819",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        80,
+        280
+      ]
+    }
+  ],
+  "connections": {
+    "A merchant appears": {
+      "main": [
+        [
+          {
+            "node": "M1 · They hear about us",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "M1 · They hear about us": {
+      "main": [
+        [
+          {
+            "node": "M2 · They see a real souq",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "M2 · They see a real souq": {
+      "main": [
+        [
+          {
+            "node": "M3 · They tap افتح متجرك",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "M3 · They tap افتح متجرك": {
+      "main": [
+        [
+          {
+            "node": "M4 · They register free",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "M4 · They register free": {
+      "main": [
+        [
+          {
+            "node": "M5 · Their page exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "M5 · Their page exists": {
+      "main": [
+        [
+          {
+            "node": "M6 · We message them",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "M6 · We message them": {
+      "main": [
+        [
+          {
+            "node": "M7 · They decide to sell",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "M7 · They decide to sell": {
+      "main": [
+        [
+          {
+            "node": "M8 · Payment clears",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "M8 · Payment clears": {
+      "main": [
+        [
+          {
+            "node": "M9 · We build their store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "M9 · We build their store": {
+      "main": [
+        [
+          {
+            "node": "M10 · Featured 14 days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "M10 · Featured 14 days": {
+      "main": [
+        [
+          {
+            "node": "M11 · Orders reach their phone",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "M11 · Orders reach their phone": {
+      "main": [
+        [
+          {
+            "node": "M12 · Month two onward",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Dubai"
+  },
+  "pinData": {},
+  "tags": [
+    {
+      "name": "matjari-map"
+    }
+  ]
+}
