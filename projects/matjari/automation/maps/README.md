@@ -11,6 +11,17 @@ its own description, with sticky notes explaining why each phase exists.
 | `map-03-licence-journey.json` | A licence customer from no licence to selling | L1–L8 |
 | `map-04-owner-week.json` | Your own week, and where it stops scaling | O1–O7 |
 
+## Can't open a .json file?
+
+Nothing is wrong with your machine — a `.json` is not a document, so tapping it
+opens nothing useful. It is an import file. Either use **Import from File** in
+n8n, or open it in a text editor, copy everything, and **paste onto an empty n8n
+canvas** — it draws itself.
+
+To simply *read* the maps with no n8n at all, open
+[`../../docs/journeys.html`](../../docs/journeys.html), which is generated from
+these same files by `build-maps.py`'s output, so the two cannot drift apart.
+
 ## These do nothing
 
 Every step is a **No-Op** node: it does nothing, sends nothing, charges nobody.

@@ -39,6 +39,7 @@ projects/matjari/
 └── docs/            THE THINKING
     ├── idea.md        the business: offerings, promises, roadmap, open decisions
     ├── idea-map.html  every path through the idea, numbered for correction
+    ├── journeys.html  the four journey maps, readable without n8n
     └── timeline.html  every workflow traced step by step
 ```
 
