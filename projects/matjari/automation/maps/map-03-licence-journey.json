@@ -2,16 +2,208 @@
   "name": "MAP · The licence customer's journey",
   "nodes": [
     {
+      "parameters": {
+        "content": "### ⚠️ Map, not automation\n\nEvery node here is a **No-Op**: it does nothing, sends nothing, charges nobody. It exists so the business can be read on a canvas.\n\nPress **Execute Workflow** to walk the path.\n\n**Never set this Active.** The workflows that actually run are the numbered ones in the folder above.",
+        "width": 300,
+        "height": 300,
+        "color": 7
+      },
+      "id": "sticky-0",
+      "name": "Note 1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 🧾 The problem",
+        "width": 400,
+        "height": 190,
+        "color": 4
+      },
+      "id": "sticky-1",
+      "name": "Note 2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        40,
+        110
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Step 1️⃣ They decide\n\nThey are selling from an Instagram account, or want to start, and cannot do it legally.",
+        "width": 480,
+        "height": 340,
+        "color": 7
+      },
+      "id": "sticky-2",
+      "name": "Note 3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### ☎️ First call — free",
+        "width": 180,
+        "height": 190,
+        "color": 5
+      },
+      "id": "sticky-3",
+      "name": "Note 4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        610,
+        110
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 📄 What they send",
+        "width": 180,
+        "height": 190,
+        "color": 4
+      },
+      "id": "sticky-4",
+      "name": "Note 5",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        610,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Step 2️⃣ The call, then the papers\n\nNothing is charged before they know the real number.",
+        "width": 260,
+        "height": 570,
+        "color": 7
+      },
+      "id": "sticky-5",
+      "name": "Note 6",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        570,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 🏛️ With the authority",
+        "width": 400,
+        "height": 190,
+        "color": 3
+      },
+      "id": "sticky-6",
+      "name": "Note 7",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        960,
+        110
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Step 3️⃣ Filing\n\nThis is the step you cannot do without a partner.",
+        "width": 480,
+        "height": 340,
+        "color": 7
+      },
+      "id": "sticky-7",
+      "name": "Note 8",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        920,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 🏪 We build it all",
+        "width": 400,
+        "height": 190,
+        "color": 6
+      },
+      "id": "sticky-8",
+      "name": "Note 9",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1530,
+        110
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Step 4️⃣ They open\n\nEverything they were paying for, delivered at once.",
+        "width": 480,
+        "height": 340,
+        "color": 7
+      },
+      "id": "sticky-9",
+      "name": "Note 10",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1490,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### ⚠️ Two promises that must never be edited out\n\n**1. We do not issue licences.** The government authority does. We prepare, file, and chase — through a licensed partner.\n\n**2. No fee number before the call.** Government fees differ by emirate, licence type and activity, and they change.\n\nPromising an outcome you do not control is how setup agents collect complaints.",
+        "width": 360,
+        "height": 320,
+        "color": 1
+      },
+      "id": "sticky-10",
+      "name": "Note 11",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2060,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 🚧 This path is blocked today\n\n**L5 is the gate.** Without a licensed setup partner you cannot legally file for anyone, so the 1,500 service cannot be sold yet — while the 55 store can be sold today.",
+        "width": 360,
+        "height": 220,
+        "color": 1
+      },
+      "id": "sticky-11",
+      "name": "Note 12",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2510,
+        0
+      ]
+    },
+    {
       "parameters": {},
-      "id": "start",
+      "id": "someone",
       "name": "Someone with no licence",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -940,
-        0
+        -260,
+        200
       ],
-      "notes": "Press Execute to walk this path. Nothing is sent — every node is a No-Op.",
+      "notes": "Press Execute to walk the path. Every node is a No-Op — nothing is sent.",
       "notesInFlow": true
     },
     {
@@ -21,10 +213,10 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        -700,
-        0
+        80,
+        200
       ],
-      "notes": "Selling from an Instagram account, or wanting to start, and unable to do it legally.",
+      "notes": "Trading in the UAE needs a valid licence, including selling through social media.",
       "notesInFlow": true
     },
     {
@@ -34,21 +226,21 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        -440,
-        0
+        300,
+        200
       ],
-      "notes": "1,500 AED once: licence, built store, first products, training, and a full year of Store.",
+      "notes": "1,500 AED once: licence, built store, first products, training, a full year of Store.",
       "notesInFlow": true
     },
     {
       "parameters": {},
       "id": "l3",
-      "name": "L3 · Free 20-minute call",
+      "name": "L3 · Twenty minutes",
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        -180,
-        0
+        650,
+        200
       ],
       "notes": "Emirate, licence type, activity — and the CONFIRMED government fee before they pay anything.",
       "notesInFlow": true
@@ -60,8 +252,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        80,
-        0
+        650,
+        430
       ],
       "notes": "Passport, photo, three proposed trade names, activity description. We reserve the name.",
       "notesInFlow": true
@@ -73,8 +265,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        340,
-        0
+        1000,
+        200
       ],
       "notes": "Through a LICENSED SETUP PARTNER. They pay government fees to the authority directly.",
       "notesInFlow": true
@@ -86,8 +278,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        340,
-        300
+        1220,
+        200
       ],
       "notes": "Usually 3–10 working days once documents are complete. The AUTHORITY issues it, not us.",
       "notesInFlow": true
@@ -95,14 +287,14 @@
     {
       "parameters": {},
       "id": "l7",
-      "name": "L7 · We build everything",
+      "name": "L7 · Page, store, products",
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        80,
-        300
+        1570,
+        200
       ],
-      "notes": "Page, store, first 20 products, then an hour of training on running it.",
+      "notes": "First 20 products uploaded, then an hour of training on running it.",
       "notesInFlow": true
     },
     {
@@ -112,59 +304,11 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        -180,
-        300
+        1790,
+        200
       ],
-      "notes": "The monthly clock starts after that year — and only starts once the licence exists.",
+      "notes": "The monthly clock starts after that year, and only starts once the licence exists.",
       "notesInFlow": true
-    },
-    {
-      "parameters": {
-        "content": "## ⚠️ This is a map, not an automation\n\nEvery node here is a **No-Op**: it does nothing, sends nothing, and charges nobody. It exists so the business can be read on a canvas instead of in a document.\n\nPress **Execute Workflow** to walk the path — each step lights up in order, and clicking one shows its description.\n\n**Never set these Active.** The workflows that actually run are the numbered ones in the folder above (01–05).",
-        "width": 520,
-        "height": 280,
-        "color": 3
-      },
-      "id": "note-84244",
-      "name": "Note 84244",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        -960,
-        -320
-      ]
-    },
-    {
-      "parameters": {
-        "content": "### Two promises that must never be edited out\n\n**1. We do not issue licences.** The government authority does. We prepare, file, and chase — through a licensed partner.\n\n**2. No fee number before the call.** Government fees differ by emirate, licence type and activity, and they change. The confirmed figure comes on the first call, before any payment.\n\nPromising an outcome you do not control is how setup agents collect complaints.",
-        "width": 500,
-        "height": 300,
-        "color": 3
-      },
-      "id": "note-96086",
-      "name": "Note 96086",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        -440,
-        -20
-      ]
-    },
-    {
-      "parameters": {
-        "content": "### This path is blocked until you have a partner\n\nL5 is the gate. Without a licensed setup partner you cannot legally file for anyone, so the 1,500 service cannot be sold — while the 55 store can be sold today.",
-        "width": 420,
-        "height": 220,
-        "color": 6
-      },
-      "id": "note-64172",
-      "name": "Note 64172",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        -180,
-        -320
-      ]
     }
   ],
   "connections": {
@@ -194,14 +338,14 @@
       "main": [
         [
           {
-            "node": "L3 · Free 20-minute call",
+            "node": "L3 · Twenty minutes",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "L3 · Free 20-minute call": {
+    "L3 · Twenty minutes": {
       "main": [
         [
           {
@@ -238,14 +382,14 @@
       "main": [
         [
           {
-            "node": "L7 · We build everything",
+            "node": "L7 · Page, store, products",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "L7 · We build everything": {
+    "L7 · Page, store, products": {
       "main": [
         [
           {

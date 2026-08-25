@@ -3,28 +3,32 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --paper:#faf8f4; --card:#fff; --ink:#1b1813; --ink-soft:#5f594e; --ink-mute:#918a7c;
-    --rule:#e4ded2; --owner:#a8762b; --owner-bg:#f6edda; --merchant:#2c7a67; --merchant-bg:#e3f1ec;
-    --shopper:#37629f; --shopper-bg:#e5edf8; --system-bg:#efece5;
-    --fd:"Fraunces",Georgia,serif; --fb:"IBM Plex Sans",system-ui,sans-serif;
-    --fm:"IBM Plex Mono",ui-monospace,Menlo,monospace; --fa:"IBM Plex Sans Arabic",system-ui,sans-serif;
+  :root{
+    --paper:#faf8f4;--card:#fff;--ink:#1b1813;--ink-soft:#5f594e;--ink-mute:#918a7c;--rule:#e4ded2;
+    --owner:#a8762b;--owner-bg:#f6edda;--merchant:#2c7a67;--merchant-bg:#e3f1ec;
+    --shopper:#37629f;--shopper-bg:#e5edf8;--system-bg:#efece5;
+    --g-input:#2c7a67;--g-engine:#7b5ea7;--g-prepare:#37629f;--g-create:#a8442b;--g-optional:#a8762b;
+    --fd:"Fraunces",Georgia,serif;--fb:"IBM Plex Sans",system-ui,sans-serif;
+    --fm:"IBM Plex Mono",ui-monospace,Menlo,monospace;
   }
-  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-    --paper:#14130f; --card:#1c1b16; --ink:#f0ece3; --ink-soft:#b0a99c; --ink-mute:#7e776a;
-    --rule:#302e26; --owner:#d9ad5f; --owner-bg:#2c2415; --merchant:#6cc3aa; --merchant-bg:#162a24;
-    --shopper:#86aee6; --shopper-bg:#17222f; --system-bg:#252319; } }
-  :root[data-theme="dark"] {
-    --paper:#14130f; --card:#1c1b16; --ink:#f0ece3; --ink-soft:#b0a99c; --ink-mute:#7e776a;
-    --rule:#302e26; --owner:#d9ad5f; --owner-bg:#2c2415; --merchant:#6cc3aa; --merchant-bg:#162a24;
-    --shopper:#86aee6; --shopper-bg:#17222f; --system-bg:#252319; }
-  *{box-sizing:border-box} body{margin:0;background:var(--paper);color:var(--ink);
-    font-family:var(--fb);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
-  .wrap{width:min(100% - 2.5rem,900px);margin-inline:auto}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+    --paper:#14130f;--card:#1c1b16;--ink:#f0ece3;--ink-soft:#b0a99c;--ink-mute:#7e776a;--rule:#302e26;
+    --owner:#d9ad5f;--owner-bg:#2c2415;--merchant:#6cc3aa;--merchant-bg:#162a24;
+    --shopper:#86aee6;--shopper-bg:#17222f;--system-bg:#252319;
+    --g-input:#6cc3aa;--g-engine:#b79ae0;--g-prepare:#86aee6;--g-create:#e0876c;--g-optional:#d9ad5f;}}
+  :root[data-theme="dark"]{
+    --paper:#14130f;--card:#1c1b16;--ink:#f0ece3;--ink-soft:#b0a99c;--ink-mute:#7e776a;--rule:#302e26;
+    --owner:#d9ad5f;--owner-bg:#2c2415;--merchant:#6cc3aa;--merchant-bg:#162a24;
+    --shopper:#86aee6;--shopper-bg:#17222f;--system-bg:#252319;
+    --g-input:#6cc3aa;--g-engine:#b79ae0;--g-prepare:#86aee6;--g-create:#e0876c;--g-optional:#d9ad5f;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--fb);font-size:16px;
+    line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{width:min(100% - 2.5rem,940px);margin-inline:auto}
   h1,h2{font-family:var(--fd);font-weight:600;line-height:1.16;margin:0}
   h1{font-size:clamp(2rem,5vw,2.8rem);letter-spacing:-.015em}
-  h2{font-size:clamp(1.3rem,3vw,1.7rem)} h3{font-size:.98rem;font-weight:600;margin:0} p{margin:0}
-  header.top{padding:3.5rem 0 2rem} section{padding:2.75rem 0;border-top:1px solid var(--rule)}
+  h2{font-size:clamp(1.3rem,3vw,1.7rem)}h3{font-size:.98rem;font-weight:600;margin:0}p{margin:0}
+  header.top{padding:3.5rem 0 2rem}section{padding:2.75rem 0;border-top:1px solid var(--rule)}
   .eyebrow{font-family:var(--fm);font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--owner)}
   .lede{color:var(--ink-soft);font-size:1.05rem;max-width:62ch;margin-top:1rem}
   .head{display:flex;align-items:baseline;gap:.8rem;flex-wrap:wrap}
@@ -34,27 +38,43 @@
   .tag--shopper{background:var(--shopper-bg);color:var(--shopper)}
   .tag--owner{background:var(--owner-bg);color:var(--owner)}
 
-  /* the flow: boxes joined by a line, exactly what the n8n canvas shows */
-  .flow{list-style:none;margin:1.6rem 0 0;padding:0;display:grid;gap:0}
-  .step{position:relative;display:grid;grid-template-columns:56px 1fr;gap:1rem;padding:0 0 1.4rem}
-  .step::before{content:"";position:absolute;inset-block:26px 0;inset-inline-start:27px;width:2px;background:var(--rule)}
-  .step:last-child::before{display:none}
-  .step__n{position:relative;z-index:1;width:56px;height:26px;display:grid;place-items:center;
-    font-family:var(--fm);font-size:.76rem;border-radius:7px;background:var(--system-bg);color:var(--ink-soft)}
+  /* a numbered step zone, the same container the n8n canvas draws */
+  .phase{margin-top:1.6rem;padding:1.2rem;border:1px solid var(--rule);border-radius:14px;background:var(--system-bg)}
+  .phase__head{display:flex;align-items:baseline;gap:.7rem;flex-wrap:wrap}
+  .phase__n{font-family:var(--fm);font-size:.74rem;padding:.15rem .5rem;border-radius:6px;
+    background:var(--card);border:1px solid var(--rule);color:var(--ink-soft)}
+  .phase__note{color:var(--ink-soft);font-size:.9rem;margin-top:.4rem}
+  .groups{display:grid;gap:.9rem;margin-top:1rem}
+  .group{border:1px solid var(--rule);border-inline-start:3px solid var(--g-prepare);
+    border-radius:11px;background:var(--card);padding:.85rem 1rem}
+  .group--input{border-inline-start-color:var(--g-input)}
+  .group--engine{border-inline-start-color:var(--g-engine)}
+  .group--prepare{border-inline-start-color:var(--g-prepare)}
+  .group--create{border-inline-start-color:var(--g-create)}
+  .group--optional{border-inline-start-color:var(--g-optional);border-style:dashed}
+  .group h4{margin:0 0 .6rem;font-size:.86rem;letter-spacing:.02em}
+  .flow{list-style:none;margin:0;padding:0;display:grid;gap:.55rem}
+  .step{display:grid;grid-template-columns:52px 1fr;gap:.8rem;align-items:start}
+  .step__n{font-family:var(--fm);font-size:.74rem;padding:.2rem .3rem;border-radius:6px;text-align:center;
+    background:var(--system-bg);color:var(--ink-soft)}
   .step--merchant .step__n{background:var(--merchant-bg);color:var(--merchant)}
   .step--shopper .step__n{background:var(--shopper-bg);color:var(--shopper)}
   .step--owner .step__n{background:var(--owner-bg);color:var(--owner)}
-  .step__b{border:1px solid var(--rule);border-radius:11px;background:var(--card);padding:.8rem 1rem}
-  .step__b p{color:var(--ink-soft);font-size:.9rem;margin-top:.25rem}
-  .asides{display:grid;gap:.8rem;margin-top:1.6rem}
-  @media(min-width:760px){.asides{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}}
+  .step.is-off{opacity:.62}
+  .step.is-off .step__n{background:transparent;border:1px dashed var(--rule)}
+  .step__b p{color:var(--ink-soft);font-size:.89rem;margin-top:.15rem}
+  .asides{display:grid;gap:.8rem;margin-top:1.4rem}
+  @media(min-width:760px){.asides{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}}
   .aside{border:1px solid var(--rule);border-inline-start:3px solid var(--owner);border-radius:11px;
     background:var(--card);padding:.9rem 1.1rem}
-  .aside h4{margin:0 0 .3rem;font-size:.92rem}
-  .aside p{font-size:.88rem;color:var(--ink-soft)}
+  .aside h4{margin:0 0 .3rem;font-size:.92rem}.aside p{font-size:.88rem;color:var(--ink-soft);white-space:pre-line}
   .box{border:1px solid var(--rule);border-radius:12px;background:var(--card);padding:1.1rem 1.2rem;margin-top:1.5rem}
   .box ol{margin:.5rem 0 0;padding-inline-start:1.2rem;color:var(--ink-soft);font-size:.92rem}
   .box li{margin-bottom:.4rem}
+  .legend{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
+  .key{display:inline-flex;align-items:center;gap:.4rem;font-size:.8rem;color:var(--ink-soft);
+    border:1px solid var(--rule);border-radius:999px;padding:.25rem .7rem;background:var(--card)}
+  .key i{width:10px;height:10px;border-radius:3px;display:block}
   code{font-family:var(--fm);font-size:.86em;background:var(--system-bg);padding:.12em .38em;border-radius:4px}
   footer{padding:2.5rem 0 3.5rem;color:var(--ink-mute);font-size:.85rem}
 </style>
@@ -64,63 +84,41 @@
     <div class="eyebrow">four journeys · nothing to install</div>
     <h1>The business, drawn</h1>
     <p class="lede">
-      The same four maps that live in the n8n files — the merchant, the shopper, the licence
-      customer, and your own week — rendered here so you can read them on a phone without
-      importing anything.
+      The same four canvases that live in the n8n files — the merchant, the shopper, the licence
+      customer, and your own week — laid out in numbered steps with colour-coded groups, so you
+      can read the whole plan on a phone without importing anything.
     </p>
+    <div class="legend">
+      <span class="key"><i style="background:var(--g-input)"></i> what a person gives us</span>
+      <span class="key"><i style="background:var(--g-prepare)"></i> deciding and shaping</span>
+      <span class="key"><i style="background:var(--g-engine)"></i> the work itself</span>
+      <span class="key"><i style="background:var(--g-create)"></i> money or something irreversible</span>
+      <span class="key"><i style="background:var(--g-optional)"></i> optional — you choose</span>
+    </div>
     <div class="box">
       <h3>If you want them inside n8n instead</h3>
       <ol>
-        <li>A <code>.json</code> file is not a document — tapping it will never open anything useful.</li>
+        <li>A <code>.json</code> file is not a document — tapping it never opens anything useful.</li>
         <li>In n8n: <b>Workflows → Import from File</b>, and pick the file.</li>
-        <li>Or faster: open the file in any text editor, select all, copy — then <b>paste onto an empty n8n canvas</b>. It draws itself.</li>
+        <li>Or faster: open it in any text editor, select all, copy — then <b>paste onto an empty n8n canvas</b>. It draws itself.</li>
       </ol>
     </div>
   </div>
 </header>
+<section><div class="wrap"><div class="head"><h2>The merchant&#x27;s journey</h2><span class="tag tag--merchant">15 steps</span></div><p class="sub">From first hearing about us to their second month.</p><div class="phase"><div class="phase__head"><span class="phase__n">Step 1</span><h3>They join, free</h3></div><p class="phase__note">Costs them nothing, and they walk away with a page they can put in their Instagram bio the same day.</p><div class="groups"><div class="group group--input"><h4>👤 They find us</h4><ol class="flow"><li class="step step--merchant"><span class="step__n">M1</span><div class="step__b"><h3>They hear about us</h3><p>An ad, another merchant&#x27;s referral, or a QR sticker on a shop or delivery bag.</p></div></li><li class="step step--merchant"><span class="step__n">M2</span><div class="step__b"><h3>They see a real souq</h3><p>The homepage shows working stores like theirs. Proof before any pitch.</p></div></li><li class="step step--merchant"><span class="step__n">M3</span><div class="step__b"><h3>They tap افتح متجرك</h3><p>The merchant page: build, market, secure, support — and what it costs.</p></div></li></ol></div><div class="group group--input"><h4>✍️ They register</h4><ol class="flow"><li class="step step--merchant"><span class="step__n">M4</span><div class="step__b"><h3>They register free</h3><p>Name, handle, WhatsApp number. No card, no commitment.</p></div></li><li class="step step--merchant"><span class="step__n">M5</span><div class="step__b"><h3>Their page exists</h3><p>matjari.ae/@handle — links, socials, WhatsApp button. Usable today.</p></div></li><li class="step step--merchant"><span class="step__n">M6</span><div class="step__b"><h3>We message them</h3><p>Welcome, their link, and exactly what to send us to finish the page.</p></div></li></ol></div></div></div><div class="phase"><div class="phase__head"><span class="phase__n">Step 2</span><h3>They open a store</h3></div><p class="phase__note">The whole business lives in this step: they pay, we build, we put them in front of shoppers.</p><div class="groups"><div class="group group--prepare"><h4>💳 They decide to sell</h4><ol class="flow"><li class="step step--merchant"><span class="step__n">M7</span><div class="step__b"><h3>They pick المتجر</h3><p>A payment link arrives on WhatsApp: 55 AED / month, cancel any time.</p></div></li><li class="step step--merchant"><span class="step__n">M8</span><div class="step__b"><h3>Payment clears</h3><p>ONLY NOW does the store open and enter the directory. Asking is never paying.</p></div></li></ol></div><div class="group group--create"><h4>🛠️ We build it for them</h4><ol class="flow"><li class="step step--merchant"><span class="step__n">M9</span><div class="step__b"><h3>We build their store</h3><p>Products, photos, categories, prices — done by us in days. This is what they buy.</p></div></li><li class="step step--merchant is-off"><span class="step__n">M10</span><div class="step__b"><h3>Featured 14 days</h3><p>Front page placement and a post on our social accounts.</p></div></li></ol></div><div class="group group--optional"><h4>🎁 Offers you may run</h4><ol class="flow"><li class="step step--merchant is-off"><span class="step__n">First month free</span><div class="step__b"><h3>First month free</h3><p>Highest-converting offer for a 55 AED subscription. Costs a page you were building anyway.</p></div></li><li class="step step--merchant is-off"><span class="step__n">Founding price</span><div class="step__b"><h3>Founding price</h3><p>First 50 stores keep 55 AED for as long as they stay.</p></div></li><li class="step step--merchant is-off"><span class="step__n">Referral month</span><div class="step__b"><h3>Referral month</h3><p>A free month each when a referred store&#x27;s first payment clears.</p></div></li></ol></div></div></div><div class="phase"><div class="phase__head"><span class="phase__n">Step 3</span><h3>They sell, and they stay</h3></div><p class="phase__note">Orders arriving on their phone is the habit. The renewal cycle runs without you.</p><div class="groups"><div class="group group--engine"><h4>🛒 Their customers</h4><ol class="flow"><li class="step step--merchant"><span class="step__n">M11</span><div class="step__b"><h3>Orders reach their phone</h3><p>Items, total, and the customer&#x27;s number on WhatsApp. They deliver and are paid directly.</p></div></li></ol></div><div class="group group--prepare"><h4>🔁 The month turns</h4><ol class="flow"><li class="step step--merchant"><span class="step__n">M12</span><div class="step__b"><h3>Renewal or suspension</h3><p>Reminder 3 days before, link on the day, warning if late. Unpaid = store off, page and products stay.</p></div></li></ol></div></div></div><div class="asides"><div class="aside"><h4>📌 The numbers on this canvas</h4><p>Store — 55 AED / month
+Setup + licence — 1,500 AED once, a year of Store included
+Featured — 14 days for every new store
+Grace period — 7 days late before the store switches off
 
-<section id="m">
-  <div class="wrap">
-    <div class="head">
-      <h2>The merchant&#x27;s journey</h2>
-      <span class="tag tag--merchant">M1–M12</span>
-    </div>
-    <p class="sub">From first hearing about us to their second month.</p>
-    <ol class="flow"><li class="step step--merchant"><span class="step__n">M1</span><div class="step__b"><h3>They hear about us</h3><p>An ad, another merchant&#x27;s referral, a QR sticker on a shop or a delivery bag.</p></div></li><li class="step step--merchant"><span class="step__n">M2</span><div class="step__b"><h3>They see a real souq</h3><p>The homepage shows working stores like theirs. Proof before any pitch.</p></div></li><li class="step step--merchant"><span class="step__n">M3</span><div class="step__b"><h3>They tap افتح متجرك</h3><p>The merchant page: build, market, secure, support — and what it costs.</p></div></li><li class="step step--merchant"><span class="step__n">M4</span><div class="step__b"><h3>They register free</h3><p>Name, handle, WhatsApp number. No card, no commitment.</p></div></li><li class="step step--merchant"><span class="step__n">M5</span><div class="step__b"><h3>Their page exists</h3><p>matjari.ae/@handle — links, socials, WhatsApp button. Ready for their bio today.</p></div></li><li class="step step--merchant"><span class="step__n">M6</span><div class="step__b"><h3>We message them</h3><p>Welcome, their link, and exactly what to send us to finish the page.</p></div></li><li class="step step--merchant"><span class="step__n">M7</span><div class="step__b"><h3>They decide to sell</h3><p>They pick المتجر. A payment link arrives on WhatsApp: 55 AED / month, cancel any time.</p></div></li><li class="step step--merchant"><span class="step__n">M8</span><div class="step__b"><h3>Payment clears</h3><p>ONLY NOW does the store switch on and enter the marketplace directory. Asking is never paying.</p></div></li><li class="step step--merchant"><span class="step__n">M9</span><div class="step__b"><h3>We build their store</h3><p>Products, photos, categories, prices — done by us in days. This is what they are buying.</p></div></li><li class="step step--merchant"><span class="step__n">M10</span><div class="step__b"><h3>Featured 14 days</h3><p>Front page placement, and their store goes out on our social accounts.</p></div></li><li class="step step--merchant"><span class="step__n">M11</span><div class="step__b"><h3>Orders reach their phone</h3><p>Items, total, and the customer&#x27;s number on WhatsApp. They deliver and are paid directly.</p></div></li><li class="step step--merchant"><span class="step__n">M12</span><div class="step__b"><h3>Month two onward</h3><p>Reminder 3 days before, link on the day, warning if late. Unpaid = store off, page and products stay.</p></div></li></ol>
-    <div class="asides"><div class="aside"><h4>Free, and useful immediately</h4><p>M1–M6 cost the merchant nothing. They walk away with a page they can use in their Instagram bio the same day. Why give it away: a free page keeps them somewhere we can reach them, and it is the cheapest proof that we do what we say.</p></div><div class="aside"><h4>Where the money starts</h4><p>M7–M10 is the whole business: they pay, we build, we feature them. The rule that protects you: the store only opens on a cleared payment, never on a request.</p></div><div class="aside"><h4>What keeps them</h4><p>M11–M12: orders arriving on their phone is the habit. The renewal cycle runs itself, and suspension takes the store — never the page, the links, or the products.</p></div></div>
-  </div>
-</section>
-<section id="s">
-  <div class="wrap">
-    <div class="head">
-      <h2>The shopper&#x27;s journey</h2>
-      <span class="tag tag--shopper">S1–S6</span>
-    </div>
-    <p class="sub">From arriving at the souq to paying a merchant.</p>
-    <ol class="flow"><li class="step step--shopper"><span class="step__n">S1</span><div class="step__b"><h3>They arrive</h3><p>From search, a merchant&#x27;s bio link, our social accounts, or a QR sticker in a real shop.</p></div></li><li class="step step--shopper"><span class="step__n">S2</span><div class="step__b"><h3>They browse the souq</h3><p>Featured stores, categories, every store with search. Many merchants in one place is the reason to return.</p></div></li><li class="step step--shopper"><span class="step__n">S3</span><div class="step__b"><h3>They open a store</h3><p>That merchant&#x27;s store, inside our website, carrying our chrome and their brand.</p></div></li><li class="step step--shopper"><span class="step__n">S4</span><div class="step__b"><h3>They open a product</h3><p>Photos, price, what&#x27;s included, quantity.</p></div></li><li class="step step--shopper"><span class="step__n">S5</span><div class="step__b"><h3>They add to cart</h3><p>Optionally leave a name and WhatsApp number so the merchant can reply.</p></div></li><li class="step step--shopper"><span class="step__n">S6</span><div class="step__b"><h3>They pay the merchant</h3><p>Checkout opens WhatsApp to THE MERCHANT. Delivery and payment agreed there. No account, no card on our site.</p></div></li></ol>
-    <div class="asides"><div class="aside"><h4>The shopper never meets the platform</h4><p>No login, no password, no saved card. They browse, they message a merchant, they pay that merchant. What this costs us: we cannot see their orders, chase abandoned carts, or email them later. What it buys us: no card data, no refunds, no payment licence, and no liability for a sale we were not part of.</p></div></div>
-  </div>
-</section>
-<section id="l">
-  <div class="wrap">
-    <div class="head">
-      <h2>The licence customer&#x27;s journey</h2>
-      <span class="tag tag--merchant">L1–L8</span>
-    </div>
-    <p class="sub">From no trade licence to a store that is legally selling.</p>
-    <ol class="flow"><li class="step step--merchant"><span class="step__n">L1</span><div class="step__b"><h3>No trade licence</h3><p>Selling from an Instagram account, or wanting to start, and unable to do it legally.</p></div></li><li class="step step--merchant"><span class="step__n">L2</span><div class="step__b"><h3>They pick تأسيس كامل</h3><p>1,500 AED once: licence, built store, first products, training, and a full year of Store.</p></div></li><li class="step step--merchant"><span class="step__n">L3</span><div class="step__b"><h3>Free 20-minute call</h3><p>Emirate, licence type, activity — and the CONFIRMED government fee before they pay anything.</p></div></li><li class="step step--merchant"><span class="step__n">L4</span><div class="step__b"><h3>Documents and name</h3><p>Passport, photo, three proposed trade names, activity description. We reserve the name.</p></div></li><li class="step step--merchant"><span class="step__n">L5</span><div class="step__b"><h3>We file it</h3><p>Through a LICENSED SETUP PARTNER. They pay government fees to the authority directly.</p></div></li><li class="step step--merchant"><span class="step__n">L6</span><div class="step__b"><h3>Licence issued</h3><p>Usually 3–10 working days once documents are complete. The AUTHORITY issues it, not us.</p></div></li><li class="step step--merchant"><span class="step__n">L7</span><div class="step__b"><h3>We build everything</h3><p>Page, store, first 20 products, then an hour of training on running it.</p></div></li><li class="step step--merchant"><span class="step__n">L8</span><div class="step__b"><h3>A year before the next payment</h3><p>The monthly clock starts after that year — and only starts once the licence exists.</p></div></li></ol>
-    <div class="asides"><div class="aside"><h4>Two promises that must never be edited out</h4><p>1. We do not issue licences. The government authority does. We prepare, file, and chase — through a licensed partner. 2. No fee number before the call. Government fees differ by emirate, licence type and activity, and they change. The confirmed figure comes on the first call, before any payment. Promising an outcome you do not control is how setup agents collect complaints.</p></div><div class="aside"><h4>This path is blocked until you have a partner</h4><p>L5 is the gate. Without a licensed setup partner you cannot legally file for anyone, so the 1,500 service cannot be sold — while the 55 store can be sold today.</p></div></div>
-  </div>
-</section>
-<section id="o">
-  <div class="wrap">
-    <div class="head">
-      <h2>Your week</h2>
-      <span class="tag tag--owner">O1–O7</span>
-    </div>
-    <p class="sub">What lands on you, what runs without you, and where it stops scaling.</p>
-    <ol class="flow"><li class="step step--owner"><span class="step__n">O1</span><div class="step__b"><h3>Signups land on your phone</h3><p>You build each free page from the sheet row. Minutes each.</p></div></li><li class="step step--owner"><span class="step__n">O2</span><div class="step__b"><h3>Store requests handle themselves</h3><p>The payment link goes out automatically. You do nothing until money lands.</p></div></li><li class="step step--owner"><span class="step__n">O3</span><div class="step__b"><h3>You build the paid store</h3><p>THE REAL WORK. Hours per merchant, and the reason they pay you instead of doing it themselves.</p></div></li><li class="step step--owner"><span class="step__n">O4</span><div class="step__b"><h3>Setup cases</h3><p>The call, the documents, the filing, and four stage updates that send themselves once you post each stage.</p></div></li><li class="step step--owner"><span class="step__n">O5</span><div class="step__b"><h3>Marketing</h3><p>Rotate who is featured, post each new store, run the seasonal campaigns.</p></div></li><li class="step step--owner"><span class="step__n">O6</span><div class="step__b"><h3>Support</h3><p>Order questions, product help, pricing advice — in working hours, which is what we promise.</p></div></li><li class="step step--owner"><span class="step__n">O7</span><div class="step__b"><h3>Renewals run without you</h3><p>Reminders, warnings and suspensions are automatic. You step in only for the ones that go quiet.</p></div></li></ol>
-    <div class="asides"><div class="aside"><h4>The one that does not scale</h4><p>O3 is the bottleneck. Every paid store costs you hours of hand-building. Ten merchants is a good week; fifty is not a person&#x27;s job. That single node is the argument for building the real backend — not features, not design. When O3 stops fitting in your week, self-serve editing pays for itself.</p></div><div class="aside"><h4>What the automations already carry</h4><p>O2 and O7 are done by workflows 02 and 03. You are not chasing payments or watching dates — you are building stores and answering merchants.</p></div></div>
-  </div>
-</section>
-<footer><div class="wrap">Generated from the same JSON that n8n imports, so the drawing and the file cannot drift apart.</div></footer>
+Change them in `content/data.js` and `MATJARI_PRICE`, not here.</p></div><div class="aside"><h4>⚠️ The rule that protects you</h4><p>A store opens on a cleared payment, never on a request. Workflow 02 enforces it: the request only creates a payment link, and Stripe&#x27;s callback is what flips the store on.</p></div></div></div></section><section><div class="wrap"><div class="head"><h2>The shopper&#x27;s journey</h2><span class="tag tag--shopper">6 steps</span></div><p class="sub">From arriving at the souq to paying a merchant.</p><div class="phase"><div class="phase__head"><span class="phase__n">Step 1</span><h3>They arrive and browse</h3></div><p class="phase__note">Many merchants in one place is the whole reason to come back — a single store never gets a second visit.</p><div class="groups"><div class="group group--input"><h4>🚪 They arrive</h4><ol class="flow"><li class="step step--shopper"><span class="step__n">S1</span><div class="step__b"><h3>They arrive</h3><p>From search, a merchant&#x27;s bio link, our social accounts, or a QR sticker in a real shop.</p></div></li><li class="step step--shopper"><span class="step__n">S2</span><div class="step__b"><h3>They browse the souq</h3><p>Featured stores, categories, and every store with search.</p></div></li></ol></div></div></div><div class="phase"><div class="phase__head"><span class="phase__n">Step 2</span><h3>They choose</h3></div><p class="phase__note">From here they are inside one merchant&#x27;s store, carrying our chrome and their brand.</p><div class="groups"><div class="group group--prepare"><h4>🛍️ Inside a store</h4><ol class="flow"><li class="step step--shopper"><span class="step__n">S3</span><div class="step__b"><h3>They open a store</h3><p>That merchant&#x27;s store, inside our website.</p></div></li><li class="step step--shopper"><span class="step__n">S4</span><div class="step__b"><h3>They open a product</h3><p>Photos, price, what&#x27;s included, quantity.</p></div></li><li class="step step--shopper"><span class="step__n">S5</span><div class="step__b"><h3>They add to cart</h3><p>Optionally leave a name and WhatsApp number so the merchant can reply.</p></div></li></ol></div></div></div><div class="phase"><div class="phase__head"><span class="phase__n">Step 3</span><h3>They pay the merchant</h3></div><p class="phase__note">The one step that defines the business: the money goes to the merchant, not to us.</p><div class="groups"><div class="group group--create"><h4>💬 Checkout</h4><ol class="flow"><li class="step step--shopper"><span class="step__n">S6</span><div class="step__b"><h3>They message the merchant</h3><p>The full order opens in WhatsApp with THE MERCHANT. Delivery and payment agreed there.</p></div></li></ol></div></div></div><div class="asides"><div class="aside"><h4>🔒 What the shopper never does</h4><p>No account. No password. No card on our site.
+
+We lose: their contact details, abandoned-cart chasing, and any email list.
+
+We gain: no card data, no refunds, no payment licence, and no liability for a sale we were never part of.</p></div></div></div></section><section><div class="wrap"><div class="head"><h2>The licence customer&#x27;s journey</h2><span class="tag tag--merchant">8 steps</span></div><p class="sub">From no trade licence to a store that is legally selling.</p><div class="phase"><div class="phase__head"><span class="phase__n">Step 1</span><h3>They decide</h3></div><p class="phase__note">They are selling from an Instagram account, or want to start, and cannot do it legally.</p><div class="groups"><div class="group group--input"><h4>🧾 The problem</h4><ol class="flow"><li class="step step--merchant"><span class="step__n">L1</span><div class="step__b"><h3>No trade licence</h3><p>Trading in the UAE needs a valid licence, including selling through social media.</p></div></li><li class="step step--merchant"><span class="step__n">L2</span><div class="step__b"><h3>They pick تأسيس كامل</h3><p>1,500 AED once: licence, built store, first products, training, a full year of Store.</p></div></li></ol></div></div></div><div class="phase"><div class="phase__head"><span class="phase__n">Step 2</span><h3>The call, then the papers</h3></div><p class="phase__note">Nothing is charged before they know the real number.</p><div class="groups"><div class="group group--prepare"><h4>☎️ First call — free</h4><ol class="flow"><li class="step step--merchant"><span class="step__n">L3</span><div class="step__b"><h3>Twenty minutes</h3><p>Emirate, licence type, activity — and the CONFIRMED government fee before they pay anything.</p></div></li></ol></div><div class="group group--input"><h4>📄 What they send</h4><ol class="flow"><li class="step step--merchant"><span class="step__n">L4</span><div class="step__b"><h3>Documents and name</h3><p>Passport, photo, three proposed trade names, activity description. We reserve the name.</p></div></li></ol></div></div></div><div class="phase"><div class="phase__head"><span class="phase__n">Step 3</span><h3>Filing</h3></div><p class="phase__note">This is the step you cannot do without a partner.</p><div class="groups"><div class="group group--create"><h4>🏛️ With the authority</h4><ol class="flow"><li class="step step--merchant"><span class="step__n">L5</span><div class="step__b"><h3>We file it</h3><p>Through a LICENSED SETUP PARTNER. They pay government fees to the authority directly.</p></div></li><li class="step step--merchant"><span class="step__n">L6</span><div class="step__b"><h3>Licence issued</h3><p>Usually 3–10 working days once documents are complete. The AUTHORITY issues it, not us.</p></div></li></ol></div></div></div><div class="phase"><div class="phase__head"><span class="phase__n">Step 4</span><h3>They open</h3></div><p class="phase__note">Everything they were paying for, delivered at once.</p><div class="groups"><div class="group group--engine"><h4>🏪 We build it all</h4><ol class="flow"><li class="step step--merchant"><span class="step__n">L7</span><div class="step__b"><h3>Page, store, products</h3><p>First 20 products uploaded, then an hour of training on running it.</p></div></li><li class="step step--merchant"><span class="step__n">L8</span><div class="step__b"><h3>A year before the next payment</h3><p>The monthly clock starts after that year, and only starts once the licence exists.</p></div></li></ol></div></div></div><div class="asides"><div class="aside"><h4>⚠️ Two promises that must never be edited out</h4><p>1. We do not issue licences. The government authority does. We prepare, file, and chase — through a licensed partner.
+
+2. No fee number before the call. Government fees differ by emirate, licence type and activity, and they change.
+
+Promising an outcome you do not control is how setup agents collect complaints.</p></div><div class="aside"><h4>🚧 This path is blocked today</h4><p>L5 is the gate. Without a licensed setup partner you cannot legally file for anyone, so the 1,500 service cannot be sold yet — while the 55 store can be sold today.</p></div></div></div></section><section><div class="wrap"><div class="head"><h2>Your week</h2><span class="tag tag--owner">7 steps</span></div><p class="sub">What lands on you, what runs without you, and where it stops scaling.</p><div class="phase"><div class="phase__head"><span class="phase__n">Step 1</span><h3>The inbox</h3></div><p class="phase__note">Everything arrives on WhatsApp. Most of it needs minutes, not hours.</p><div class="groups"><div class="group group--input"><h4>📥 What arrives</h4><ol class="flow"><li class="step step--owner"><span class="step__n">O1</span><div class="step__b"><h3>Signups</h3><p>You build each free page from the sheet row. Minutes each.</p></div></li><li class="step step--owner"><span class="step__n">O2</span><div class="step__b"><h3>Store requests</h3><p>The payment link goes out by itself. You do nothing until money lands.</p></div></li></ol></div></div></div><div class="phase"><div class="phase__head"><span class="phase__n">Step 2</span><h3>The build</h3></div><p class="phase__note">The part that is genuinely your job — and the part that will eventually break.</p><div class="groups"><div class="group group--create"><h4>🛠️ Hand work</h4><ol class="flow"><li class="step step--owner"><span class="step__n">O3</span><div class="step__b"><h3>You build the paid store</h3><p>THE BOTTLENECK. Hours per merchant, and the reason they pay you rather than doing it themselves.</p></div></li><li class="step step--owner"><span class="step__n">O4</span><div class="step__b"><h3>Setup cases</h3><p>The call, the documents, the filing, and four stage updates that send themselves once you post each stage.</p></div></li></ol></div></div></div><div class="phase"><div class="phase__head"><span class="phase__n">Step 3</span><h3>Growing it</h3></div><p class="phase__note">The promises you made on the merchant page come due here.</p><div class="groups"><div class="group group--engine"><h4>📣 Marketing</h4><ol class="flow"><li class="step step--owner"><span class="step__n">O5</span><div class="step__b"><h3>Feature and post</h3><p>Rotate who is featured, post each new store, run the seasonal campaigns.</p></div></li></ol></div><div class="group group--prepare"><h4>💬 Support</h4><ol class="flow"><li class="step step--owner"><span class="step__n">O6</span><div class="step__b"><h3>Answer merchants</h3><p>Order questions, product help, pricing advice — in working hours, which is what we promise.</p></div></li></ol></div></div></div><div class="phase"><div class="phase__head"><span class="phase__n">Step 4</span><h3>What you never touch</h3></div><p class="phase__note">Already automated. Do not spend your week here.</p><div class="groups"><div class="group group--prepare"><h4>🤖 Runs itself</h4><ol class="flow"><li class="step step--owner"><span class="step__n">O7</span><div class="step__b"><h3>Renewals and suspensions</h3><p>Reminders, warnings and suspensions are automatic. You step in only for the ones that go quiet.</p></div></li></ol></div></div></div><div class="asides"><div class="aside"><h4>📈 When to stop doing this by hand</h4><p>O3 is the ceiling. Ten merchants is a good week. Fifty is not a person&#x27;s job.
+
+When O3 stops fitting in your week, self-serve product editing pays for itself — that, not features or design, is the moment to build the real backend.</p></div></div></div></section>
+<footer><div class="wrap">Generated from the same definitions as the n8n canvases, so the drawing and the file cannot drift apart.</div></footer>

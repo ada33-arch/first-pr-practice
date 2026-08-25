@@ -1,3 +1,4 @@
 node_modules/
 .env
 projects/matjari/standalone.html
+__pycache__/

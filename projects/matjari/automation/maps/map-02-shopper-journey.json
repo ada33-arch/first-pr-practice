@@ -2,16 +2,144 @@
   "name": "MAP · The shopper's journey",
   "nodes": [
     {
+      "parameters": {
+        "content": "### ⚠️ Map, not automation\n\nEvery node here is a **No-Op**: it does nothing, sends nothing, charges nobody. It exists so the business can be read on a canvas.\n\nPress **Execute Workflow** to walk the path.\n\n**Never set this Active.** The workflows that actually run are the numbered ones in the folder above.",
+        "width": 300,
+        "height": 300,
+        "color": 7
+      },
+      "id": "sticky-0",
+      "name": "Note 1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 🚪 They arrive",
+        "width": 400,
+        "height": 190,
+        "color": 4
+      },
+      "id": "sticky-1",
+      "name": "Note 2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        40,
+        110
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Step 1️⃣ They arrive and browse\n\nMany merchants in one place is the whole reason to come back — a single store never gets a second visit.",
+        "width": 480,
+        "height": 340,
+        "color": 7
+      },
+      "id": "sticky-2",
+      "name": "Note 3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 🛍️ Inside a store",
+        "width": 620,
+        "height": 190,
+        "color": 5
+      },
+      "id": "sticky-3",
+      "name": "Note 4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        610,
+        110
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Step 2️⃣ They choose\n\nFrom here they are inside one merchant's store, carrying our chrome and their brand.",
+        "width": 700,
+        "height": 340,
+        "color": 7
+      },
+      "id": "sticky-4",
+      "name": "Note 5",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        570,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 💬 Checkout",
+        "width": 180,
+        "height": 190,
+        "color": 3
+      },
+      "id": "sticky-5",
+      "name": "Note 6",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1400,
+        110
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Step 3️⃣ They pay the merchant\n\nThe one step that defines the business: the money goes to the merchant, not to us.",
+        "width": 260,
+        "height": 340,
+        "color": 7
+      },
+      "id": "sticky-6",
+      "name": "Note 7",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 🔒 What the shopper never does\n\nNo account. No password. No card on our site.\n\n**We lose:** their contact details, abandoned-cart chasing, and any email list.\n\n**We gain:** no card data, no refunds, no payment licence, and no liability for a sale we were never part of.",
+        "width": 360,
+        "height": 300,
+        "color": 1
+      },
+      "id": "sticky-7",
+      "name": "Note 8",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1710,
+        0
+      ]
+    },
+    {
       "parameters": {},
-      "id": "start",
+      "id": "a",
       "name": "A shopper arrives",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -940,
-        0
+        -260,
+        200
       ],
-      "notes": "Press Execute to walk this path. Nothing is sent — every node is a No-Op.",
+      "notes": "Press Execute to walk the path. Every node is a No-Op — nothing is sent.",
       "notesInFlow": true
     },
     {
@@ -21,8 +149,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        -700,
-        0
+        80,
+        200
       ],
       "notes": "From search, a merchant's bio link, our social accounts, or a QR sticker in a real shop.",
       "notesInFlow": true
@@ -34,10 +162,10 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        -440,
-        0
+        300,
+        200
       ],
-      "notes": "Featured stores, categories, every store with search. Many merchants in one place is the reason to return.",
+      "notes": "Featured stores, categories, and every store with search.",
       "notesInFlow": true
     },
     {
@@ -47,10 +175,10 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        -180,
-        0
+        650,
+        200
       ],
-      "notes": "That merchant's store, inside our website, carrying our chrome and their brand.",
+      "notes": "That merchant's store, inside our website.",
       "notesInFlow": true
     },
     {
@@ -60,8 +188,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        80,
-        0
+        870,
+        200
       ],
       "notes": "Photos, price, what's included, quantity.",
       "notesInFlow": true
@@ -73,8 +201,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        340,
-        0
+        1090,
+        200
       ],
       "notes": "Optionally leave a name and WhatsApp number so the merchant can reply.",
       "notesInFlow": true
@@ -82,47 +210,15 @@
     {
       "parameters": {},
       "id": "s6",
-      "name": "S6 · They pay the merchant",
+      "name": "S6 · They message the merchant",
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        340,
-        300
+        1440,
+        200
       ],
-      "notes": "Checkout opens WhatsApp to THE MERCHANT. Delivery and payment agreed there. No account, no card on our site.",
+      "notes": "The full order opens in WhatsApp with THE MERCHANT. Delivery and payment agreed there.",
       "notesInFlow": true
-    },
-    {
-      "parameters": {
-        "content": "## ⚠️ This is a map, not an automation\n\nEvery node here is a **No-Op**: it does nothing, sends nothing, and charges nobody. It exists so the business can be read on a canvas instead of in a document.\n\nPress **Execute Workflow** to walk the path — each step lights up in order, and clicking one shows its description.\n\n**Never set these Active.** The workflows that actually run are the numbered ones in the folder above (01–05).",
-        "width": 520,
-        "height": 280,
-        "color": 3
-      },
-      "id": "note-52646",
-      "name": "Note 52646",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        -960,
-        -320
-      ]
-    },
-    {
-      "parameters": {
-        "content": "### The shopper never meets the platform\n\nNo login, no password, no saved card. They browse, they message a merchant, they pay that merchant.\n\n**What this costs us:** we cannot see their orders, chase abandoned carts, or email them later.\n\n**What it buys us:** no card data, no refunds, no payment licence, and no liability for a sale we were not part of.",
-        "width": 460,
-        "height": 280,
-        "color": 5
-      },
-      "id": "note-46363",
-      "name": "Note 46363",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        -440,
-        0
-      ]
     }
   ],
   "connections": {
@@ -185,7 +281,7 @@
       "main": [
         [
           {
-            "node": "S6 · They pay the merchant",
+            "node": "S6 · They message the merchant",
             "type": "main",
             "index": 0
           }
