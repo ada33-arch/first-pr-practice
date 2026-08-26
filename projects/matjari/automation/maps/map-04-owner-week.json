@@ -20,7 +20,7 @@
     {
       "parameters": {
         "content": "### 📥 What arrives",
-        "width": 400,
+        "width": 510,
         "height": 190,
         "color": 4
       },
@@ -36,7 +36,7 @@
     {
       "parameters": {
         "content": "## Step 1️⃣ The inbox\n\nEverything arrives on WhatsApp. Most of it needs minutes, not hours.",
-        "width": 480,
+        "width": 590,
         "height": 340,
         "color": 7
       },
@@ -52,7 +52,7 @@
     {
       "parameters": {
         "content": "### 🛠️ Hand work",
-        "width": 400,
+        "width": 510,
         "height": 190,
         "color": 3
       },
@@ -61,14 +61,14 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        610,
+        800,
         110
       ]
     },
     {
       "parameters": {
         "content": "## Step 2️⃣ The build\n\nThe part that is genuinely your job — and the part that will eventually break.",
-        "width": 480,
+        "width": 590,
         "height": 340,
         "color": 7
       },
@@ -77,14 +77,14 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        570,
+        760,
         0
       ]
     },
     {
       "parameters": {
         "content": "### 📣 Marketing",
-        "width": 180,
+        "width": 290,
         "height": 190,
         "color": 6
       },
@@ -93,14 +93,14 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1180,
+        1560,
         110
       ]
     },
     {
       "parameters": {
         "content": "### 💬 Support",
-        "width": 180,
+        "width": 290,
         "height": 190,
         "color": 5
       },
@@ -109,14 +109,14 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1180,
+        1560,
         340
       ]
     },
     {
       "parameters": {
         "content": "## Step 3️⃣ Growing it\n\nThe promises you made on the merchant page come due here.",
-        "width": 260,
+        "width": 370,
         "height": 570,
         "color": 7
       },
@@ -125,14 +125,14 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1140,
+        1520,
         0
       ]
     },
     {
       "parameters": {
         "content": "### 🤖 Runs itself",
-        "width": 180,
+        "width": 290,
         "height": 190,
         "color": 5
       },
@@ -141,14 +141,14 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1530,
+        2100,
         110
       ]
     },
     {
       "parameters": {
         "content": "## Step 4️⃣ What you never touch\n\nAlready automated. Do not spend your week here.",
-        "width": 260,
+        "width": 370,
         "height": 340,
         "color": 7
       },
@@ -157,7 +157,7 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1490,
+        2060,
         0
       ]
     },
@@ -173,7 +173,7 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1840,
+        2600,
         0
       ]
     },
@@ -223,7 +223,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        650,
+        840,
         200
       ],
       "notes": "THE BOTTLENECK. Hours per merchant, and the reason they pay you rather than doing it themselves.",
@@ -236,7 +236,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        870,
+        1060,
         200
       ],
       "notes": "The call, the documents, the filing, and four stage updates that send themselves once you post each stage.",
@@ -249,7 +249,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        1220,
+        1600,
         200
       ],
       "notes": "Rotate who is featured, post each new store, run the seasonal campaigns.",
@@ -262,7 +262,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        1220,
+        1600,
         430
       ],
       "notes": "Order questions, product help, pricing advice — in working hours, which is what we promise.",
@@ -275,7 +275,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        1570,
+        2140,
         200
       ],
       "notes": "Reminders, warnings and suspensions are automatic. You step in only for the ones that go quiet.",

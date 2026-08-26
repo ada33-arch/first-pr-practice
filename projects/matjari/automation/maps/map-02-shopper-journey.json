@@ -20,7 +20,7 @@
     {
       "parameters": {
         "content": "### 🚪 They arrive",
-        "width": 400,
+        "width": 510,
         "height": 190,
         "color": 4
       },
@@ -36,7 +36,7 @@
     {
       "parameters": {
         "content": "## Step 1️⃣ They arrive and browse\n\nMany merchants in one place is the whole reason to come back — a single store never gets a second visit.",
-        "width": 480,
+        "width": 590,
         "height": 340,
         "color": 7
       },
@@ -52,7 +52,7 @@
     {
       "parameters": {
         "content": "### 🛍️ Inside a store",
-        "width": 620,
+        "width": 730,
         "height": 190,
         "color": 5
       },
@@ -61,14 +61,14 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        610,
+        800,
         110
       ]
     },
     {
       "parameters": {
         "content": "## Step 2️⃣ They choose\n\nFrom here they are inside one merchant's store, carrying our chrome and their brand.",
-        "width": 700,
+        "width": 810,
         "height": 340,
         "color": 7
       },
@@ -77,14 +77,14 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        570,
+        760,
         0
       ]
     },
     {
       "parameters": {
         "content": "### 💬 Checkout",
-        "width": 180,
+        "width": 290,
         "height": 190,
         "color": 3
       },
@@ -93,14 +93,14 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1400,
+        1780,
         110
       ]
     },
     {
       "parameters": {
         "content": "## Step 3️⃣ They pay the merchant\n\nThe one step that defines the business: the money goes to the merchant, not to us.",
-        "width": 260,
+        "width": 370,
         "height": 340,
         "color": 7
       },
@@ -109,7 +109,7 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1360,
+        1740,
         0
       ]
     },
@@ -125,7 +125,7 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1710,
+        2280,
         0
       ]
     },
@@ -175,7 +175,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        650,
+        840,
         200
       ],
       "notes": "That merchant's store, inside our website.",
@@ -188,7 +188,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        870,
+        1060,
         200
       ],
       "notes": "Photos, price, what's included, quantity.",
@@ -201,7 +201,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        1090,
+        1280,
         200
       ],
       "notes": "Optionally leave a name and WhatsApp number so the merchant can reply.",
@@ -214,7 +214,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        1440,
+        1820,
         200
       ],
       "notes": "The full order opens in WhatsApp with THE MERCHANT. Delivery and payment agreed there.",

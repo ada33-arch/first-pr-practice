@@ -20,7 +20,7 @@
     {
       "parameters": {
         "content": "### 🧾 The problem",
-        "width": 400,
+        "width": 510,
         "height": 190,
         "color": 4
       },
@@ -36,7 +36,7 @@
     {
       "parameters": {
         "content": "## Step 1️⃣ They decide\n\nThey are selling from an Instagram account, or want to start, and cannot do it legally.",
-        "width": 480,
+        "width": 590,
         "height": 340,
         "color": 7
       },
@@ -52,7 +52,7 @@
     {
       "parameters": {
         "content": "### ☎️ First call — free",
-        "width": 180,
+        "width": 290,
         "height": 190,
         "color": 5
       },
@@ -61,14 +61,14 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        610,
+        800,
         110
       ]
     },
     {
       "parameters": {
         "content": "### 📄 What they send",
-        "width": 180,
+        "width": 290,
         "height": 190,
         "color": 4
       },
@@ -77,14 +77,14 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        610,
+        800,
         340
       ]
     },
     {
       "parameters": {
         "content": "## Step 2️⃣ The call, then the papers\n\nNothing is charged before they know the real number.",
-        "width": 260,
+        "width": 370,
         "height": 570,
         "color": 7
       },
@@ -93,14 +93,14 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        570,
+        760,
         0
       ]
     },
     {
       "parameters": {
         "content": "### 🏛️ With the authority",
-        "width": 400,
+        "width": 510,
         "height": 190,
         "color": 3
       },
@@ -109,14 +109,14 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        960,
+        1340,
         110
       ]
     },
     {
       "parameters": {
         "content": "## Step 3️⃣ Filing\n\nThis is the step you cannot do without a partner.",
-        "width": 480,
+        "width": 590,
         "height": 340,
         "color": 7
       },
@@ -125,14 +125,14 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        920,
+        1300,
         0
       ]
     },
     {
       "parameters": {
         "content": "### 🏪 We build it all",
-        "width": 400,
+        "width": 510,
         "height": 190,
         "color": 6
       },
@@ -141,14 +141,14 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1530,
+        2100,
         110
       ]
     },
     {
       "parameters": {
         "content": "## Step 4️⃣ They open\n\nEverything they were paying for, delivered at once.",
-        "width": 480,
+        "width": 590,
         "height": 340,
         "color": 7
       },
@@ -157,7 +157,7 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1490,
+        2060,
         0
       ]
     },
@@ -173,7 +173,7 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        2060,
+        2820,
         0
       ]
     },
@@ -189,7 +189,7 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        2510,
+        3350,
         0
       ]
     },
@@ -239,7 +239,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        650,
+        840,
         200
       ],
       "notes": "Emirate, licence type, activity — and the CONFIRMED government fee before they pay anything.",
@@ -252,7 +252,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        650,
+        840,
         430
       ],
       "notes": "Passport, photo, three proposed trade names, activity description. We reserve the name.",
@@ -265,7 +265,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        1000,
+        1380,
         200
       ],
       "notes": "Through a LICENSED SETUP PARTNER. They pay government fees to the authority directly.",
@@ -278,7 +278,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        1220,
+        1600,
         200
       ],
       "notes": "Usually 3–10 working days once documents are complete. The AUTHORITY issues it, not us.",
@@ -291,7 +291,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        1570,
+        2140,
         200
       ],
       "notes": "First 20 products uploaded, then an hour of training on running it.",
@@ -304,7 +304,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        1790,
+        2360,
         200
       ],
       "notes": "The monthly clock starts after that year, and only starts once the licence exists.",

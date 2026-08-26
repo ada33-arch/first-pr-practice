@@ -24,7 +24,7 @@ DIGITS = ["0️⃣", "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6�
 NODE_DX, NODE_DY = 220, 170          # spacing between nodes
 GROUP_PAD_X, GROUP_TOP, GROUP_BOT = 40, 90, 40
 STEP_PAD_X, STEP_TOP, STEP_BOT = 40, 110, 40
-STEP_GAP, GROUP_GAP = 90, 40
+STEP_GAP, GROUP_GAP = 170, 40
 
 
 class Canvas:
@@ -72,13 +72,13 @@ class Canvas:
     def step(self, number, title, note, groups):
         """groups: [(role, title, [(node_name, node_note, optional_flag), ...]), ...]"""
         widest = max(len(g[2]) for g in groups)
-        inner_w = widest * NODE_DX - (NODE_DX - 100)
+        inner_w = widest * NODE_DX - (NODE_DX - 210)
         gx = self._x + STEP_PAD_X
         gy = STEP_TOP
         placed = []
 
         for role, gtitle, items in groups:
-            gw = len(items) * NODE_DX - (NODE_DX - 100) + GROUP_PAD_X * 2
+            gw = len(items) * NODE_DX - (NODE_DX - 210) + GROUP_PAD_X * 2
             gh = GROUP_TOP + GROUP_BOT + 60
             self._sticky(f"### {gtitle}", (gx, gy), gw, gh, ROLE[role])
             for i, item in enumerate(items):
@@ -90,7 +90,7 @@ class Canvas:
             gy += gh + GROUP_GAP
 
         step_w = max(inner_w + STEP_PAD_X * 2,
-                     max((len(g[2]) * NODE_DX - (NODE_DX - 100) + GROUP_PAD_X * 2) for g in groups) + STEP_PAD_X * 2)
+                     max((len(g[2]) * NODE_DX - (NODE_DX - 210) + GROUP_PAD_X * 2) for g in groups) + STEP_PAD_X * 2)
         step_h = gy - STEP_TOP + STEP_TOP + STEP_BOT - GROUP_GAP
         digits = "".join(DIGITS[int(d)] for d in str(number))
         self._sticky(f"## Step {digits} {title}\n\n{note}", (self._x, 0), step_w, step_h, ROLE["step"])

@@ -20,7 +20,7 @@
     {
       "parameters": {
         "content": "### 👤 They find us",
-        "width": 620,
+        "width": 730,
         "height": 190,
         "color": 4
       },
@@ -36,7 +36,7 @@
     {
       "parameters": {
         "content": "### ✍️ They register",
-        "width": 620,
+        "width": 730,
         "height": 190,
         "color": 4
       },
@@ -52,7 +52,7 @@
     {
       "parameters": {
         "content": "## Step 1️⃣ They join, free\n\nCosts them nothing, and they walk away with a page they can put in their Instagram bio the same day.",
-        "width": 700,
+        "width": 810,
         "height": 570,
         "color": 7
       },
@@ -68,7 +68,7 @@
     {
       "parameters": {
         "content": "### 💳 They decide to sell",
-        "width": 400,
+        "width": 510,
         "height": 190,
         "color": 5
       },
@@ -77,14 +77,14 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        830,
+        1020,
         110
       ]
     },
     {
       "parameters": {
         "content": "### 🛠️ We build it for them",
-        "width": 400,
+        "width": 510,
         "height": 190,
         "color": 3
       },
@@ -93,14 +93,14 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        830,
+        1020,
         340
       ]
     },
     {
       "parameters": {
         "content": "### 🎁 Offers you may run",
-        "width": 620,
+        "width": 730,
         "height": 190,
         "color": 1
       },
@@ -109,14 +109,14 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        830,
+        1020,
         570
       ]
     },
     {
       "parameters": {
         "content": "## Step 2️⃣ They open a store\n\nThe whole business lives in this step: they pay, we build, we put them in front of shoppers.",
-        "width": 700,
+        "width": 810,
         "height": 800,
         "color": 7
       },
@@ -125,14 +125,14 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        790,
+        980,
         0
       ]
     },
     {
       "parameters": {
         "content": "### 🛒 Their customers",
-        "width": 180,
+        "width": 290,
         "height": 190,
         "color": 6
       },
@@ -141,14 +141,14 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1620,
+        2000,
         110
       ]
     },
     {
       "parameters": {
         "content": "### 🔁 The month turns",
-        "width": 180,
+        "width": 290,
         "height": 190,
         "color": 5
       },
@@ -157,14 +157,14 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1620,
+        2000,
         340
       ]
     },
     {
       "parameters": {
         "content": "## Step 3️⃣ They sell, and they stay\n\nOrders arriving on their phone is the habit. The renewal cycle runs without you.",
-        "width": 260,
+        "width": 370,
         "height": 570,
         "color": 7
       },
@@ -173,7 +173,7 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1580,
+        1960,
         0
       ]
     },
@@ -189,7 +189,7 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1930,
+        2500,
         0
       ]
     },
@@ -205,7 +205,7 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        2380,
+        3030,
         0
       ]
     },
@@ -307,7 +307,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        870,
+        1060,
         200
       ],
       "notes": "A payment link arrives on WhatsApp: 55 AED / month, cancel any time.",
@@ -320,7 +320,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        1090,
+        1280,
         200
       ],
       "notes": "ONLY NOW does the store open and enter the directory. Asking is never paying.",
@@ -333,7 +333,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        870,
+        1060,
         430
       ],
       "notes": "Products, photos, categories, prices — done by us in days. This is what they buy.",
@@ -346,7 +346,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        1090,
+        1280,
         430
       ],
       "notes": "Front page placement and a post on our social accounts.",
@@ -360,7 +360,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        870,
+        1060,
         660
       ],
       "notes": "Highest-converting offer for a 55 AED subscription. Costs a page you were building anyway.",
@@ -374,7 +374,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        1090,
+        1280,
         660
       ],
       "notes": "First 50 stores keep 55 AED for as long as they stay.",
@@ -388,7 +388,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        1310,
+        1500,
         660
       ],
       "notes": "A free month each when a referred store's first payment clears.",
@@ -402,7 +402,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        1660,
+        2040,
         200
       ],
       "notes": "Items, total, and the customer's number on WhatsApp. They deliver and are paid directly.",
@@ -415,7 +415,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        1660,
+        2040,
         430
       ],
       "notes": "Reminder 3 days before, link on the day, warning if late. Unpaid = store off, page and products stay.",

@@ -5,7 +5,7 @@ import json, pathlib, html, textwrap
 HERE = pathlib.Path(__file__).resolve().parent
 OUT = HERE.parents[1] / "docs" / "canvas.html"
 PAL = {1: "#c9a227", 2: "#9a6b3f", 3: "#c05a55", 4: "#2f8a63", 5: "#3d78c0", 6: "#8367b8", 7: "#6b6b73"}
-NW, NH = 186, 62
+NW, NH = 202, 74
 
 def esc(t): return html.escape(t or "")
 
@@ -39,9 +39,9 @@ def draw(path):
         rest = " ".join(l for l in body[1:] if l.strip()).replace("**", "")
         big = body[0].startswith("## ")
         parts.append(f'<rect x="{x}" y="{y}" width="{sw}" height="{sh}" rx="14" fill="{c}" fill-opacity="{.10 if big else .16}" stroke="{c}" stroke-opacity=".55"/>')
-        parts.append(f'<text x="{x+18}" y="{y+30}" fill="{c}" font-size="{16 if big else 13}" font-weight="700">{esc(head)}</text>')
-        for i, line in enumerate(wrap(rest, 42 if sw < 420 else 60, 6)):
-            parts.append(f'<text x="{x+18}" y="{y+52+i*17}" fill="#a7a39b" font-size="11.5">{esc(line)}</text>')
+        parts.append(f'<text x="{x+18}" y="{y+30}" fill="{c}" font-size="{19 if big else 15}" font-weight="700">{esc(head)}</text>')
+        for i, line in enumerate(wrap(rest, 36 if sw < 420 else 52, 6)):
+            parts.append(f'<text x="{x+18}" y="{y+56+i*19}" fill="#a7a39b" font-size="13">{esc(line)}</text>')
 
     for a, conns in wf["connections"].items():
         src = next((n for n in nodes if n["name"] == a), None)
@@ -62,11 +62,11 @@ def draw(path):
         dash = ' stroke-dasharray="5 4"' if off else ''
         edge = "#4a4a52" if off else "#5f5a52"
         parts.append(f'<rect x="{x}" y="{y}" width="{NW}" height="{NH}" rx="11" fill="#26262c" stroke="{edge}" stroke-width="1.4"{dash}/>')
-        parts.append(f'<text x="{x+12}" y="{y+22}" fill="{"#8a857c" if off else "#f0ece3"}" font-size="12.5" font-weight="600">{esc((num if label else name)[:24])}</text>')
+        parts.append(f'<text x="{x+12}" y="{y+24}" fill="{"#8a857c" if off else "#f0ece3"}" font-size="14.5" font-weight="700">{esc((num if label else name)[:21])}</text>')
         if label:
-            parts.append(f'<text x="{x+12}" y="{y+38}" fill="#cfc9bf" font-size="11">{esc(label[:26])}</text>')
-        for i, line in enumerate(wrap(n.get("notes", ""), 30, 1)):
-            parts.append(f'<text x="{x+12}" y="{y+54}" fill="#918c83" font-size="10">{esc(line)}</text>')
+            parts.append(f'<text x="{x+12}" y="{y+43}" fill="#cfc9bf" font-size="12.5" font-weight="500">{esc(label[:23])}</text>')
+        for i, line in enumerate(wrap(n.get("notes", ""), 27, 1)):
+            parts.append(f'<text x="{x+12}" y="{y+64}" fill="#918c83" font-size="11.5">{esc(line)}</text>')
 
     svg = (f'<svg viewBox="0 0 {w} {h}" width="{w}" height="{h}" xmlns="http://www.w3.org/2000/svg" '
            f'role="img" aria-label="{esc(wf["name"])}"><defs>'
