@@ -4,7 +4,7 @@
 
 | Project | What it is |
 | --- | --- |
-| [`projects/matjari`](projects/matjari) | **متجري** — an Arabic-first UAE marketplace: many merchants' stores on one website, free personal pages, paid stores, and a setup-and-licence service. Site, automations, and the written idea all live in that folder. |
+| [`projects/rentstore`](projects/rentstore) | **رنت ستور** — an Arabic-first UAE marketplace: many merchants' stores on one website, free personal pages, paid stores, and a setup-and-licence service. Site, automations, and the written idea all live in that folder. |
 
 Each project keeps everything it owns in its own folder, split the same way:
 `content/` (the words and numbers), `design/` (the look), `pages/` (the screens),

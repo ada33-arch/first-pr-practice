@@ -16,7 +16,7 @@ to them. Draw first, then write only what the drawing cannot say.
    on a phone.
 
 Defining them once and generating both is what stops them drifting apart. Use
-`canvas.py` in this folder; `projects/matjari/automation/maps/build-maps.py` is
+`canvas.py` in this folder; `projects/rentstore/automation/maps/build-maps.py` is
 a worked example of both outputs from one definition.
 
 ## The grammar

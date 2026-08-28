@@ -1,0 +1,396 @@
+{
+  "name": "RentStore · 1 · Free signup",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "rentstore-signup",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "signup-submitted",
+      "name": "Signup submitted",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -620,
+        300
+      ],
+      "webhookId": "rentstore-signup"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Normalise what the signup form sent and decide whether it is usable.\nconst body = $json.body ?? $json;\n\nconst name   = String(body.name   ?? '').trim();\nconst handle = String(body.handle ?? '').trim().toLowerCase().replace(/[^a-z0-9._-]/g, '');\nconst sells  = String(body.sells  ?? '').trim();\nconst plan   = body.plan === 'store' ? 'store' : 'free';\nconst email  = String(body.email  ?? '').trim();\n\n// UAE numbers: 0501234567 / +971501234567 / 971501234567 all end up as 971501234567\nlet phone = String(body.phone ?? '').replace(/[^\\d]/g, '');\nif (phone.startsWith('00')) phone = phone.slice(2);\nif (phone.startsWith('0'))  phone = '971' + phone.slice(1);\nif (phone.length === 9)     phone = '971' + phone;\n\nconst problems = [];\nif (name.length < 2)              problems.push('name');\nif (handle.length < 3)            problems.push('handle');\nif (!/^97\\d{9,10}$|^\\d{10,15}$/.test(phone)) problems.push('phone');\n\nreturn [{\n  json: {\n    valid: problems.length === 0,\n    problems,\n    name, handle, phone, email, sells, plan,\n    page_url: `https://${$env.RENTSTORE_DOMAIN || 'rentstore.ae'}/@${handle}`,\n    created_at: new Date().toISOString(),\n    status: 'active',\n    store_status: plan === 'store' ? 'requested' : 'off',\n    source: body.source ?? 'website',\n  },\n}];"
+      },
+      "id": "validate-and-normalise",
+      "name": "Validate and normalise",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "is-it-valid",
+      "name": "Is it valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -180,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: false, error: 'invalid_input', problems: $json.problems }) }}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "id": "reject:-missing-fields",
+      "name": "Reject: missing fields",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        40,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "sellers",
+          "mode": "name"
+        },
+        "options": {},
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "handle",
+              "lookupValue": "={{ $json.handle }}"
+            }
+          ]
+        }
+      },
+      "id": "look-up-the-handle",
+      "name": "Look up the handle",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        40,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.handle }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "handle-already-taken",
+      "name": "Handle already taken?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        260,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: false, error: 'handle_taken' }) }}",
+        "options": {
+          "responseCode": 409
+        }
+      },
+      "id": "reject:-handle-taken",
+      "name": "Reject: handle taken",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        480,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "sellers",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "create-the-seller-row",
+      "name": "Create the seller row",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        480,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{ $env.WA_PHONE_ID }}/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ messaging_product: 'whatsapp', recipient_type: 'individual', to: $json.phone, type: 'text', text: { preview_url: true, body: =`أهلاً ${$json.name} 👋\\n\\nتم تسجيلك في رنت ستور.\\nصفحتك: ${$json.page_url}\\n\\nالخطوة الجاية: أرسل لنا صورتك، نبذة قصيرة، وروابط حساباتك — ونجهّز صفحتك خلال ٢٤ ساعة.\\n\\nوإذا حبيت تضيف متجر ومنتجات، رد بكلمة (متجر) ونرسل لك التفاصيل.` } }) }}",
+        "options": {}
+      },
+      "id": "whatsapp:-welcome-the-seller",
+      "name": "WhatsApp: welcome the seller",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        700,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{ $env.WA_PHONE_ID }}/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ messaging_product: 'whatsapp', recipient_type: 'individual', to: $env.OWNER_PHONE, type: 'text', text: { preview_url: true, body: =`🆕 تسجيل جديد\\n\\nالاسم: ${$json.name}\\nالرابط: ${$json.page_url}\\nواتساب: ${$json.phone}\\nيبيع: ${$json.sells || '—'}\\nالباقة المطلوبة: ${$json.plan === 'store' ? 'متجر' : 'مجاني'}` } }) }}",
+        "options": {}
+      },
+      "id": "whatsapp:-tell-the-owner",
+      "name": "WhatsApp: tell the owner",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        700,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true, handle: $json.handle, page_url: $json.page_url }) }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "reply:-account-created",
+      "name": "Reply: account created",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        920,
+        290
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 1 · Free signup\nThe signup form on the site POSTs here.\n\n**Nobody pays anything in this flow.** It creates the row, welcomes the seller, and tells you a new person joined.\n\nThe seller's own WhatsApp message (from the site button) is what opens the 24-hour window that lets these plain-text replies through.",
+        "width": 480,
+        "height": 320,
+        "color": 4
+      },
+      "id": "note-7307",
+      "name": "Note 7307",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        -60
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### Before this runs\n- `YOUR_SHEET_ID` in the three Google Sheets nodes\n- Header Auth credential: `Authorization: Bearer <WhatsApp token>`\n- Env: `WA_PHONE_ID`, `OWNER_PHONE`, `RENTSTORE_DOMAIN`",
+        "width": 420,
+        "height": 220,
+        "color": 3
+      },
+      "id": "note-8118",
+      "name": "Note 8118",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        480,
+        -60
+      ]
+    }
+  ],
+  "connections": {
+    "Signup submitted": {
+      "main": [
+        [
+          {
+            "node": "Validate and normalise",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate and normalise": {
+      "main": [
+        [
+          {
+            "node": "Is it valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is it valid?": {
+      "main": [
+        [
+          {
+            "node": "Look up the handle",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reject: missing fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Look up the handle": {
+      "main": [
+        [
+          {
+            "node": "Handle already taken?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle already taken?": {
+      "main": [
+        [
+          {
+            "node": "Reject: handle taken",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create the seller row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create the seller row": {
+      "main": [
+        [
+          {
+            "node": "WhatsApp: welcome the seller",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "WhatsApp: tell the owner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WhatsApp: welcome the seller": {
+      "main": [
+        [
+          {
+            "node": "Reply: account created",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Dubai",
+    "saveManualExecutions": true
+  },
+  "pinData": {},
+  "tags": [
+    {
+      "name": "rentstore"
+    }
+  ]
+}

@@ -1,0 +1,303 @@
+{
+  "name": "MAP · The shopper's journey",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "### ⚠️ Map, not automation\n\nEvery node here is a **No-Op**: it does nothing, sends nothing, charges nobody. It exists so the business can be read on a canvas.\n\nPress **Execute Workflow** to walk the path.\n\n**Never set this Active.** The workflows that actually run are the numbered ones in the folder above.",
+        "width": 300,
+        "height": 300,
+        "color": 7
+      },
+      "id": "sticky-0",
+      "name": "Note 1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 🚪 They arrive",
+        "width": 510,
+        "height": 190,
+        "color": 4
+      },
+      "id": "sticky-1",
+      "name": "Note 2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        40,
+        110
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Step 1️⃣ They arrive and browse\n\nMany merchants in one place is the whole reason to come back — a single store never gets a second visit.",
+        "width": 590,
+        "height": 340,
+        "color": 7
+      },
+      "id": "sticky-2",
+      "name": "Note 3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 🛍️ Inside a store",
+        "width": 730,
+        "height": 190,
+        "color": 5
+      },
+      "id": "sticky-3",
+      "name": "Note 4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        800,
+        110
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Step 2️⃣ They choose\n\nFrom here they are inside one merchant's store, carrying our chrome and their brand.",
+        "width": 810,
+        "height": 340,
+        "color": 7
+      },
+      "id": "sticky-4",
+      "name": "Note 5",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        760,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 💬 Checkout",
+        "width": 290,
+        "height": 190,
+        "color": 3
+      },
+      "id": "sticky-5",
+      "name": "Note 6",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1780,
+        110
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Step 3️⃣ They pay the merchant\n\nThe one step that defines the business: the money goes to the merchant, not to us.",
+        "width": 370,
+        "height": 340,
+        "color": 7
+      },
+      "id": "sticky-6",
+      "name": "Note 7",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1740,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 🔒 What the shopper never does\n\nNo account. No password. No card on our site.\n\n**We lose:** their contact details, abandoned-cart chasing, and any email list.\n\n**We gain:** no card data, no refunds, no payment licence, and no liability for a sale we were never part of.",
+        "width": 360,
+        "height": 300,
+        "color": 1
+      },
+      "id": "sticky-7",
+      "name": "Note 8",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2280,
+        0
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "a",
+      "name": "A shopper arrives",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -260,
+        200
+      ],
+      "notes": "Press Execute to walk the path. Every node is a No-Op — nothing is sent.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "s1",
+      "name": "S1 · They arrive",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        80,
+        200
+      ],
+      "notes": "From search, a merchant's bio link, our social accounts, or a QR sticker in a real shop.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "s2",
+      "name": "S2 · They browse the souq",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        300,
+        200
+      ],
+      "notes": "Featured stores, categories, and every store with search.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "s3",
+      "name": "S3 · They open a store",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        840,
+        200
+      ],
+      "notes": "That merchant's store, inside our website.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "s4",
+      "name": "S4 · They open a product",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1060,
+        200
+      ],
+      "notes": "Photos, price, what's included, quantity.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "s5",
+      "name": "S5 · They add to cart",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        200
+      ],
+      "notes": "Optionally leave a name and WhatsApp number so the merchant can reply.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "s6",
+      "name": "S6 · They message the merchant",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1820,
+        200
+      ],
+      "notes": "The full order opens in WhatsApp with THE MERCHANT. Delivery and payment agreed there.",
+      "notesInFlow": true
+    }
+  ],
+  "connections": {
+    "A shopper arrives": {
+      "main": [
+        [
+          {
+            "node": "S1 · They arrive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "S1 · They arrive": {
+      "main": [
+        [
+          {
+            "node": "S2 · They browse the souq",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "S2 · They browse the souq": {
+      "main": [
+        [
+          {
+            "node": "S3 · They open a store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "S3 · They open a store": {
+      "main": [
+        [
+          {
+            "node": "S4 · They open a product",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "S4 · They open a product": {
+      "main": [
+        [
+          {
+            "node": "S5 · They add to cart",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "S5 · They add to cart": {
+      "main": [
+        [
+          {
+            "node": "S6 · They message the merchant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Dubai"
+  },
+  "pinData": {},
+  "tags": [
+    {
+      "name": "rentstore-map"
+    }
+  ]
+}
