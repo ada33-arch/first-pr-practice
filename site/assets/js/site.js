@@ -293,6 +293,7 @@
         '<div class="topbar__tools">' +
           '<a class="icon-btn icon-btn--text" href="vendors.html" data-i18n="nav.vendors"></a>' +
           '<a class="icon-btn icon-btn--text" href="store.html" data-i18n="nav.store"></a>' +
+          (page === "apply" ? "" : '<a class="icon-btn icon-btn--text icon-btn--cta" href="apply.html" data-i18n="nav.apply"></a>') +
           '<button class="icon-btn icon-btn--text" data-lang-toggle data-i18n-aria="a11y.lang"></button>' +
           '<button class="icon-btn" data-theme-toggle data-i18n-aria="a11y.theme"></button>' +
           '<button class="icon-btn" data-cart-open data-i18n-aria="a11y.cart">' + icon("cart") +
@@ -946,6 +947,369 @@
     bindAddButtons(root);
   }
 
+  /* ----------------------------------------------------- store builder -- */
+  /* A seller fills this in on their phone and watches their storefront build
+     itself out of the very components the live site uses. The page produces a
+     JSON block for the marketplace owner to paste into data.js — there is no
+     backend, so nothing here writes to the site directly.                   */
+
+  // Fixed palettes rather than a free colour picker: every store then looks
+  // like it belongs to the same marketplace.
+  var PALETTES = [
+    { id: "violet", from: "#3a2f5f", to: "#0f0d1a" },
+    { id: "teal",   from: "#1f4a44", to: "#0b1614" },
+    { id: "plum",   from: "#4a2340", to: "#160b14" },
+    { id: "amber",  from: "#63451f", to: "#1a1207" },
+    { id: "ocean",  from: "#2b3d63", to: "#0c1120" },
+    { id: "sand",   from: "#5f4326", to: "#1a120a" },
+  ];
+  var EMOJIS = ["🧾","📦","📚","📘","🎨","✨","📣","🎯","🔍","🛠️","💡","🧠",
+                "📊","🖼️","🧰","🪄","🧵","☕","🍯","👗","💍","🌿","🕋","🚀"];
+
+  function slug(text) {
+    return String(text || "").toLowerCase().trim()
+      .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40);
+  }
+  function lines(text) {
+    return String(text || "").split("\n")
+      .map(function (l) { return l.trim(); })
+      .filter(function (l) { return l; });
+  }
+  // en falls back to ar: tx() already prefers the active language and drops
+  // through to whichever side has text, so an Arabic-only store renders fine.
+  function pair(ar, en) { return { ar: ar || en || "", en: en || ar || "" }; }
+
+  function renderApply() {
+    var root = qs("[data-page-root]");
+    if (!root) return;
+
+    var draft = {
+      nameAr: "", nameEn: "", tagAr: "", tagEn: "",
+      category: "", categoryOther: "", emoji: EMOJIS[0], palette: PALETTES[0].id,
+      whatsapp: "", since: "",
+      products: [newProduct()],
+    };
+    function newProduct() {
+      return { titleAr: "", titleEn: "", descAr: "", descEn: "",
+               price: "", oldPrice: "", emoji: "📦", featAr: "", featEn: "" };
+    }
+
+    // Categories already in use, so sellers land in an existing aisle rather
+    // than inventing a synonym for one.
+    var cats = [];
+    V.forEach(function (v) {
+      if (!cats.some(function (c) { return c.en === v.category.en; })) cats.push(v.category);
+    });
+
+    function catPair() {
+      if (draft.category === "__other") return pair(draft.categoryOther, draft.categoryOther);
+      var found = cats.filter(function (c) { return c.en === draft.category; })[0];
+      return found || pair(draft.categoryOther, draft.categoryOther);
+    }
+    function palette() {
+      return PALETTES.filter(function (p) { return p.id === draft.palette; })[0] || PALETTES[0];
+    }
+    function draftId() {
+      return slug(draft.nameEn) || slug(draft.nameAr) || "new-store";
+    }
+
+    function draftVendor() {
+      var pal = palette();
+      return {
+        id: draftId(),
+        name: pair(draft.nameAr, draft.nameEn),
+        tagline: pair(draft.tagAr, draft.tagEn),
+        category: catPair(),
+        initials: pair((draft.nameAr || "م").charAt(0), (draft.nameEn || "S").charAt(0)),
+        whatsapp: draft.whatsapp,
+        verified: false,
+        featured: false,
+        since: draft.since,
+        art: { emoji: draft.emoji, from: pal.from, to: pal.to },
+      };
+    }
+    function draftProducts() {
+      var pal = palette();
+      var vid = draftId();
+      return draft.products.map(function (p, i) {
+        var ar = lines(p.featAr), en = lines(p.featEn);
+        var n = Math.max(ar.length, en.length);
+        var features = [];
+        for (var k = 0; k < n; k++) features.push(pair(ar[k], en[k]));
+        return {
+          id: (slug(p.titleEn) || slug(p.titleAr) || "item") + "-" + (i + 1),
+          vendor: vid,
+          category: catPair(),
+          title: pair(p.titleAr, p.titleEn),
+          desc: pair(p.descAr, p.descEn),
+          price: Number(p.price) || 0,
+          oldPrice: Number(p.oldPrice) || undefined,
+          badge: null,
+          featured: false,
+          image: "",
+          art: { emoji: p.emoji, from: pal.from, to: pal.to },
+          features: features,
+        };
+      });
+    }
+
+    /* ------------------------------------------------------------ form -- */
+    function textField(bind, labelKey, opts) {
+      opts = opts || {};
+      return '<label class="bf">' +
+          '<span class="bf__label">' + esc(t(labelKey)) + (opts.optional ? ' <em>' + esc(t("apply.optional")) + "</em>" : "") + "</span>" +
+          (opts.area
+            ? '<textarea rows="' + (opts.rows || 3) + '" data-bind="' + bind + '"' +
+              (opts.dir ? ' dir="' + opts.dir + '"' : "") +
+              (opts.ph ? ' placeholder="' + esc(t(opts.ph)) + '"' : "") + "></textarea>"
+            : '<input type="' + (opts.type || "text") + '" data-bind="' + bind + '"' +
+              (opts.dir ? ' dir="' + opts.dir + '"' : "") +
+              (opts.ph ? ' placeholder="' + esc(t(opts.ph)) + '"' : "") + ">") +
+        "</label>";
+    }
+
+    function productBlock(p, i) {
+      function pf(bind, labelKey, opts) {
+        opts = opts || {};
+        var id = 'data-bind="' + bind + '" data-i="' + i + '"';
+        return '<label class="bf">' +
+            '<span class="bf__label">' + esc(t(labelKey)) + (opts.optional ? ' <em>' + esc(t("apply.optional")) + "</em>" : "") + "</span>" +
+            (opts.area
+              ? "<textarea rows=\"" + (opts.rows || 2) + "\" " + id + (opts.dir ? ' dir="' + opts.dir + '"' : "") + "></textarea>"
+              : '<input type="' + (opts.type || "text") + '" ' + id + (opts.dir ? ' dir="' + opts.dir + '"' : "") + ">") +
+          "</label>";
+      }
+      return '<fieldset class="bblock">' +
+          '<legend class="bblock__legend">' + esc(t("apply.product")) + " " + (i + 1) +
+            (draft.products.length > 1
+              ? '<button type="button" class="bblock__drop" data-drop-product="' + i + '">✕</button>'
+              : "") +
+          "</legend>" +
+          '<div class="bgrid">' +
+            pf("titleAr", "apply.pTitleAr", { dir: "rtl" }) +
+            pf("titleEn", "apply.pTitleEn", { dir: "ltr", optional: true }) +
+            pf("price", "apply.price", { type: "number", dir: "ltr" }) +
+            pf("oldPrice", "apply.oldPrice", { type: "number", dir: "ltr", optional: true }) +
+          "</div>" +
+          pf("descAr", "apply.pDescAr", { area: true, dir: "rtl" }) +
+          pf("descEn", "apply.pDescEn", { area: true, dir: "ltr", optional: true }) +
+          '<div class="bgrid">' +
+            pf("featAr", "apply.featAr", { area: true, rows: 3, dir: "rtl" }) +
+            pf("featEn", "apply.featEn", { area: true, rows: 3, dir: "ltr", optional: true }) +
+          "</div>" +
+          '<div class="bf"><span class="bf__label">' + esc(t("apply.pEmoji")) + "</span>" +
+            '<div class="picker">' + EMOJIS.map(function (e) {
+              return '<button type="button" class="picker__opt' + (p.emoji === e ? " is-on" : "") +
+                '" data-pemoji="' + esc(e) + '" data-i="' + i + '">' + e + "</button>";
+            }).join("") + "</div>" +
+          "</div>" +
+        "</fieldset>";
+    }
+
+    function paintProducts() {
+      var host = qs("[data-products]");
+      if (host) host.innerHTML = draft.products.map(productBlock).join("");
+    }
+
+    /* --------------------------------------------------------- preview -- */
+    function paintPreview() {
+      var host = qs("[data-preview]");
+      if (!host) return;
+      var v = draftVendor();
+      var items = draftProducts();
+      host.innerHTML =
+        '<div class="preview__label">' + esc(t("apply.previewNote")) + "</div>" +
+        '<section class="storefront">' +
+          vendorAvatar(v, "storefront__art") +
+          '<div class="storefront__body">' +
+            '<div class="eyebrow">' + esc(tx(v.category) || t("apply.catPlaceholder")) + "</div>" +
+            "<h1>" + esc(tx(v.name) || t("apply.namePlaceholder")) + "</h1>" +
+            '<p class="muted">' + esc(tx(v.tagline) || t("apply.tagPlaceholder")) + "</p>" +
+            '<div class="storefront__meta"><span>' + items.length + " " + esc(t("vendors.products")) + "</span></div>" +
+          "</div>" +
+        "</section>" +
+        '<div class="preview__label">' + esc(t("apply.previewCard")) + "</div>" +
+        '<div class="vendors">' + vendorCard(v) + "</div>" +
+        '<div class="preview__label">' + esc(t("apply.previewGrid")) + "</div>" +
+        '<div class="grid">' + items.map(productCard).join("") + "</div>";
+      // Everything in here is a mock-up; its links and buttons must not fire.
+      qsa(".reveal", host).forEach(function (el) { el.classList.add("is-in"); });
+    }
+
+    /* ---------------------------------------------------------- submit -- */
+    function validate() {
+      if (!draft.nameAr && !draft.nameEn) return t("apply.errName");
+      if (!draft.category) return t("apply.errCategory");
+      if (!String(draft.whatsapp).replace(/\D/g, "")) return t("apply.errWhatsapp");
+      var ok = draft.products.filter(function (p) {
+        return (p.titleAr || p.titleEn) && Number(p.price) > 0;
+      });
+      if (!ok.length) return t("apply.errProduct");
+      return "";
+    }
+
+    function payloadJSON() {
+      var v = draftVendor();
+      delete v.since;
+      if (draft.since) v.since = Number(draft.since);
+      return JSON.stringify({
+        vendor: v,
+        products: draftProducts().filter(function (p) {
+          return tx(p.title) && p.price > 0;
+        }),
+      }, null, 2);
+    }
+
+    function submit() {
+      var problem = validate();
+      if (problem) { toast(problem); return; }
+      var json = payloadJSON();
+
+      if (S.applyAction) {
+        fetch(S.applyAction, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify({ store: tx(draftVendor().name), whatsapp: draft.whatsapp, submission: json }),
+        }).then(function (res) {
+          toast(res.ok ? t("apply.sent") : t("apply.sendFailed"));
+          if (!res.ok) copy(json);
+        }).catch(function () {
+          toast(t("apply.sendFailed"));
+          copy(json);
+        });
+        return;
+      }
+
+      // No endpoint configured: the seller carries the payload over themselves.
+      // The JSON goes on the clipboard rather than into the wa.me URL, which
+      // has a length limit a real store would blow straight past.
+      copy(json).then(function () {
+        toast(t("apply.copied"));
+        var url = waLinkFor(S.whatsapp, t("apply.waIntro") + " — " + (tx(draftVendor().name) || ""));
+        if (url) window.open(url, "_blank", "noopener");
+      });
+    }
+
+    /* ------------------------------------------------------------ mount -- */
+    root.innerHTML =
+      '<section class="hero shell--wide shell">' +
+        '<div class="eyebrow" data-i18n="apply.eyebrow"></div>' +
+        '<h1 data-i18n="apply.title"></h1>' +
+        '<p data-i18n="apply.sub"></p>' +
+      "</section>" +
+      '<div class="shell shell--wide builder">' +
+        '<form class="builder__form" data-builder novalidate>' +
+          '<fieldset class="bblock">' +
+            '<legend class="bblock__legend">' + esc(t("apply.storeSection")) + "</legend>" +
+            '<div class="bgrid">' +
+              textField("nameAr", "apply.nameAr", { dir: "rtl" }) +
+              textField("nameEn", "apply.nameEn", { dir: "ltr", optional: true }) +
+            "</div>" +
+            textField("tagAr", "apply.tagAr", { dir: "rtl" }) +
+            textField("tagEn", "apply.tagEn", { dir: "ltr", optional: true }) +
+            '<div class="bgrid">' +
+              '<label class="bf"><span class="bf__label">' + esc(t("apply.category")) + "</span>" +
+                '<select data-bind="category">' +
+                  '<option value="">' + esc(t("apply.choose")) + "</option>" +
+                  cats.map(function (c) {
+                    return '<option value="' + esc(c.en) + '">' + esc(tx(c)) + "</option>";
+                  }).join("") +
+                  '<option value="__other">' + esc(t("apply.other")) + "</option>" +
+                "</select>" +
+              "</label>" +
+              textField("categoryOther", "apply.categoryOther", { optional: true }) +
+            "</div>" +
+            '<div class="bgrid">' +
+              textField("whatsapp", "apply.whatsapp", { type: "tel", dir: "ltr", ph: "apply.whatsappPh" }) +
+              textField("since", "apply.since", { type: "number", dir: "ltr", optional: true }) +
+            "</div>" +
+            '<div class="bf"><span class="bf__label">' + esc(t("apply.emoji")) + "</span>" +
+              '<div class="picker">' + EMOJIS.map(function (e) {
+                return '<button type="button" class="picker__opt" data-emoji="' + esc(e) + '">' + e + "</button>";
+              }).join("") + "</div>" +
+            "</div>" +
+            '<div class="bf"><span class="bf__label">' + esc(t("apply.palette")) + "</span>" +
+              '<div class="picker">' + PALETTES.map(function (pal) {
+                return '<button type="button" class="picker__swatch" data-palette="' + esc(pal.id) + '" ' +
+                  'style="background:linear-gradient(150deg,' + pal.from + "," + pal.to + ')" ' +
+                  'aria-label="' + esc(pal.id) + '"></button>';
+              }).join("") + "</div>" +
+            "</div>" +
+          "</fieldset>" +
+          '<div data-products></div>' +
+          '<button type="button" class="btn btn--ghost btn--block" data-add-product>' +
+            icon("plus") + "<span>" + esc(t("apply.addProduct")) + "</span></button>" +
+          '<div class="builder__submit">' +
+            '<button type="button" class="btn btn--primary btn--block" data-submit>' +
+              icon("bolt") + "<span>" + esc(t("apply.submit")) + "</span></button>" +
+            '<button type="button" class="btn btn--ghost btn--block btn--sm" data-copy-json>' +
+              esc(t("apply.copyJson")) + "</button>" +
+            '<p class="tiny muted">' + esc(t("apply.reviewNote")) + "</p>" +
+          "</div>" +
+        "</form>" +
+        '<aside class="builder__preview" data-preview></aside>' +
+      "</div>" +
+      footerHTML();
+
+    paintProducts();
+    paintPreview();
+
+    var form = qs("[data-builder]");
+
+    // One delegated handler: the form is rebuilt whenever products change, so
+    // per-node listeners would have to be rebound every time.
+    form.addEventListener("input", function (ev) {
+      var el = ev.target.closest("[data-bind]");
+      if (!el) return;
+      var key = el.getAttribute("data-bind");
+      var i = el.getAttribute("data-i");
+      if (i === null) draft[key] = el.value;
+      else draft.products[Number(i)][key] = el.value;
+      paintPreview();
+    });
+    form.addEventListener("change", function (ev) {
+      var el = ev.target.closest("[data-bind]");
+      if (!el || el.tagName !== "SELECT") return;
+      draft[el.getAttribute("data-bind")] = el.value;
+      paintPreview();
+    });
+    form.addEventListener("click", function (ev) {
+      var el = ev.target.closest("[data-emoji],[data-pemoji],[data-palette],[data-add-product],[data-drop-product],[data-submit],[data-copy-json]");
+      if (!el) return;
+      if (el.hasAttribute("data-emoji")) {
+        draft.emoji = el.getAttribute("data-emoji");
+        qsa("[data-emoji]", form).forEach(function (b) { b.classList.toggle("is-on", b === el); });
+      } else if (el.hasAttribute("data-pemoji")) {
+        draft.products[Number(el.getAttribute("data-i"))].emoji = el.getAttribute("data-pemoji");
+        paintProducts();
+      } else if (el.hasAttribute("data-palette")) {
+        draft.palette = el.getAttribute("data-palette");
+        qsa("[data-palette]", form).forEach(function (b) { b.classList.toggle("is-on", b === el); });
+      } else if (el.hasAttribute("data-add-product")) {
+        draft.products.push(newProduct());
+        paintProducts();
+      } else if (el.hasAttribute("data-drop-product")) {
+        draft.products.splice(Number(el.getAttribute("data-drop-product")), 1);
+        paintProducts();
+      } else if (el.hasAttribute("data-submit")) {
+        submit();
+        return;
+      } else if (el.hasAttribute("data-copy-json")) {
+        var problem = validate();
+        if (problem) { toast(problem); return; }
+        copy(payloadJSON()).then(function () { toast(t("apply.copied")); });
+        return;
+      }
+      paintPreview();
+    });
+
+    // The preview is a picture of the store, not the store: swallow its clicks.
+    qs("[data-preview]").addEventListener("click", function (ev) { ev.preventDefault(); });
+
+    qsa("[data-emoji]", form)[0].classList.add("is-on");
+    qsa("[data-palette]", form)[0].classList.add("is-on");
+  }
+
   function renderPage() {
     var page = document.body.dataset.page;
     if (page === "home") renderHome();
@@ -953,6 +1317,7 @@
     else if (page === "vendors") renderVendors();
     else if (page === "vendor") renderVendor();
     else if (page === "product") renderProduct();
+    else if (page === "apply") renderApply();
     applyLang();
     revealAll();
   }

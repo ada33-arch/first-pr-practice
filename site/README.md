@@ -16,6 +16,7 @@ a reload. No build step, no framework, no backend — open `index.html` and it r
 | `vendor.html?id=<id>` | One seller's storefront: their header, their products, contact them |
 | `store.html` | Every product from every store, filterable by category **and** by store |
 | `product.html?id=<id>` | One product: art, price, what's included, and the store selling it |
+| `apply.html` | The store builder: a seller fills a form and watches their storefront build itself |
 | `404.html` | Standalone not-found page — renders even if the JS fails to load |
 | `robots.txt`, `sitemap.xml` | Crawler basics. The domain in them is set by `scripts/set-domain.sh` |
 | `CNAME` | Written by `scripts/set-domain.sh`; not committed until you pick a domain |
@@ -124,13 +125,52 @@ Two things to change before you go live:
 - the `<title>`, `description`, and `og:` tags in each HTML file
 - `favicon` — the inline SVG in each `<head>`
 
+## How sellers get in
+
+`apply.html` is the intake. A seller fills it in on their phone and the right-hand
+panel renders their storefront live — the same `storefront`, `vendorCard`, and
+`productCard` components the real site uses, so what they see is what customers get.
+It teaches a good listing while they write one: a thin description visibly looks thin.
+
+They pick an icon and a colour from fixed sets rather than uploading a logo. That is
+deliberate — a static site has nowhere to receive an upload, and fixed palettes keep
+every store looking like it belongs to the same marketplace. When a seller has real
+product photography, they send it over WhatsApp and you drop it in `assets/img/`.
+
+Pressing **Send my store** produces a JSON block:
+
+```json
+{ "vendor": { "id": "…", "name": {…}, … }, "products": [ … ] }
+```
+
+Where it goes depends on `SITE.applyAction`:
+
+- **Set** to a form endpoint that accepts JSON (Formspree, Getform, Basin) → the
+  builder POSTs it and the submission lands in your inbox.
+- **Empty** → the payload is copied to the seller's clipboard and WhatsApp opens on
+  your number for them to paste. The JSON is deliberately *not* stuffed into the
+  `wa.me` link: a real store's payload is far longer than a URL can carry.
+
+Either way it arrives as data, not prose. Paste `vendor` into `VENDORS` and the
+`products` array into `PRODUCTS`, commit, and the store is live. Nothing the seller
+submits reaches the site until you do that — the review step is the whole point.
+
+The builder validates before it will send: a store name, a category, a WhatsApp number
+to receive orders, and at least one product with a name and a price.
+
 ## Where this stops being enough
 
-Everything here is static, which means **you** add sellers by editing `data.js` and
-committing. That's the right trade for the first dozen stores — no backend, no hosting
-bill, nothing to break. It stops working when sellers need to sign themselves up, edit
-their own products, or see their own sales. At that point the storefront markup carries
-over unchanged, but the data has to move behind an API with seller accounts.
+Everything here is static, which means **you** paste each submission into `data.js` and
+commit. That's the right trade for the first couple of dozen stores — no backend, no
+hosting bill, nothing to break, and the review step is what keeps the marketplace worth
+browsing.
+
+Two things will eventually push past it. When pasting becomes the bottleneck, split
+`data.js` into per-seller JSON files and have a GitHub Action turn a submission into a
+pull request you merge. When sellers start asking to change **their own** prices — the
+one request static hosting simply cannot answer — it is time for real accounts and an
+API. The storefront markup, the cart splitting, and the order routing all survive that
+move; only where the data lives changes.
 
 ## Notes
 
