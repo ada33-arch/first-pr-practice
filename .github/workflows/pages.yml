@@ -1,10 +1,10 @@
-name: Deploy site to GitHub Pages
+name: Deploy landing page to GitHub Pages
 
 on:
   push:
     branches: [main]
     paths:
-      - 'site/**'
+      - 'landing/**'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
 
@@ -27,9 +27,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
-      - name: Upload site/
+      # Only landing/ is published. site/ stays in the repo, unpublished,
+      # until there is a decision to put it live.
+      - name: Upload landing/
         uses: actions/upload-pages-artifact@v3
         with:
-          path: site
+          path: landing
       - id: deployment
         uses: actions/deploy-pages@v4

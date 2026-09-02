@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a0a0d">
+<title>rentstore.ae</title>
+<meta name="description" content="rentstore.ae — قريباً · Coming soon">
+<meta name="robots" content="noindex">
+<link rel="canonical" href="https://rentstore.ae/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://rentstore.ae/">
+<meta property="og:title" content="rentstore.ae">
+<meta property="og:description" content="قريباً · Coming soon">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23d8b475'/%3E%3Ctext x='16' y='22' font-size='16' font-family='sans-serif' font-weight='700' text-anchor='middle' fill='%231a1508'%3ER%3C/text%3E%3C/svg%3E">
+<style>
+  /* Self-contained on purpose: no fonts, scripts, or assets to fetch, so the
+     page renders instantly and has nothing that can fail. */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    display: grid;
+    place-items: center;
+    padding: 2rem 1.25rem;
+    background: #0a0a0d;
+    color: #f4f1ea;
+    font-family: "Tajawal", "Noto Kufi Arabic", system-ui, -apple-system, "Segoe UI", sans-serif;
+    text-align: center;
+    /* A single soft light source, so the empty page still feels intentional. */
+    background-image: radial-gradient(60rem 40rem at 50% -10%, rgba(216, 180, 117, .13), transparent 70%);
+  }
+  main { max-width: 34rem; }
+  .mark {
+    width: 68px;
+    height: 68px;
+    margin: 0 auto 1.75rem;
+    display: grid;
+    place-items: center;
+    border-radius: 20px;
+    background: linear-gradient(150deg, #d8b475, #b08c4d);
+    color: #1a1508;
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+    box-shadow: 0 18px 50px rgba(216, 180, 117, .22);
+  }
+  h1 {
+    margin: 0;
+    font-size: clamp(1.9rem, 7vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -.01em;
+    /* The domain is a Latin string: keep it LTR inside an RTL page. */
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+  .rule {
+    width: 3.5rem;
+    height: 2px;
+    margin: 1.75rem auto;
+    border-radius: 2px;
+    background: linear-gradient(90deg, transparent, #d8b475, transparent);
+  }
+  .soon { font-size: clamp(1.05rem, 3.5vw, 1.3rem); font-weight: 700; color: #f4f1ea; }
+  .soon-en {
+    margin-top: .35rem;
+    font-size: clamp(.95rem, 3vw, 1.1rem);
+    font-weight: 600;
+    color: #a7a29a;
+    direction: ltr;
+    unicode-bidi: isolate;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  footer {
+    margin-top: 3rem;
+    font-size: .78rem;
+    color: #6f6b64;
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+  @media (prefers-color-scheme: light) {
+    body {
+      background: #f7f4ef;
+      color: #17140e;
+      background-image: radial-gradient(60rem 40rem at 50% -10%, rgba(176, 140, 77, .16), transparent 70%);
+    }
+    .soon { color: #17140e; }
+    .soon-en { color: #6b6459; }
+    footer { color: #8a8378; }
+  }
+</style>
+</head>
+<body>
+  <main>
+    <div class="mark" aria-hidden="true">R</div>
+    <h1>rentstore.ae</h1>
+    <div class="rule" role="presentation"></div>
+    <p class="soon">قريباً</p>
+    <p class="soon-en" lang="en">Coming soon</p>
+    <footer>&copy; <span id="y">2026</span> rentstore.ae</footer>
+  </main>
+  <script>document.getElementById("y").textContent = new Date().getFullYear();</script>
+</body>
+</html>
