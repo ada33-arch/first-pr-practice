@@ -1,104 +1,459 @@
 <!doctype html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0a0a0d">
-<title>rentstore.ae</title>
-<meta name="description" content="rentstore.ae — قريباً · Coming soon">
-<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0E2A47">
+<title>RentStore.ae — Coming Soon · قريباً</title>
+<meta name="description" content="RentStore.ae — a new platform that helps businesses and home projects create their online stores and start selling online easily. Coming soon. منصة جديدة تساعد أصحاب المشاريع والأعمال المنزلية على إنشاء متاجرهم الإلكترونية.">
 <link rel="canonical" href="https://rentstore.ae/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://rentstore.ae/">
-<meta property="og:title" content="rentstore.ae">
-<meta property="og:description" content="قريباً · Coming soon">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23d8b475'/%3E%3Ctext x='16' y='22' font-size='16' font-family='sans-serif' font-weight='700' text-anchor='middle' fill='%231a1508'%3ER%3C/text%3E%3C/svg%3E">
+<meta property="og:title" content="RentStore.ae — Coming Soon · قريباً">
+<meta property="og:description" content="Your Store. Your Business. Online. — مشروعك عليك والستور علينا">
+<meta property="og:locale" content="en_AE">
+<meta property="og:locale:alternate" content="ar_AE">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230E2A47'/%3E%3Cpath d='M9 12h14l-1.2 11.5a1.5 1.5 0 0 1-1.5 1.3H11.7a1.5 1.5 0 0 1-1.5-1.3z' fill='none' stroke='%23E0A340' stroke-width='2'/%3E%3Cpath d='M12.5 12V9.8a3.5 3.5 0 0 1 7 0V12' fill='none' stroke='%23E0A340' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  /* Self-contained on purpose: no fonts, scripts, or assets to fetch, so the
-     page renders instantly and has nothing that can fail. */
-  *, *::before, *::after { box-sizing: border-box; }
-  html, body { height: 100%; }
-  body {
-    margin: 0;
-    display: grid;
-    place-items: center;
-    padding: 2rem 1.25rem;
-    background: #0a0a0d;
-    color: #f4f1ea;
-    font-family: "Tajawal", "Noto Kufi Arabic", system-ui, -apple-system, "Segoe UI", sans-serif;
-    text-align: center;
-    /* A single soft light source, so the empty page still feels intentional. */
-    background-image: radial-gradient(60rem 40rem at 50% -10%, rgba(216, 180, 117, .13), transparent 70%);
+  :root {
+    --navy:       #0E2A47;
+    --navy-deep:  #08203A;
+    --ink:        #12263F;
+    --gold:       #E0A340;
+    --gold-deep:  #C4862A;
+    --muted:      #5B6C80;
+    --line:       #E3E8EF;
+    --bg:         #FFFFFF;
+    --bg-soft:    #F5F7FA;
+    --font-en: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-ar: "Cairo", "Tajawal", system-ui, "Segoe UI", sans-serif;
+    --shadow: 0 18px 50px rgba(14, 42, 71, .12);
   }
-  main { max-width: 34rem; }
-  .mark {
-    width: 68px;
-    height: 68px;
-    margin: 0 auto 1.75rem;
+  *, *::before, *::after { box-sizing: border-box; }
+  body, h1, h2, h3, p, figure { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-en);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  :lang(ar) { font-family: var(--font-ar); }
+  .shell { width: min(1180px, 100% - 2.5rem); margin-inline: auto; }
+
+  /* ------------------------------------------------------------ topbar -- */
+  .topbar {
+    background: var(--navy);
+    color: #fff;
+    padding: .9rem 0;
+  }
+  .topbar__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 1.5rem;
+    flex-wrap: wrap;
+  }
+  .logo { display: flex; align-items: center; gap: .65rem; }
+  .logo__bag { width: 38px; height: 38px; flex: none; }
+  .logo__text { display: flex; flex-direction: column; line-height: 1.15; }
+  .logo__word { font-size: 1.4rem; font-weight: 800; letter-spacing: -.01em; }
+  .logo__word .is-gold { color: var(--gold); }
+  .logo__tag { font-size: .66rem; font-weight: 500; color: #A9BDD4; letter-spacing: .02em; }
+
+  /* The 7 emirates, from the design's platform-wide header strip. */
+  .emirates { display: flex; align-items: center; gap: .5rem 1.1rem; flex-wrap: wrap; }
+  .emirates__label { font-size: .72rem; font-weight: 600; color: var(--gold); }
+  .emirates__list { display: flex; gap: .5rem .9rem; flex-wrap: wrap; }
+  .emirates__list span { font-size: .72rem; color: #C6D5E6; white-space: nowrap; }
+
+  /* -------------------------------------------------------------- hero -- */
+  .hero {
     display: grid;
-    place-items: center;
-    border-radius: 20px;
-    background: linear-gradient(150deg, #d8b475, #b08c4d);
-    color: #1a1508;
-    font-size: 2rem;
-    font-weight: 800;
-    line-height: 1;
-    box-shadow: 0 18px 50px rgba(216, 180, 117, .22);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 3rem 3.5rem;
+    align-items: start;
+    padding: 3.5rem 0 4rem;
   }
   h1 {
-    margin: 0;
-    font-size: clamp(1.9rem, 7vw, 3rem);
+    margin-top: .25rem;
+    font-size: clamp(2.1rem, 5.2vw, 3.4rem);
     font-weight: 800;
-    letter-spacing: -.01em;
-    /* The domain is a Latin string: keep it LTR inside an RTL page. */
-    direction: ltr;
-    unicode-bidi: isolate;
+    letter-spacing: -.02em;
+    line-height: 1.1;
   }
-  .rule {
-    width: 3.5rem;
-    height: 2px;
-    margin: 1.75rem auto;
-    border-radius: 2px;
-    background: linear-gradient(90deg, transparent, #d8b475, transparent);
+  h1 .ar { color: var(--gold); font-family: var(--font-ar); margin-inline-start: .4rem; }
+  .soft {
+    margin-top: .6rem;
+    display: flex;
+    align-items: baseline;
+    gap: .6rem;
+    flex-wrap: wrap;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--gold-deep);
   }
-  .soon { font-size: clamp(1.05rem, 3.5vw, 1.3rem); font-weight: 700; color: #f4f1ea; }
-  .soon-en {
-    margin-top: .35rem;
-    font-size: clamp(.95rem, 3vw, 1.1rem);
+  .soft .ar { font-family: var(--font-ar); font-weight: 600; color: var(--muted); }
+  .lede { margin-top: 1.35rem; color: var(--muted); font-size: 1rem; max-width: 34rem; }
+  .lede + .lede { margin-top: .55rem; }
+  .lede.ar { font-family: var(--font-ar); direction: rtl; text-align: right; }
+
+  /* -------------------------------------------------------------- form -- */
+  .notify {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--bg-soft);
+    box-shadow: var(--shadow);
+    max-width: 30rem;
+  }
+  .notify__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: .75rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.1rem;
+  }
+  .notify__head strong { font-size: .98rem; font-weight: 700; }
+  .notify__head .ar { font-family: var(--font-ar); font-size: .9rem; color: var(--muted); }
+  .field + .field { margin-top: .85rem; }
+  .field__label {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: .5rem;
+    margin-bottom: .3rem;
+    font-size: .8rem;
     font-weight: 600;
-    color: #a7a29a;
-    direction: ltr;
-    unicode-bidi: isolate;
-    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
   }
-  footer {
-    margin-top: 3rem;
-    font-size: .78rem;
-    color: #6f6b64;
-    direction: ltr;
-    unicode-bidi: isolate;
+  .field__label .ar { font-family: var(--font-ar); font-weight: 500; color: var(--muted); }
+  .field input {
+    width: 100%;
+    padding: .7rem .85rem;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--ink);
+    font: inherit;
+    font-size: .92rem;
   }
-  @media (prefers-color-scheme: light) {
-    body {
-      background: #f7f4ef;
-      color: #17140e;
-      background-image: radial-gradient(60rem 40rem at 50% -10%, rgba(176, 140, 77, .16), transparent 70%);
-    }
-    .soon { color: #17140e; }
-    .soon-en { color: #6b6459; }
-    footer { color: #8a8378; }
+  .field input::placeholder { color: #9AA9BA; }
+  .field input:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(224, 163, 64, .18);
+  }
+  .btn {
+    margin-top: 1.25rem;
+    width: 100%;
+    padding: .85rem 1rem;
+    border: 0;
+    border-radius: 10px;
+    background: linear-gradient(180deg, var(--gold), var(--gold-deep));
+    color: #17222F;
+    font-family: var(--font-en);
+    font-size: .95rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .55rem;
+    transition: filter .15s ease, transform .15s ease;
+  }
+  .btn .ar { font-family: var(--font-ar); }
+  .btn:hover { filter: brightness(1.05); }
+  .btn:active { transform: translateY(1px); }
+  .btn[disabled] { opacity: .65; cursor: progress; }
+  .note {
+    margin-top: .85rem;
+    font-size: .82rem;
+    line-height: 1.5;
+    text-align: center;
+    min-height: 1.2em;
+  }
+  .note.is-ok { color: #1F7A4D; }
+  .note.is-warn { color: var(--gold-deep); }
+  .note.is-err { color: #B4342C; }
+  .note .ar { font-family: var(--font-ar); display: block; }
+
+  /* ------------------------------------------------------------ visual -- */
+  .laptop { filter: drop-shadow(0 22px 45px rgba(14, 42, 71, .22)); }
+  .laptop__screen {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    border: 10px solid #1B2E45;
+    border-radius: 14px 14px 4px 4px;
+    background: linear-gradient(170deg, #123A63 0%, #0B2340 55%, #071B31 100%);
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    padding: 1.25rem;
+  }
+  .laptop__base {
+    height: 13px;
+    border-radius: 0 0 12px 12px;
+    background: linear-gradient(180deg, #C9D3DE, #93A3B4);
+    position: relative;
+  }
+  .laptop__base::after {
+    content: "";
+    position: absolute;
+    inset-inline: 42%;
+    top: 0;
+    height: 4px;
+    border-radius: 0 0 4px 4px;
+    background: #7C8C9E;
+  }
+  .screen__content { position: relative; z-index: 2; }
+  .screen__word { font-size: clamp(1.1rem, 3.2vw, 1.7rem); font-weight: 800; color: #fff; letter-spacing: -.01em; }
+  .screen__word .is-gold { color: var(--gold); }
+  .screen__ar {
+    font-family: var(--font-ar);
+    margin-top: .5rem;
+    font-size: clamp(.85rem, 2.3vw, 1.1rem);
+    font-weight: 700;
+    color: var(--gold);
+    direction: rtl;
+  }
+  .screen__en { margin-top: .2rem; font-size: clamp(.6rem, 1.6vw, .78rem); color: #A9BDD4; }
+  .skyline { position: absolute; bottom: 0; left: 0; width: 100%; opacity: .5; z-index: 1; }
+
+  /* ---------------------------------------------------------- features -- */
+  .features {
+    margin-top: 1.75rem;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .85rem;
+  }
+  .feature {
+    padding: 1.1rem .75rem;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: #fff;
+    text-align: center;
+    box-shadow: 0 6px 18px rgba(14, 42, 71, .05);
+  }
+  .feature svg { width: 26px; height: 26px; margin: 0 auto .55rem; display: block; color: var(--gold-deep); }
+  .feature b { display: block; font-size: .82rem; font-weight: 700; }
+  .feature span { display: block; margin-top: .15rem; font-family: var(--font-ar); font-size: .78rem; color: var(--muted); }
+
+  /* ------------------------------------------------------------ footer -- */
+  .footer {
+    background: var(--navy-deep);
+    color: #93A9C2;
+    text-align: center;
+    padding: 1.1rem 0;
+    font-size: .8rem;
+  }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; gap: 2.5rem; padding: 2.5rem 0 3rem; }
+    .notify, .lede { max-width: none; }
+    .topbar__inner { justify-content: center; text-align: center; }
+    .emirates { justify-content: center; }
+  }
+  @media (max-width: 480px) {
+    .features { grid-template-columns: 1fr; }
+    .shell { width: min(1180px, 100% - 1.75rem); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
   }
 </style>
 </head>
 <body>
-  <main>
-    <div class="mark" aria-hidden="true">R</div>
-    <h1>rentstore.ae</h1>
-    <div class="rule" role="presentation"></div>
-    <p class="soon">قريباً</p>
-    <p class="soon-en" lang="en">Coming soon</p>
-    <footer>&copy; <span id="y">2026</span> rentstore.ae</footer>
-  </main>
-  <script>document.getElementById("y").textContent = new Date().getFullYear();</script>
+
+<header class="topbar">
+  <div class="shell topbar__inner">
+    <div class="logo">
+      <svg class="logo__bag" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <path d="M9 13h22l-1.7 17a2.4 2.4 0 0 1-2.4 2.2H13.1A2.4 2.4 0 0 1 10.7 30z"
+              stroke="#E0A340" stroke-width="2.4" stroke-linejoin="round"/>
+        <path d="M14.6 13V9.9a5.4 5.4 0 0 1 10.8 0V13" stroke="#E0A340" stroke-width="2.4" stroke-linecap="round"/>
+      </svg>
+      <span class="logo__text">
+        <span class="logo__word">Rent<span class="is-gold">Store</span>.ae</span>
+        <span class="logo__tag">Your Store. Your Business. Online.</span>
+      </span>
+    </div>
+    <div class="emirates">
+      <span class="emirates__label">Serving All 7 Emirates</span>
+      <span class="emirates__list">
+        <span>Abu Dhabi</span><span>Dubai</span><span>Sharjah</span><span>Ajman</span>
+        <span>Umm Al Quwain</span><span>Ras Al Khaimah</span><span>Fujairah</span>
+      </span>
+    </div>
+  </div>
+</header>
+
+<main class="shell hero">
+  <div>
+    <h1>Coming Soon <span class="ar" lang="ar" dir="rtl">قريباً</span></h1>
+    <p class="soft"><span>Soft Opening</span><span class="ar" lang="ar" dir="rtl">الإطلاق التجريبي</span></p>
+
+    <p class="lede">A new platform that helps businesses and home projects create their online
+      stores and start selling online easily.</p>
+    <p class="lede ar" lang="ar" dir="rtl">منصة جديدة تساعد أصحاب المشاريع والأعمال والمشاريع
+      المنزلية على إنشاء متاجرهم الإلكترونية والبيع أونلاين بسهولة.</p>
+
+    <form class="notify" id="notify" novalidate>
+      <div class="notify__head">
+        <strong>Be the first to know when we launch</strong>
+        <span class="ar" lang="ar" dir="rtl">كن أول من يعرف عند الإطلاق</span>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="name">
+          <span>Full Name</span><span class="ar" lang="ar" dir="rtl">الاسم الكامل</span>
+        </label>
+        <input id="name" name="name" type="text" autocomplete="name" required>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="email">
+          <span>Email Address</span><span class="ar" lang="ar" dir="rtl">البريد الإلكتروني</span>
+        </label>
+        <input id="email" name="email" type="email" autocomplete="email" required>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="phone">
+          <span>Phone Number (Optional)</span><span class="ar" lang="ar" dir="rtl">رقم الجوال (اختياري)</span>
+        </label>
+        <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" placeholder="+971 50 123 4567">
+      </div>
+
+      <button class="btn" type="submit">
+        <span>Notify Me</span><span class="ar" lang="ar" dir="rtl">أخبرني عند الإطلاق</span>
+      </button>
+      <p class="note" id="note" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+
+  <div>
+    <figure class="laptop">
+      <div class="laptop__screen">
+        <div class="screen__content">
+          <div class="screen__word">Rent<span class="is-gold">Store</span>.ae</div>
+          <div class="screen__ar" lang="ar" dir="rtl">مشروعك عليك والستور علينا</div>
+          <div class="screen__en">Your Project is Yours, The Store is Ours.</div>
+        </div>
+        <svg class="skyline" viewBox="0 0 400 90" preserveAspectRatio="none" aria-hidden="true">
+          <path fill="#5C86B4" d="M0 90V64h14v-9h10v9h13V50h16v40zm58 0V44h12V32h9v12h12v46zm40 0V56h20v-8h11v42zm88 0V38h10V22h8v16h10v52zm-51 0V60h18v-7h10v37zm79 0V48h14v-8h9v8h13v42zm52 0V58h16v-6h10v38zm42 0V34h9V20h7v14h9v56z"/>
+          <path fill="#3E6491" d="M186 90V16l6-14 6 14v74z"/>
+        </svg>
+      </div>
+      <div class="laptop__base"></div>
+    </figure>
+
+    <div class="features">
+      <div class="feature">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/><path d="M10 19.5V14h4v5.5"/>
+        </svg>
+        <b>Easy to Start</b><span lang="ar" dir="rtl">سهل البدء</span>
+      </div>
+      <div class="feature">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3.2 19.5 6v6c0 4.5-3.2 7.8-7.5 8.8C7.7 19.8 4.5 16.5 4.5 12V6z"/><path d="m8.8 12 2.3 2.3 4.1-4.4"/>
+        </svg>
+        <b>Secure &amp; Trusted</b><span lang="ar" dir="rtl">آمن وموثوق</span>
+      </div>
+      <div class="feature">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 21h18"/><path d="M5 21v-7"/><path d="M19 21v-7"/>
+          <path d="M8 21V12a4 4 0 0 1 8 0v9"/><path d="M12 8V3"/><path d="M12 3.5h4l-1.2 1.6L16 6.7h-4"/>
+        </svg>
+        <b>Built for UAE</b><span lang="ar" dir="rtl">مصمم للإمارات</span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="shell">&copy; <span id="year">2026</span> RentStore.ae &ndash; All Rights Reserved</div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  /* Where a signup goes. Set this to a form endpoint that accepts JSON
+     (Formspree, Getform, Basin — all have free tiers) and the form starts
+     collecting. While it is empty the form deliberately does NOT pretend to
+     have saved anything: it says signups are not open yet, because quietly
+     discarding somebody's email is worse than not asking for it. */
+  var NOTIFY_ENDPOINT = "";
+
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  var form = document.getElementById("notify");
+  var note = document.getElementById("note");
+  var button = form.querySelector("button");
+  // Look the inputs up by id. form.<name> is unsafe here: HTMLFormElement
+  // defines its own `name` property, so form.name is the form's name
+  // attribute (a string), not the input called "name".
+  var nameInput = document.getElementById("name");
+  var emailInput = document.getElementById("email");
+  var phoneInput = document.getElementById("phone");
+
+  function say(text, ar, kind) {
+    note.className = "note" + (kind ? " is-" + kind : "");
+    note.textContent = text;
+    if (ar) {
+      var line = document.createElement("span");
+      line.className = "ar";
+      line.lang = "ar";
+      line.dir = "rtl";
+      line.textContent = ar;
+      note.appendChild(line);
+    }
+  }
+
+  form.addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var name = nameInput.value.trim();
+    var email = emailInput.value.trim();
+    var phone = phoneInput.value.trim();
+
+    if (!name) { say("Please enter your name.", "الرجاء إدخال الاسم.", "err"); nameInput.focus(); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      say("Please enter a valid email address.", "الرجاء إدخال بريد إلكتروني صحيح.", "err");
+      emailInput.focus();
+      return;
+    }
+
+    if (!NOTIFY_ENDPOINT) {
+      say("Signups aren't open yet — please check back shortly.",
+          "التسجيل لم يُفتح بعد — تابعنا قريباً.", "warn");
+      return;
+    }
+
+    button.disabled = true;
+    fetch(NOTIFY_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ name: name, email: email, phone: phone }),
+    }).then(function (res) {
+      if (!res.ok) throw new Error("bad status");
+      form.reset();
+      say("Thank you — we'll email you the moment we launch.",
+          "شكراً لك — سنراسلك فور الإطلاق.", "ok");
+    }).catch(function () {
+      say("Something went wrong. Please try again.", "حدث خطأ. الرجاء المحاولة مرة أخرى.", "err");
+    }).then(function () {
+      button.disabled = false;
+    });
+  });
+})();
+</script>
 </body>
 </html>
