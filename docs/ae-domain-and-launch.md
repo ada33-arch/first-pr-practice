@@ -84,14 +84,15 @@ traffic is real.
 
 ## 4. Launch runbook
 
-### Step 1 — set the domain in the repo
+### Step 1 — set the domain in the repo ✅ done
+
+`rentstore.ae` is registered and already set throughout the repo — `site/CNAME`, the
+canonical tags, the Open Graph URLs, `robots.txt`, and `sitemap.xml`. To move to a
+different domain later, one command rewrites all of them:
 
 ```bash
-scripts/set-domain.sh yourbrand.ae
+scripts/set-domain.sh newdomain.ae
 ```
-
-That writes `site/CNAME`, and fills the real domain into the canonical tags, the Open
-Graph URLs, `robots.txt`, and `sitemap.xml`. Commit the result.
 
 ### Step 2 — turn on hosting
 
@@ -105,7 +106,7 @@ build command: *(none)* → build output directory: `site`.
 
 At your registrar's DNS panel:
 
-**For GitHub Pages** — apex `yourbrand.ae`:
+**For GitHub Pages** — apex `rentstore.ae`:
 
 | Type | Name | Value |
 | --- | --- | --- |

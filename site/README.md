@@ -110,16 +110,17 @@ restricted on file URLs in some browsers.
 Any other static host works too; Cloudflare Pages is the better choice for a Gulf
 audience because it has UAE edge locations.
 
-To attach a custom domain:
+The custom domain is **`rentstore.ae`** — set in `CNAME`, the canonical tags, the
+`og:url` tags, `robots.txt`, and `sitemap.xml`. To move to a different domain, one
+command rewrites all of them:
 
 ```bash
-scripts/set-domain.sh yourbrand.ae
+scripts/set-domain.sh newdomain.ae
 ```
 
-That writes `CNAME` and fills the real domain into the canonical tags, the `og:url`
-tags, `robots.txt`, and `sitemap.xml` — all of which ship with `example.ae` as a
-placeholder. The full walkthrough, including the DNS records and where to buy a `.ae`,
-is in [`docs/ae-domain-and-launch.md`](../docs/ae-domain-and-launch.md).
+The full walkthrough, including the DNS records that have to exist at the registrar
+before the domain resolves, is in
+[`docs/ae-domain-and-launch.md`](../docs/ae-domain-and-launch.md).
 
 Two things to change before you go live:
 - the `<title>`, `description`, and `og:` tags in each HTML file
