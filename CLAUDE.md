@@ -17,7 +17,8 @@ A practice repository for the GitHub workflow — cloning, branching, committing
 - `.github/workflows/ci.yml` — runs the composite and docker actions on push to `main` and on every PR
 - `scripts/slack-upload.sh` — uploads a file to Slack via the three-step external-upload flow
 - `connect-apps-plugin/` — a Claude Code plugin providing `/connect-apps:setup`
-- `site/` — static bilingual (AR/EN, RTL) link-in-bio page plus a product store and product page. No build step; all content lives in `site/assets/js/data.js`. See `site/README.md`.
+- `projects/rentstore/` — the marketplace project, and the pattern every project here follows: `content/data.js` (all words, prices, stores), `design/styles.css`, `pages/*.html`, `code/site.js` + `code/bundle.mjs`, `automation/*.json` (n8n), `docs/idea.md` + `docs/timeline.html`. No build step; `node projects/rentstore/code/bundle.mjs` emits a single-file build.
+- `.claude/skills/workflow-canvas/` — the house style for any plan or workflow: draw it as an n8n canvas (numbered step zones, colour-coded groups, notes carrying the real numbers) **and** a readable page, both generated from one definition by `canvas.py`. Use it whenever a plan, workflow, automation, launch or marketing plan is asked for.
 - `.claude/skills/ui-ux-pro-max/` — UI/UX design-guidance skill (definition only; the `search.py` CLI and CSV data it references are not vendored here)
 - `.mcp.json` — HTTP MCP servers wired up for this repo: `github` and `graphify`
 
@@ -35,7 +36,7 @@ There is no test suite. `npm run typecheck` is the closest thing to one — run 
 ## Verifying Other Changes
 
 - **Docs and content** — verified by reading.
-- **`site/`** — open the pages in a browser (`npx serve site`) and click through: language toggle, theme toggle, cart add/remove, and checkout. There is nothing to compile.
+- **`projects/rentstore/`** — open the pages in a browser (`npx serve projects/rentstore/pages`) and click through: signup validation, the language and theme toggles, cart add/remove, and checkout. There is nothing to compile.
 - **Actions and workflow** — CI exercises these on every PR. To check locally first, emulate the runner contract: inputs arrive as `INPUT_<NAME>`, and outputs/state are *appended* to the files named by `$GITHUB_OUTPUT` / `$GITHUB_STATE`.
 
   ```bash

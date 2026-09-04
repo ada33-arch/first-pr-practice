@@ -1,6 +1,20 @@
+# Workspace
+
+## Projects
+
+| Project | What it is |
+| --- | --- |
+| [`projects/rentstore`](projects/rentstore) | **رنت ستور** — an Arabic-first UAE marketplace: many merchants' stores on one website, free personal pages, paid stores, and a setup-and-licence service. Site, automations, and the written idea all live in that folder. |
+
+Each project keeps everything it owns in its own folder, split the same way:
+`content/` (the words and numbers), `design/` (the look), `pages/` (the screens),
+`code/` (the logic), `automation/` (the workflows), `docs/` (the thinking).
+
+---
+
 # First PR Practice
 
-This is a small practice repo for shipping my first pull request.
+The rest of this repo is the original practice ground for the GitHub workflow.
 
 ## About
 
