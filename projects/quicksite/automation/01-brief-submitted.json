@@ -1,0 +1,149 @@
+{
+  "name": "QuickSite · 1 · Brief submitted",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "quicksite-brief",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "brief-submitted",
+      "name": "Brief submitted",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-620, 300],
+      "webhookId": "quicksite-brief"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Normalise what the brief form sent and decide whether it is usable.\nconst body = $json.body ?? $json;\n\nconst fields = body.fields ?? {};\nconst name   = String(fields.name ?? '').trim();\nconst kind   = String(body.kind ?? '').trim();\nconst pal    = String(body.palette ?? '').trim();\nconst lang   = body.lang === 'en' ? 'en' : 'ar';\nconst usedBefore = Number(body.used_before ?? 0);\nconst freeCount  = Number(body.free_count ?? 2);\n\nconst problems = [];\nif (name.length < 1)  problems.push('name');\nif (kind.length < 1)  problems.push('kind');\nif (pal.length < 1)   problems.push('palette');\n\nreturn [{\n  json: {\n    valid: problems.length === 0,\n    problems,\n    name, kind, palette: pal, lang,\n    what: String(fields.what ?? '').trim(),\n    who: String(fields.who ?? '').trim(),\n    why: String(fields.why ?? '').trim(),\n    offer: String(fields.offer ?? '').trim(),\n    action: String(fields.action ?? '').trim(),\n    contact: String(fields.contact ?? '').trim(),\n    used_before: usedBefore,\n    free_count: freeCount,\n    billable: usedBefore >= freeCount,\n    created_at: new Date().toISOString(),\n    status: 'new',\n  },\n}];"
+      },
+      "id": "validate-and-normalise",
+      "name": "Validate and normalise",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-400, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "loose", "version": 2 },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": "",
+              "operator": { "type": "boolean", "operation": "true" }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "is-it-valid",
+      "name": "Is it valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [-180, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: false, error: 'invalid_input', problems: $json.problems }) }}",
+        "options": { "responseCode": 400 }
+      },
+      "id": "reject:-missing-fields",
+      "name": "Reject: missing fields",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [40, 460]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": { "__rl": true, "value": "YOUR_SHEET_ID", "mode": "id" },
+        "sheetName": { "__rl": true, "value": "briefs", "mode": "name" },
+        "columns": { "mappingMode": "autoMapInputData", "matchingColumns": [], "schema": [] },
+        "options": {}
+      },
+      "id": "log-the-brief",
+      "name": "Log the brief",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [40, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{ $env.WA_PHONE_ID }}/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ messaging_product: 'whatsapp', recipient_type: 'individual', to: $env.OWNER_PHONE, type: 'text', text: { preview_url: false, body: `🆕 موجز جديد\\n\\nالاسم: ${$json.name}\\nالنوع: ${$json.kind}\\nالمظهر: ${$json.palette}\\nالتواصل: ${$json.contact || '—'}\\nمدفوعة: ${$json.billable ? 'نعم' : 'لا — ضمن الصفحتين المجانيتين'}` } }) }}",
+        "options": {}
+      },
+      "id": "whatsapp:-tell-the-owner",
+      "name": "WhatsApp: tell the owner",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [260, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true, billable: $json.billable }) }}",
+        "options": { "responseCode": 200 }
+      },
+      "id": "reply:-brief-logged",
+      "name": "Reply: brief logged",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "content": "## 1 · Brief submitted\nThe brief form's \"send\" button POSTs here — fire-and-forget, alongside its own WhatsApp handoff, so a dead webhook never costs the customer their page.\n\nThis flow only logs and alerts. Building the actual page from the row is still done by hand; see the note at the end of `../docs/idea.md`.",
+        "width": 480,
+        "height": 260,
+        "color": 4
+      },
+      "id": "note-1",
+      "name": "Note 1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-640, -40]
+    },
+    {
+      "parameters": {
+        "content": "### Before this runs\n- `YOUR_SHEET_ID` in the Google Sheets node\n- Header Auth credential: `Authorization: Bearer <WhatsApp token>`\n- Env: `WA_PHONE_ID`, `OWNER_PHONE`",
+        "width": 400,
+        "height": 200,
+        "color": 3
+      },
+      "id": "note-2",
+      "name": "Note 2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [260, -40]
+    }
+  ],
+  "connections": {
+    "Brief submitted": { "main": [[{ "node": "Validate and normalise", "type": "main", "index": 0 }]] },
+    "Validate and normalise": { "main": [[{ "node": "Is it valid?", "type": "main", "index": 0 }]] },
+    "Is it valid?": {
+      "main": [
+        [{ "node": "Log the brief", "type": "main", "index": 0 }],
+        [{ "node": "Reject: missing fields", "type": "main", "index": 0 }]
+      ]
+    },
+    "Log the brief": { "main": [[{ "node": "WhatsApp: tell the owner", "type": "main", "index": 0 }]] },
+    "WhatsApp: tell the owner": { "main": [[{ "node": "Reply: brief logged", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1", "timezone": "Asia/Dubai", "saveManualExecutions": true },
+  "pinData": {},
+  "tags": [{ "name": "quicksite" }]
+}
