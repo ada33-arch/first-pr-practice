@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en" class="theme-violet">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My projects</title>
+<meta name="description" content="Everything you've started, ready to look at again or download.">
+<link rel="stylesheet" href="tokens/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/web.css">
+<style>
+  body { background: var(--surface-muted); }
+  .wrap { max-width: 900px; margin-inline: auto; padding: var(--space-8) var(--space-5) var(--space-11); }
+  .proj { display: grid; gap: var(--space-4); grid-template-columns: 1fr auto; align-items: center; }
+  @media (max-width: 640px) { .proj { grid-template-columns: 1fr; } }
+  .proj__meta { display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: baseline; }
+  .tag {
+    font-size: var(--fs-caption); font-weight: var(--fw-semibold); letter-spacing: .06em;
+    text-transform: uppercase; padding: .2rem .6rem; border-radius: var(--radius-pill);
+    background: var(--accent-50); color: var(--accent-700);
+  }
+  .tag--done { background: #E7F7EF; color: #0B6244; }
+  .btn--sm { padding: .45rem 1rem; font-size: var(--fs-caption); }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="wrap stack stack-6">
+
+  <div class="bar">
+    <a class="navbar__brand" href="/" style="text-decoration:none">
+      <span class="icon-chip icon-chip--sm" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 18 L10 8 L14 14 L20 5"/></svg>
+      </span>Design System
+    </a>
+    <span style="flex:1"></span>
+    <span class="caption" id="who"></span>
+    <a class="btn btn--primary btn--sm" href="/brief">Start another</a>
+    <button class="btn btn--ghost btn--sm" type="button" id="out">Sign out</button>
+  </div>
+
+  <div class="stack stack-3">
+    <span class="eyebrow">Your work</span>
+    <h1 class="h2">My projects</h1>
+    <p class="body measure" id="lede">Everything you've started. Pick one up again, or take the files.</p>
+    <hr class="rule">
+  </div>
+
+  <p class="body" id="msg" hidden></p>
+  <div class="stack stack-4" id="list"></div>
+
+  <div class="card card--flat stack stack-3" id="empty" hidden>
+    <h2 class="h3">Nothing here yet</h2>
+    <p class="body measure">Answer four questions and you'll have a page to look at in a couple of minutes.</p>
+    <div><a class="btn btn--primary" href="/brief">Start a project</a></div>
+  </div>
+
+</div>
+
+<script type="module">
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c =>
+  ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+const KIND = { website: 'A website', landing: 'A page to sell something',
+               deck: 'A presentation', portfolio: 'A portfolio' };
+
+const when = ms => new Date(ms).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+
+const me = await fetch('/api/me', { credentials: 'same-origin' }).then(r => r.json()).catch(() => null);
+if (!me?.signedIn) {
+  location.replace('/signin?returnTo=%2Fprojects');
+} else {
+  $('who').textContent = me.user.email;
+  const u = me.usage || {};
+  $('lede').textContent = u.paywall && !u.plan
+    ? `Everything you've started. ${u.remaining} of your ${u.free} free downloads left.`
+    : "Everything you've started. Pick one up again, or take the files.";
+  render();
+}
+
+async function render() {
+  const { briefs } = await fetch('/api/briefs', { credentials: 'same-origin' }).then(r => r.json());
+  if (!briefs.length) { $('empty').hidden = false; return; }
+
+  $('list').innerHTML = briefs.map(b => `
+    <article class="card proj" data-id="${esc(b.id)}">
+      <div class="stack stack-2">
+        <div class="proj__meta">
+          <h2 class="card__title" style="margin:0">${esc(b.title || 'Untitled project')}</h2>
+          <span class="tag${b.status === 'released' ? ' tag--done' : ''}">${esc(statusOf(b))}</span>
+        </div>
+        <p class="caption">${esc(KIND[b.kind] || 'A project')} · started ${when(b.createdAt)}</p>
+      </div>
+      <div class="bar">
+        <a class="btn btn--outline btn--sm" href="/api/briefs/${esc(b.id)}/preview" target="_blank" rel="noopener">See it</a>
+        <button class="btn btn--primary btn--sm" type="button" data-dl="${esc(b.id)}">Download</button>
+      </div>
+    </article>`).join('');
+
+  for (const btn of document.querySelectorAll('[data-dl]')) {
+    btn.onclick = () => download(btn.dataset.dl, btn);
+  }
+}
+
+const statusOf = b => b.status === 'released' ? 'Ready'
+  : b.status === 'approved' ? 'Approved' : 'Draft';
+
+async function download(id, btn) {
+  const label = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Packing…';
+  $('msg').hidden = true;
+
+  try {
+    const res = await fetch(`/api/briefs/${id}/download`, { method: 'POST', credentials: 'same-origin' });
+
+    if (res.status === 402 || res.status === 409) {
+      const d = await res.json().catch(() => ({}));
+      $('msg').textContent = d.message || 'That download is not available yet.';
+      $('msg').hidden = false;
+      return;
+    }
+    if (!res.ok) {
+      $('msg').textContent = 'That did not work. Try again in a moment.';
+      $('msg').hidden = false;
+      return;
+    }
+
+    const blob = await res.blob();
+    const name = (res.headers.get('Content-Disposition') || '').match(/filename="([^"]+)"/)?.[1] || 'project-files.zip';
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = label;
+  }
+}
+
+$('out').onclick = async () => {
+  await fetch('/auth/signout', { method: 'POST', credentials: 'same-origin' });
+  location.replace('/');
+};
+</script>
+
+</body>
+</html>

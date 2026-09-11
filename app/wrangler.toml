@@ -1,0 +1,51 @@
+name = "design-system"
+main = "src/index.js"
+compatibility_date = "2024-11-06"
+
+# The design system's pages are served as static assets; the Worker handles
+# /auth/* and /api/*, and everything else falls through to a file.
+[assets]
+directory = "../design-system"
+binding = "ASSETS"
+
+[vars]
+ENVIRONMENT = "production"
+BRAND_NAME = "Design System"
+SUPPORT_EMAIL = "hello@example.com"
+# Registration is live; charging is not. Every download is still counted, so
+# the allowance is enforceable the day a payment provider is wired in.
+PAYWALL = "off"
+# When "on", files are held until someone confirms the job needs no further
+# work from us. Off for now, so downloads are immediate.
+REVIEW_BEFORE_RELEASE = "off"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "design-system"
+# Replace with the id printed by: npx wrangler d1 create design-system
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+
+# Secrets are never written here. Set each with `wrangler secret put NAME`:
+#
+#   GOOGLE_CLIENT_ID        Google Cloud console → Credentials → OAuth client
+#   GOOGLE_CLIENT_SECRET
+#   APPLE_CLIENT_ID         The Services ID, e.g. com.example.designsystem.web
+#   APPLE_TEAM_ID           Apple Developer → Membership
+#   APPLE_KEY_ID            The key you create for Sign in with Apple
+#   APPLE_PRIVATE_KEY       Contents of the .p8 file, newlines and all
+#   RESEND_API_KEY          For the magic-link email
+#
+# Every one is optional. A provider with no credentials simply does not appear
+# on the sign-in page, rather than appearing and then failing.
+
+[env.development]
+vars = { ENVIRONMENT = "development", BRAND_NAME = "Design System (dev)", PAYWALL = "off", REVIEW_BEFORE_RELEASE = "off", SUPPORT_EMAIL = "hello@example.com" }
+
+[[env.development.d1_databases]]
+binding = "DB"
+database_name = "design-system"
+database_id = "00000000-0000-0000-0000-000000000000"
+
+[env.development.assets]
+directory = "../design-system"
+binding = "ASSETS"
