@@ -4,6 +4,7 @@
   "description": "Getting started with the Claude Agents SDK (TypeScript) + Composio tool router",
   "scripts": {
     "agent": "tsx agent.ts",
+    "omniroute": "omniroute",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [],
@@ -12,6 +13,7 @@
   "type": "module",
   "devDependencies": {
     "@types/node": "^26.1.2",
+    "omniroute": "^3.8.49",
     "tsx": "^4.23.1",
     "typescript": "^7.0.2"
   },
