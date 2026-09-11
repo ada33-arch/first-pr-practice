@@ -27,11 +27,12 @@ A practice repository for the GitHub workflow — cloning, branching, committing
 ```bash
 npm install          # first run only
 npm run typecheck    # tsc --noEmit — the verification step for TypeScript changes
+npm test             # node tests.mjs — runs the node:test suite
 npm run agent        # tsx agent.ts — runs the agent; needs ANTHROPIC_API_KEY
 npm run agent "your prompt here"
 ```
 
-There is no test suite. `npm run typecheck` is the closest thing to one — run it after touching any `.ts` file.
+`npm run typecheck` is the verification step for TypeScript changes. `tests.mjs` is a worked example of Node's built-in test runner (`node:test` + `node:assert`); it deliberately includes one passing and one failing test so `npm test` exits non-zero — read it as a demo of both outcomes, not a regression.
 
 ## Verifying Other Changes
 
