@@ -4,7 +4,8 @@
   "description": "Getting started with the Claude Agents SDK (TypeScript) + Composio tool router",
   "scripts": {
     "agent": "tsx agent.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "node tests.mjs"
   },
   "keywords": [],
   "author": "",
