@@ -25,6 +25,7 @@ const router = `
     demo: "home",
     store: "store",
     product: "product",
+    marketplace: "marketplace",
   };
 
   function route() {

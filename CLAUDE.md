@@ -17,7 +17,8 @@ A practice repository for the GitHub workflow — cloning, branching, committing
 - `.github/workflows/ci.yml` — runs the composite and docker actions on push to `main` and on every PR
 - `scripts/slack-upload.sh` — uploads a file to Slack via the three-step external-upload flow
 - `connect-apps-plugin/` — a Claude Code plugin providing `/connect-apps:setup`
-- `projects/rentstore/` — the marketplace project, and the pattern every project here follows: `content/data.js` (all words, prices, stores), `design/styles.css`, `pages/*.html`, `code/site.js` + `code/bundle.mjs`, `automation/*.json` (n8n), `docs/idea.md` + `docs/timeline.html`. No build step; `node projects/rentstore/code/bundle.mjs` emits a single-file build.
+- `projects/rentstore/` — the marketplace project, and the pattern every project here follows: `content/data.js` (all words, prices, stores, `SITE` + `MERCHANTS`), `design/styles.css`, `pages/*.html` (including `marketplace.html`, the store directory), `code/site.js` + `code/bundle.mjs`, `automation/*.json` (n8n), `docs/idea.md` + `docs/timeline.html`. No build step; `node projects/rentstore/code/bundle.mjs` emits a single-file build. Any page takes `?m=<merchant-id>` to switch which store it shows.
+- `landing/` — a standalone coming-soon page for `rentstore.ae`, deployed by `.github/workflows/pages.yml` on push to `main`. Self-contained (no fonts, scripts, or shared code with `projects/rentstore/`); exists alongside the real site in `projects/rentstore/` rather than in place of it — which one is actually served depends on which directory the host points at.
 - `.claude/skills/workflow-canvas/` — the house style for any plan or workflow: draw it as an n8n canvas (numbered step zones, colour-coded groups, notes carrying the real numbers) **and** a readable page, both generated from one definition by `canvas.py`. Use it whenever a plan, workflow, automation, launch or marketing plan is asked for.
 - `.claude/skills/ui-ux-pro-max/` — UI/UX design-guidance skill (definition only; the `search.py` CLI and CSV data it references are not vendored here)
 - `.mcp.json` — HTTP MCP servers wired up for this repo: `github` and `graphify`
@@ -36,7 +37,7 @@ There is no test suite. `npm run typecheck` is the closest thing to one — run 
 ## Verifying Other Changes
 
 - **Docs and content** — verified by reading.
-- **`projects/rentstore/`** — open the pages in a browser (`npx serve projects/rentstore/pages`) and click through: signup validation, the language and theme toggles, cart add/remove, and checkout. There is nothing to compile.
+- **`projects/rentstore/`** — serve the *project* directory, not `pages/` (the pages load `../content/data.js` and `../code/site.js`, which a dev server refuses to reach if `pages/` is its root): `npx serve projects/rentstore` and open `/pages/index.html`, or open any `pages/*.html` directly as a `file://` URL. Click through: signup validation and its live preview, the marketplace directory (`marketplace.html`), a store visited via `?m=<id>`, the language and theme toggles, cart add/remove, and checkout. There is nothing to compile.
 - **Actions and workflow** — CI exercises these on every PR. To check locally first, emulate the runner contract: inputs arrive as `INPUT_<NAME>`, and outputs/state are *appended* to the files named by `$GITHUB_OUTPUT` / `$GITHUB_STATE`.
 
   ```bash
