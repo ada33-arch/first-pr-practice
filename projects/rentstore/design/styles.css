@@ -978,8 +978,12 @@ html[dir="rtl"] .backlink svg { transform: none; }
 .final .btn { margin-top: .8rem; }
 
 /* ---------------------------------------------------------------- signup -- */
-.signup { padding: 2.5rem 0 1rem; max-width: 480px; }
+.signup { padding: 2.5rem 0 1rem; max-width: 880px; }
 .signup h1 { font-size: clamp(1.5rem, 4vw, 2.1rem); margin: .5rem 0 .5rem; }
+.signup-grid { display: grid; gap: 2rem; align-items: start; }
+@media (min-width: 860px) {
+  .signup-grid { grid-template-columns: minmax(0, 1fr) minmax(260px, 320px); }
+}
 .form { display: grid; gap: 1rem; margin-top: 1.75rem; }
 .field { display: grid; gap: .4rem; border: 0; padding: 0; margin: 0; }
 .field > span, .field legend {
@@ -1401,3 +1405,72 @@ html[dir="rtl"] .steps::before { transform-origin: 100% 50%; }
 /* the hero owns its aurora */
 .hero--landing { position: relative; isolation: isolate; }
 .sells { display: grid; gap: .6rem; }
+
+/* ------------------------------------------------------------- marketplace -- */
+.merchants {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+.merchant {
+  display: flex;
+  align-items: center;
+  gap: .9rem;
+  padding: 1rem 1.1rem;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--hairline);
+  background: var(--surface);
+  transition: transform .3s var(--ease), border-color .3s var(--ease), box-shadow .3s var(--ease);
+}
+.merchant:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--accent) 38%, transparent);
+  box-shadow: var(--shadow-md);
+}
+.merchant__art {
+  flex: 0 0 auto;
+  width: 54px;
+  height: 54px;
+  border-radius: var(--r-md);
+  display: grid;
+  place-items: center;
+  font-size: 1.5rem;
+}
+.merchant__body { flex: 1; min-width: 0; }
+.merchant__cat { font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-mute); }
+.merchant__title { display: flex; align-items: center; gap: .35rem; font-weight: 700; margin-top: .1rem; }
+.merchant__title .verified { width: 15px; height: 15px; color: var(--accent); flex: none; }
+.merchant__tagline {
+  margin-top: .15rem;
+  font-size: .84rem;
+  color: var(--ink-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.merchant__meta { margin-top: .3rem; font-size: .74rem; color: var(--ink-mute); }
+.merchant .link-card__arrow { flex: none; color: var(--ink-mute); }
+.merchant:hover .link-card__arrow { color: var(--accent); transform: translateX(3px); }
+
+/* ---------------------------------------------------------- signup preview -- */
+.signup-preview {
+  position: sticky;
+  top: 5rem;
+  padding: 1.1rem;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--hairline);
+  background: var(--bg-elev);
+}
+.signup-preview__label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: .5rem;
+  margin-bottom: .8rem;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+@media (max-width: 860px) { .signup-preview { position: static; margin-top: 1.5rem; } }

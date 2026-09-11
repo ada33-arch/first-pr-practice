@@ -5,12 +5,39 @@
 (function () {
   "use strict";
 
-  var S = window.SITE || {};
+  /* One static site, many merchants: MERCHANTS holds every store (SITE is
+     always MERCHANTS[0], kept for pages that predate the marketplace). Any
+     page picks its merchant from ?m=<id> — mHref() below carries that param
+     forward on every internal link so navigating within one merchant's pages
+     never falls back to the default. */
+  var MERCHANTS = (window.MERCHANTS && window.MERCHANTS.length) ? window.MERCHANTS : (window.SITE ? [window.SITE] : []);
+  function findMerchant(id) {
+    return MERCHANTS.filter(function (m) { return m.id === id; })[0];
+  }
+  function requestedMerchantId() {
+    var hashQuery = (window.location.hash.split("?")[1] || "");
+    return new URLSearchParams(window.location.search).get("m") ||
+           new URLSearchParams(hashQuery).get("m");
+  }
+  var DEFAULT_MERCHANT_ID = MERCHANTS[0] && MERCHANTS[0].id;
+  var S = findMerchant(requestedMerchantId()) || MERCHANTS[0] || window.SITE || {};
   var P = window.PLATFORM || {};
   var DICT = window.I18N || { ar: {}, en: {} };
 
+  // A relative page link (store.html, product.html?id=…) that carries the
+  // active merchant forward. Left untouched for "wa", hashes, and http(s)
+  // links — those never take an ?m= param.
+  function mHref(url) {
+    if (!url || url === "wa" || url.charAt(0) === "#" || /^https?:/.test(url)) return url;
+    if (!S.id || S.id === DEFAULT_MERCHANT_ID) return url;
+    return url + (url.indexOf("?") === -1 ? "?" : "&") + "m=" + encodeURIComponent(S.id);
+  }
+
   var KEY = {
-    lang: "nzm.lang", theme: "nzm.theme", cart: "nzm.cart",
+    lang: "nzm.lang", theme: "nzm.theme",
+    // Scoped per merchant: a cart built on one store's page must not surface
+    // as another store's cart, or as fictional stock on either one.
+    cart: "nzm.cart." + (S.id || "default"),
     buyerName: "nzm.buyer.name", buyerPhone: "nzm.buyer.phone",
   };
 
@@ -252,7 +279,7 @@
   }
 
   /* ------------------------------------------------------------- chrome -- */
-  var PLATFORM_PAGES = ["landing", "signup", "setup"];
+  var PLATFORM_PAGES = ["landing", "signup", "setup", "marketplace"];
 
   function mountChrome() {
     var ribbon = document.createElement("div");
@@ -305,17 +332,21 @@
     var sideLink = onPlatform
       ? '<a class="icon-btn icon-btn--text" href="demo.html" data-i18n="nav.example"></a>'
       : (page === "home"
-          ? '<a class="icon-btn icon-btn--text" href="store.html" data-i18n="nav.store"></a>'
-          : '<a class="icon-btn icon-btn--text" href="demo.html" data-i18n="nav.links"></a>');
+          ? '<a class="icon-btn icon-btn--text" href="' + mHref("store.html") + '" data-i18n="nav.store"></a>'
+          : '<a class="icon-btn icon-btn--text" href="' + mHref("demo.html") + '" data-i18n="nav.links"></a>');
+    // Present on every page: the one way in from a seller's page (or the
+    // platform's own pages) to see every other store in the marketplace.
+    var marketLink = '<a class="icon-btn icon-btn--text" href="marketplace.html" data-i18n="nav.marketplace"></a>';
 
     qs(".topbar").innerHTML =
       '<div class="topbar__inner">' +
-        '<a class="brand" href="' + (onPlatform ? "index.html" : "demo.html") + '">' +
+        '<a class="brand" href="' + (onPlatform ? "index.html" : mHref("demo.html")) + '">' +
           '<span class="brand__mark" data-brand-mark></span>' +
           "<span data-brand-name></span>" +
         "</a>" +
         '<div class="topbar__tools">' +
           sideLink +
+          marketLink +
           '<button class="icon-btn icon-btn--text" data-lang-toggle data-i18n-aria="a11y.lang"></button>' +
           '<button class="icon-btn" data-theme-toggle data-i18n-aria="a11y.theme"></button>' +
           (onPlatform
@@ -359,7 +390,7 @@
         '<div class="empty"><span>🧺</span>' +
         "<strong>" + esc(t("cart.empty")) + "</strong>" +
         '<p class="tiny">' + esc(t("cart.emptyHint")) + "</p>" +
-        '<a class="btn btn--ghost btn--sm" href="store.html">' + esc(t("cart.browse")) + "</a></div>";
+        '<a class="btn btn--ghost btn--sm" href="' + mHref("store.html") + '">' + esc(t("cart.browse")) + "</a></div>";
       foot.innerHTML = "";
       return;
     }
@@ -451,12 +482,12 @@
 
   function productCard(p) {
     return '<article class="product reveal">' +
-        '<a href="product.html?id=' + encodeURIComponent(p.id) + '" aria-label="' + esc(tx(p.title)) + '">' +
+        '<a href="' + mHref("product.html?id=" + encodeURIComponent(p.id)) + '" aria-label="' + esc(tx(p.title)) + '">' +
           artHTML(p, "product__art") +
         "</a>" +
         '<div class="product__body">' +
           '<div class="product__cat">' + esc(tx(p.category)) + "</div>" +
-          '<a class="product__title" href="product.html?id=' + encodeURIComponent(p.id) + '">' + esc(tx(p.title)) + "</a>" +
+          '<a class="product__title" href="' + mHref("product.html?id=" + encodeURIComponent(p.id)) + '">' + esc(tx(p.title)) + "</a>" +
           '<p class="product__desc">' + esc(tx(p.desc)) + "</p>" +
           '<div class="product__foot">' +
             '<div class="price"><span class="price__now">' + esc(money(p.price)) + "</span>" +
@@ -466,6 +497,36 @@
           "</div>" +
         "</div>" +
       "</article>";
+  }
+
+  /* ---------------------------------------------------------- merchants -- */
+  function merchantArt(m, cls) {
+    var art = m.art || {};
+    var bg = "background:linear-gradient(150deg," + (art.from || "#2a2a35") + "," + (art.to || "#101017") + ")";
+    return '<div class="' + cls + '" style="' + bg + '">' +
+      '<span aria-hidden="true">' + (art.emoji || "🛍️") + "</span></div>";
+  }
+
+  function merchantCard(m) {
+    var count = (m.products || []).length;
+    return '<a class="merchant reveal" href="' + mHrefFor(m, "demo.html") + '">' +
+        merchantArt(m, "merchant__art") +
+        '<div class="merchant__body">' +
+          '<div class="merchant__cat">' + esc(tx(m.category)) + "</div>" +
+          '<div class="merchant__title">' + esc(tx(m.name)) +
+            (m.verified ? icon("verified", "verified") : "") + "</div>" +
+          '<p class="merchant__tagline">' + esc(tx(m.tagline || m.bio)) + "</p>" +
+          '<div class="merchant__meta">' + count + " " + esc(t("market.products")) + "</div>" +
+        "</div>" +
+        icon("chevron", "link-card__arrow") +
+      "</a>";
+  }
+
+  // Like mHref, but for a specific merchant rather than the active one — the
+  // marketplace directory links into stores it isn't currently showing.
+  function mHrefFor(m, url) {
+    if (!m.id || m.id === DEFAULT_MERCHANT_ID) return url;
+    return url + (url.indexOf("?") === -1 ? "?" : "&") + "m=" + encodeURIComponent(m.id);
   }
 
   function footerHTML() {
@@ -919,32 +980,41 @@
         '<div class="eyebrow" data-i18n="land.eyebrow"></div>' +
         '<h1 data-i18n="signup.title"></h1>' +
         '<p class="muted" data-i18n="signup.sub"></p>' +
-        '<form class="form" novalidate>' +
-          '<label class="field"><span data-i18n="signup.name"></span>' +
-            '<input name="name" autocomplete="name" required></label>' +
-          '<label class="field"><span data-i18n="signup.handle"></span>' +
-            '<input name="handle" class="ltr" inputmode="latin" placeholder="ahmed" required>' +
-            '<small class="field__hint ltr" data-handle-preview>' + esc(P.domain || "") + "/@</small></label>" +
-          '<label class="field"><span data-i18n="signup.contact"></span>' +
-            '<input name="phone" class="ltr" type="tel" inputmode="tel" placeholder="+971 50 000 0000" required></label>' +
-          '<label class="field"><span data-i18n="signup.what"></span>' +
-            '<input name="sells" placeholder="' + esc(tx((P.sells && P.sells[0] && P.sells[0].label) || "")) + '"></label>' +
-          '<fieldset class="field">' +
-            '<legend data-i18n="signup.plan"></legend>' +
-            '<div class="choices">' +
-              choice("free", esc(tx(P.plans.free.name)) + " · " + esc(t("plan.freePrice"))) +
-              choice("store", esc(tx(P.plans.store.name)) + " · " + esc(money(P.plans.store.price)) +
-                     " " + esc(tx(P.plans.store.period))) +
-              choice("setup", esc(tx(P.plans.setup.name)) + " · " + esc(money(P.plans.setup.price)) +
-                     " " + esc(tx(P.plans.setup.once))) +
+        '<div class="signup-grid">' +
+          '<form class="form" novalidate>' +
+            '<label class="field"><span data-i18n="signup.name"></span>' +
+              '<input name="name" autocomplete="name" required></label>' +
+            '<label class="field"><span data-i18n="signup.handle"></span>' +
+              '<input name="handle" class="ltr" inputmode="latin" placeholder="ahmed" required>' +
+              '<small class="field__hint ltr" data-handle-preview>' + esc(P.domain || "") + "/@</small></label>" +
+            '<label class="field"><span data-i18n="signup.contact"></span>' +
+              '<input name="phone" class="ltr" type="tel" inputmode="tel" placeholder="+971 50 000 0000" required></label>' +
+            '<label class="field"><span data-i18n="signup.what"></span>' +
+              '<input name="sells" placeholder="' + esc(tx((P.sells && P.sells[0] && P.sells[0].label) || "")) + '"></label>' +
+            '<fieldset class="field">' +
+              '<legend data-i18n="signup.plan"></legend>' +
+              '<div class="choices">' +
+                choice("free", esc(tx(P.plans.free.name)) + " · " + esc(t("plan.freePrice"))) +
+                choice("store", esc(tx(P.plans.store.name)) + " · " + esc(money(P.plans.store.price)) +
+                       " " + esc(tx(P.plans.store.period))) +
+                choice("setup", esc(tx(P.plans.setup.name)) + " · " + esc(money(P.plans.setup.price)) +
+                       " " + esc(tx(P.plans.setup.once))) +
+              "</div>" +
+            "</fieldset>" +
+            '<button class="btn btn--primary btn--block" type="submit">' + icon("whatsapp") +
+              '<span data-i18n="signup.submit"></span></button>' +
+            '<button class="btn btn--ghost btn--block btn--sm" type="button" data-copy-signup ' +
+              'data-i18n="signup.copy"></button>' +
+            '<p class="tiny muted" data-i18n="signup.note"></p>' +
+          "</form>" +
+          '<aside class="signup-preview">' +
+            '<div class="signup-preview__label">' +
+              '<span data-i18n="signup.previewTitle"></span>' +
+              '<span data-i18n="signup.previewHint"></span>' +
             "</div>" +
-          "</fieldset>" +
-          '<button class="btn btn--primary btn--block" type="submit">' + icon("whatsapp") +
-            '<span data-i18n="signup.submit"></span></button>' +
-          '<button class="btn btn--ghost btn--block btn--sm" type="button" data-copy-signup ' +
-            'data-i18n="signup.copy"></button>' +
-          '<p class="tiny muted" data-i18n="signup.note"></p>' +
-        "</form>" +
+            '<div data-preview></div>' +
+          "</aside>" +
+        "</div>" +
       "</section>" +
       footerHTML();
 
@@ -956,8 +1026,32 @@
       var clean = handle.value.trim().replace(/[^a-zA-Z0-9._-]/g, "").toLowerCase();
       handle.value = clean;
       preview.textContent = (P.domain || "") + "/@" + clean;
+      paintProfilePreview();
     }
     handle.addEventListener("input", paintPreview);
+
+    // A live sketch of the free profile page the person is about to get —
+    // built entirely from what they've typed so far, nothing invented.
+    function paintProfilePreview() {
+      var host = qs("[data-preview]", root);
+      if (!host) return;
+      var name = qs('[name="name"]', form).value.trim();
+      var sells = qs('[name="sells"]', form).value.trim();
+      var initial = (name.charAt(0) || tx({ ar: "؟", en: "?" })).toUpperCase();
+      host.innerHTML =
+        '<div class="profile" style="padding:0">' +
+          '<div class="avatar" style="margin:0 auto"><div class="avatar__inner">' + esc(initial) + "</div></div>" +
+          '<h1 class="profile__name" style="margin-top:.6rem;font-size:1.1rem">' +
+            esc(name || t("signup.previewPlaceholderName")) + "</h1>" +
+          '<div class="profile__handle"><span class="ltr">' + esc(P.domain || "") + "/@" +
+            esc(handle.value || "…") + "</span></div>" +
+          '<p class="profile__bio" style="font-size:.85rem">' +
+            esc(sells || t("signup.previewPlaceholderBio")) + "</p>" +
+        "</div>";
+    }
+    qs('[name="name"]', form).addEventListener("input", paintProfilePreview);
+    qs('[name="sells"]', form).addEventListener("input", paintProfilePreview);
+    paintProfilePreview();
 
     qsa(".choice input", form).forEach(function (radio) {
       radio.addEventListener("change", function () {
@@ -1050,7 +1144,7 @@
         '<div class="section__head"><h2 class="section__title" data-i18n="profile.links"></h2></div>' +
         '<div class="links">' +
           links.map(function (l) {
-            var href = l.url === "wa" ? waLink(t("order.title") + " · @" + S.handle) : l.url;
+            var href = l.url === "wa" ? waLink(t("order.title") + " · @" + S.handle) : mHref(l.url);
             var external = /^https?:/.test(href);
             return '<a class="link-card reveal" href="' + esc(href) + '"' +
               (external ? ' target="_blank" rel="noopener"' : "") + ">" +
@@ -1070,7 +1164,7 @@
         ? '<section class="section shell">' +
             '<div class="section__head">' +
               '<h2 class="section__title" data-i18n="profile.featured"></h2>' +
-              '<a class="section__link" href="store.html" data-i18n="profile.all"></a>' +
+              '<a class="section__link" href="' + mHref("store.html") + '" data-i18n="profile.all"></a>' +
             "</div>" +
             '<div class="grid grid--rail">' + featured.map(productCard).join("") + "</div>" +
           "</section>"
@@ -1176,6 +1270,69 @@
     paint();
   }
 
+  /* --------------------------------------------------------- marketplace -- */
+  function renderMarketplace() {
+    var root = qs("[data-page-root]");
+    if (!root) return;
+
+    var categories = [];
+    MERCHANTS.forEach(function (m) {
+      var c = tx(m.category);
+      if (c && categories.indexOf(c) === -1) categories.push(c);
+    });
+
+    root.innerHTML =
+      '<section class="hero shell--wide shell">' +
+        '<div class="eyebrow" data-i18n="market.eyebrow"></div>' +
+        '<h1 data-i18n="market.title"></h1>' +
+        '<p data-i18n="market.sub"></p>' +
+      "</section>" +
+      '<section class="shell shell--wide">' +
+        '<div class="toolbar">' +
+          '<label class="search">' + icon("search") +
+            '<input type="search" data-search data-i18n-ph="market.search">' +
+            '<span class="sr-only">search</span>' +
+          "</label>" +
+          '<div class="chips">' +
+            '<button class="chip is-active" data-cat="">' + esc(t("market.all")) + "</button>" +
+            categories.map(function (c) {
+              return '<button class="chip" data-cat="' + esc(c) + '">' + esc(c) + "</button>";
+            }).join("") +
+          "</div>" +
+        "</div>" +
+        '<div class="merchants" data-grid></div>' +
+      "</section>" +
+      footerHTML();
+
+    var state = { cat: "", q: "" };
+    function paint() {
+      var list = MERCHANTS.filter(function (m) {
+        var haystack = (tx(m.name) + " " + tx(m.tagline || m.bio) + " " + tx(m.category)).toLowerCase();
+        var matchQ = !state.q || haystack.indexOf(state.q.toLowerCase()) !== -1;
+        var matchC = !state.cat || tx(m.category) === state.cat;
+        return matchQ && matchC;
+      });
+      var grid = qs("[data-grid]");
+      grid.innerHTML = list.length
+        ? list.map(merchantCard).join("")
+        : '<div class="empty" style="grid-column:1/-1"><span>🔍</span><strong>' + esc(t("market.empty")) + "</strong></div>";
+      revealAll();
+    }
+    qs("[data-search]").addEventListener("input", function (ev) {
+      state.q = ev.target.value.trim();
+      paint();
+    });
+    qsa(".chip").forEach(function (chip) {
+      chip.addEventListener("click", function () {
+        qsa(".chip").forEach(function (c) { c.classList.remove("is-active"); });
+        chip.classList.add("is-active");
+        state.cat = chip.getAttribute("data-cat");
+        paint();
+      });
+    });
+    paint();
+  }
+
   function renderProduct() {
     var root = qs("[data-page-root]");
     if (!root) return;
@@ -1186,7 +1343,7 @@
 
     if (!p) {
       root.innerHTML = '<section class="shell empty"><span>🔍</span><strong>' + esc(t("product.missing")) +
-        '</strong><a class="btn btn--ghost btn--sm" href="store.html">' + esc(t("product.back")) + "</a></section>";
+        '</strong><a class="btn btn--ghost btn--sm" href="' + mHref("store.html") + '">' + esc(t("product.back")) + "</a></section>";
       return;
     }
     document.title = tx(p.title) + " · " + tx(S.name);
@@ -1195,7 +1352,7 @@
 
     root.innerHTML =
       '<div class="shell shell--wide">' +
-        '<a class="section__link backlink" href="store.html">' + icon("chevron") + "<span>" + esc(t("product.back")) + "</span></a>" +
+        '<a class="section__link backlink" href="' + mHref("store.html") + '">' + icon("chevron") + "<span>" + esc(t("product.back")) + "</span></a>" +
         '<div class="detail">' +
           '<div class="reveal">' + artHTML(p, "detail__art") + "</div>" +
           '<div class="detail__buy reveal">' +
@@ -1238,7 +1395,7 @@
         (others.length
           ? '<section class="section">' +
               '<div class="section__head"><h2 class="section__title" data-i18n="profile.featured"></h2>' +
-              '<a class="section__link" href="store.html" data-i18n="profile.all"></a></div>' +
+              '<a class="section__link" href="' + mHref("store.html") + '" data-i18n="profile.all"></a></div>' +
               '<div class="grid">' + others.map(productCard).join("") + "</div>" +
             "</section>"
           : "") +
@@ -1271,6 +1428,7 @@
     else if (page === "home") renderHome();
     else if (page === "store") renderStore();
     else if (page === "product") renderProduct();
+    else if (page === "marketplace") renderMarketplace();
     applyLang();
     revealAll();
     renderCart();

@@ -190,6 +190,9 @@ const NOTES = [
 
 window.SITE = {
   /* ------------------------------------------------------------ profile -- */
+  // Unique per merchant. Used to scope the cart and to build this merchant's
+  // links (?m=<id>) once more than one store is live — see MERCHANTS below.
+  id: "ys",
   handle: "_ys",
   name: { ar: "احمد العامري", en: "Ahmed Alameri" },
   verified: true,
@@ -199,6 +202,10 @@ window.SITE = {
     ar: "زيوت عطرية مركّزة، تُخلط وتُعبّأ بعناية. اختر عطرك واطلبه مباشرة على واتساب.",
     en: "Concentrated perfume oils, blended and bottled with care. Pick your scent and order straight over WhatsApp.",
   },
+  // Shown on this merchant's card in the marketplace directory (marketplace.html).
+  category: { ar: "عطور", en: "Perfume" },
+  tagline: { ar: "زيوت عطرية مركّزة تدوم", en: "Concentrated oils that last" },
+  art: { emoji: "🕌", from: "#3b2412", to: "#140b06" },
 
   /* ------------------------------------------------------------ contact -- */
   // WhatsApp number in international format, digits only (no + and no spaces).
@@ -368,6 +375,240 @@ window.SITE = {
   ],
 };
 
+/* ==========================================================================
+   OTHER STORES — example merchants shown in the marketplace directory
+   (marketplace.html). Same shape as SITE. Add a real one here once a
+   merchant signs up; nothing else needs to change to make their page live —
+   visiting any page with ?m=<id> switches the whole site to that merchant.
+   ========================================================================== */
+window.MERCHANTS = [
+  window.SITE,
+  {
+    id: "kutub",
+    handle: "dar_alkutub",
+    name: { ar: "دار الكتب", en: "Dar Al-Kutub" },
+    verified: false,
+    avatar: "",
+    initials: { ar: "د", en: "D" },
+    bio: {
+      ar: "كتب ودفاتر مصمّمة بعناية للقراءة والتخطيط اليومي، تصلك أينما كنت في الإمارات.",
+      en: "Thoughtfully designed books and planners for reading and daily planning, delivered anywhere in the UAE.",
+    },
+    category: { ar: "كتب ومطبوعات", en: "Books and print" },
+    tagline: { ar: "دفاتر وكتب تنظّم يومك", en: "Notebooks and books that organise your day" },
+    art: { emoji: "📚", from: "#2f3b2a", to: "#0e130d" },
+    whatsapp: "",
+    email: "",
+    orderWebhook: "",
+    newsletterAction: "",
+    currency: { ar: "د.إ", en: "AED" },
+    socials: [],
+    links: [
+      {
+        icon: "📖",
+        title: { ar: "المتجر — كل الإصدارات", en: "Shop — every title" },
+        sub:   { ar: "كتب ودفاتر · من ٤٥ د.إ", en: "Books and planners · from AED 45" },
+        url: "store.html",
+        tag: { ar: "الأهم", en: "Top" },
+      },
+    ],
+    products: [
+      {
+        id: "planner-daily",
+        category: { ar: "دفاتر", en: "Planners" },
+        title: { ar: "دفتر تخطيط يومي", en: "Daily Planner" },
+        desc: {
+          ar: "دفتر تخطيط بتصميم عربي أنيق، صفحة لكل يوم مع مساحة للأولويات والملاحظات.",
+          en: "An elegantly designed planner, one page per day with space for priorities and notes.",
+        },
+        price: 65,
+        badge: { ar: "الأكثر مبيعاً", en: "Bestseller" },
+        featured: true,
+        image: "",
+        art: { emoji: "📓", from: "#3a4a33", to: "#12160f" },
+        features: [
+          { ar: "غلاف مقوّى مقاوم للماء", en: "Hardcover, water-resistant" },
+          { ar: "١٢ أسبوع من التخطيط", en: "12 weeks of planning" },
+          { ar: "شريط لتحديد الصفحة", en: "Ribbon page marker" },
+        ],
+      },
+      {
+        id: "storybook-kids",
+        category: { ar: "أطفال", en: "Kids" },
+        title: { ar: "مجموعة قصص للأطفال", en: "Kids Storybook Set" },
+        desc: {
+          ar: "خمس قصص مصوّرة بالعربية والإنجليزية، لعمر ٣ إلى ٧ سنوات.",
+          en: "Five illustrated stories in Arabic and English, for ages 3 to 7.",
+        },
+        price: 89,
+        badge: null,
+        featured: true,
+        image: "",
+        art: { emoji: "🧸", from: "#4a3a2f", to: "#160f0a" },
+        features: [
+          { ar: "٥ كتب داخل علبة هدية", en: "5 books in a gift box" },
+          { ar: "ورق سميك آمن للأطفال", en: "Thick, child-safe paper" },
+        ],
+      },
+      {
+        id: "quran-journal",
+        category: { ar: "دينية", en: "Faith" },
+        title: { ar: "دفتر تدبّر القرآن", en: "Quran Reflection Journal" },
+        desc: {
+          ar: "دفتر لتدوين تدبّرك اليومي أثناء القراءة، بتصميم هادئ ومساحة كافية.",
+          en: "A journal for daily reflection while reading, with a calm design and room to write.",
+        },
+        price: 55,
+        badge: { ar: "جديد", en: "New" },
+        featured: false,
+        image: "",
+        art: { emoji: "🕯️", from: "#3a3226", to: "#120f0a" },
+        features: [
+          { ar: "٦٠ يوم من صفحات التدبّر", en: "60 days of reflection pages" },
+          { ar: "غلاف ناعم بلون محايد", en: "Soft cover in a neutral tone" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "hisabi",
+    handle: "hisabi_systems",
+    name: { ar: "أنظمة حسابي", en: "Hisabi Systems" },
+    verified: true,
+    avatar: "",
+    initials: { ar: "ح", en: "H" },
+    bio: {
+      ar: "أنظمة حسابات وفواتير جاهزة للأعمال الصغيرة — رخصة استخدام تُسلّم فوراً بعد الدفع.",
+      en: "Ready-made invoicing and accounting systems for small businesses — a licence delivered instantly after payment.",
+    },
+    category: { ar: "أنظمة وبرامج", en: "Software and systems" },
+    tagline: { ar: "فواتير وحسابات بلا تعقيد", en: "Invoicing and books, without the mess" },
+    art: { emoji: "💻", from: "#1f3a4a", to: "#0a1216" },
+    whatsapp: "",
+    email: "",
+    orderWebhook: "",
+    newsletterAction: "",
+    currency: { ar: "د.إ", en: "AED" },
+    socials: [],
+    links: [
+      {
+        icon: "🧾",
+        title: { ar: "المتجر — كل الأنظمة", en: "Shop — every system" },
+        sub:   { ar: "رخصة استخدام تصلك فوراً", en: "A licence delivered instantly" },
+        url: "store.html",
+        tag: { ar: "الأهم", en: "Top" },
+      },
+    ],
+    products: [
+      {
+        id: "invoicing-lite",
+        category: { ar: "فوترة", en: "Invoicing" },
+        title: { ar: "نظام الفوترة الأساسي", en: "Invoicing Lite" },
+        desc: {
+          ar: "أصدر فواتير متوافقة مع ضريبة القيمة المضافة خلال دقائق، بلا اشتراك شهري.",
+          en: "Issue VAT-compliant invoices in minutes, no monthly subscription.",
+        },
+        price: 299,
+        badge: { ar: "الأكثر طلباً", en: "Most popular" },
+        featured: true,
+        image: "",
+        art: { emoji: "🧾", from: "#2a4a4a", to: "#0d1616" },
+        features: [
+          { ar: "رخصة استخدام دائمة لجهاز واحد", en: "Perpetual licence for one device" },
+          { ar: "قوالب فواتير عربي وإنجليزي", en: "Arabic and English invoice templates" },
+          { ar: "تحديثات مجانية لمدة سنة", en: "Free updates for one year" },
+        ],
+      },
+      {
+        id: "pos-addon",
+        category: { ar: "نقاط بيع", en: "Point of sale" },
+        title: { ar: "إضافة نقطة البيع", en: "POS Add-on" },
+        desc: {
+          ar: "وصلها بنظام الفوترة وحوّل أي جهاز لوحي إلى نقطة بيع كاملة.",
+          en: "Connect it to Invoicing Lite and turn any tablet into a full point of sale.",
+        },
+        price: 199,
+        badge: null,
+        featured: true,
+        image: "",
+        art: { emoji: "🖥️", from: "#3a2f4a", to: "#120e16" },
+        features: [
+          { ar: "يعمل بدون إنترنت", en: "Works offline" },
+          { ar: "تقارير مبيعات يومية", en: "Daily sales reports" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "maram",
+    handle: "maram_academy",
+    name: { ar: "أكاديمية مرام", en: "Maram Academy" },
+    verified: false,
+    avatar: "",
+    initials: { ar: "م", en: "M" },
+    bio: {
+      ar: "دورات مسجّلة بالعربي في التسويق والمحتوى، تشترك وتشاهد فور الدفع.",
+      en: "Recorded Arabic courses in marketing and content — subscribe and watch right after payment.",
+    },
+    category: { ar: "دورات وملفات", en: "Courses and files" },
+    tagline: { ar: "دورات تشاهدها اليوم وتطبّقها غداً", en: "Courses you watch today, apply tomorrow" },
+    art: { emoji: "🎓", from: "#4a3a1f", to: "#16120a" },
+    whatsapp: "",
+    email: "",
+    orderWebhook: "",
+    newsletterAction: "",
+    currency: { ar: "د.إ", en: "AED" },
+    socials: [],
+    links: [
+      {
+        icon: "🎥",
+        title: { ar: "المتجر — كل الدورات", en: "Shop — every course" },
+        sub:   { ar: "مشاهدة فورية بعد الدفع", en: "Instant access after payment" },
+        url: "store.html",
+        tag: { ar: "الأهم", en: "Top" },
+      },
+    ],
+    products: [
+      {
+        id: "content-course",
+        category: { ar: "تسويق", en: "Marketing" },
+        title: { ar: "دورة صناعة المحتوى", en: "Content Creation Course" },
+        desc: {
+          ar: "من الفكرة إلى النشر — كيف تبني محتوى يبيع بدون ميزانية إعلانات.",
+          en: "From idea to publish — build content that sells without an ad budget.",
+        },
+        price: 249,
+        badge: { ar: "الأكثر مبيعاً", en: "Bestseller" },
+        featured: true,
+        image: "",
+        art: { emoji: "🎬", from: "#4a3f1f", to: "#16130a" },
+        features: [
+          { ar: "٥ ساعات فيديو مقسّمة لدروس قصيرة", en: "5 hours split into short lessons" },
+          { ar: "قوالب تخطيط محتوى شهري", en: "Monthly content planning templates" },
+          { ar: "وصول مدى الحياة للتحديثات", en: "Lifetime access to updates" },
+        ],
+      },
+      {
+        id: "pricing-workshop",
+        category: { ar: "تسعير", en: "Pricing" },
+        title: { ar: "ورشة تسعير المنتجات", en: "Pricing Workshop" },
+        desc: {
+          ar: "كيف تسعّر منتجك بدون خسارة هامش الربح أو تخويف الزبون.",
+          en: "How to price your product without losing margin or scaring the buyer.",
+        },
+        price: 149,
+        badge: null,
+        featured: true,
+        image: "",
+        art: { emoji: "📊", from: "#3f4a1f", to: "#13160a" },
+        features: [
+          { ar: "ساعتان فيديو + ملف حساب التكلفة", en: "2 hours of video plus a cost-calculation sheet" },
+        ],
+      },
+    ],
+  },
+];
+
 /* --------------------------------------------------------------- strings -- */
 window.I18N = {
   ar: {
@@ -467,6 +708,18 @@ window.I18N = {
     "newsletter.done": "تم! راجع بريدك لتأكيد الاشتراك",
     "footer.rights": "جميع الحقوق محفوظة",
     "footer.built": "صُنع على",
+    "nav.marketplace": "تصفح المتاجر",
+    "market.eyebrow": "السوق",
+    "market.title": "متاجر رنت ستور",
+    "market.sub": "تصفح متاجر حقيقية على المنصّة — كل متجر له صفحته وطلباته الخاصة.",
+    "market.search": "ابحث عن متجر…",
+    "market.all": "الكل",
+    "market.empty": "ما لقينا متجر بهذا البحث",
+    "market.products": "منتج",
+    "signup.previewTitle": "هذا شكل صفحتك",
+    "signup.previewHint": "يتحدّث تلقائياً وأنت تعبّي البيانات",
+    "signup.previewPlaceholderName": "اسمك أو اسم مشروعك",
+    "signup.previewPlaceholderBio": "نبذة قصيرة عن مشروعك تظهر هنا",
     "a11y.theme": "تبديل الوضع",
     "a11y.lang": "تغيير اللغة",
     "a11y.cart": "السلة",
@@ -568,6 +821,18 @@ window.I18N = {
     "newsletter.done": "Done! Check your inbox to confirm",
     "footer.rights": "All rights reserved",
     "footer.built": "Built on",
+    "nav.marketplace": "Browse stores",
+    "market.eyebrow": "Marketplace",
+    "market.title": "Stores on RentStore",
+    "market.sub": "Browse real stores on the platform — each with its own page and its own orders.",
+    "market.search": "Search stores…",
+    "market.all": "All",
+    "market.empty": "No store matches that search",
+    "market.products": "products",
+    "signup.previewTitle": "This is your page",
+    "signup.previewHint": "It updates live as you fill in your details",
+    "signup.previewPlaceholderName": "Your name or your brand",
+    "signup.previewPlaceholderBio": "A short line about your business shows up here",
     "a11y.theme": "Toggle theme",
     "a11y.lang": "Change language",
     "a11y.cart": "Cart",
