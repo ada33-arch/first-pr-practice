@@ -53,6 +53,15 @@ There is no test suite. `npm run typecheck` is the closest thing to one — run 
 - Building `docker-demo` needs a running Docker daemon. Some sandboxes ship the `docker` CLI without one — the entrypoint is a plain shell script and can be run directly when that happens.
 - In `run:` blocks, pass values in through `env:` rather than splicing `${{ }}` into the script text; a fork-controlled expression inside `run:` is code execution. `greet-and-check/action.yml` follows this.
 
+## MCP Servers
+
+`.mcp.json` wires up two HTTP MCP servers, shared by everyone who opens this repo in Claude Code:
+
+- `github` — GitHub's hosted Copilot MCP endpoint.
+- `graphify` — registered in #20 with no accompanying notes on what it's for.
+
+Authorizing a project MCP server is an interactive, one-time step per environment — it opens a browser for OAuth — so it can't be completed from a non-interactive or remote/headless session. In an interactive `claude` session in this repo, run `/mcp` (or `claude mcp` from the shell) to see each server's status and authorize the ones that need it. A session that can't open a browser will just report the server as unauthorized and leave it at that.
+
 ## Conventions
 
 - The default branch is `main`. Following the repo's purpose, make changes on a feature branch and propose them via pull request rather than committing directly to `main`.
