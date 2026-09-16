@@ -1,16 +1,10 @@
-name: Deploy design system to Pages
-
-# Publishes design-system/ as a public website, so anyone can use the intake
-# and browse the examples from a URL without cloning anything.
-#
-# One-time setup: repo Settings → Pages → Source: "GitHub Actions".
-# Until that is switched on this workflow builds but cannot deploy.
+name: Deploy landing page to GitHub Pages
 
 on:
   push:
     branches: [main]
     paths:
-      - 'design-system/**'
+      - 'landing/**'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
 
@@ -19,49 +13,25 @@ permissions:
   pages: write
   id-token: write
 
-# Let a running deploy finish rather than cancelling it mid-publish.
+# One live deployment at a time; let a newer push finish rather than cancelling it.
 concurrency:
   group: pages
   cancel-in-progress: false
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Check the site has no external dependencies
-        run: |
-          # The system is meant to be self-contained. A stray CDN link would
-          # break it offline and behind strict CSP, so fail the build instead.
-          if grep -rIn --include='*.html' -E '(src|href)="https?://' design-system/ ; then
-            echo "::error::Found an external asset reference in design-system/"
-            exit 1
-          fi
-          echo "No external asset references."
-
-      - name: Check every accent theme stays readable
-        run: node design-system/tools/check-contrast.js
-
-      - name: Verify entry points exist
-        run: |
-          for f in index.html examples/picker.html examples/deck.html \
-                   examples/landing.html examples/intake-standalone.html; do
-            test -f "design-system/$f" || { echo "::error::missing design-system/$f"; exit 1; }
-          done
-          echo "All entry points present."
-
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: design-system
-
   deploy:
-    needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      # Only landing/ is published. site/ stays in the repo, unpublished,
+      # until there is a decision to put it live.
+      - name: Upload landing/
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: landing
       - id: deployment
         uses: actions/deploy-pages@v4

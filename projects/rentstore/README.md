@@ -19,12 +19,13 @@ projects/rentstore/
 │   ├── styles.css
 │   └── img/           logos and photos go here
 ├── pages/           THE PAGES — one file per screen, all markup
-│   ├── index.html     landing
-│   ├── signup.html    free signup, ?plan= preselects
-│   ├── setup.html     the licence + setup service
-│   ├── demo.html      a merchant's link page
-│   ├── store.html     that merchant's store
-│   └── product.html   one product
+│   ├── index.html       landing
+│   ├── marketplace.html every store, searchable — the "browse many merchants" page
+│   ├── signup.html      free signup, ?plan= preselects
+│   ├── setup.html       the licence + setup service
+│   ├── demo.html        a merchant's link page
+│   ├── store.html       that merchant's store
+│   └── product.html     one product
 ├── code/            THE LOGIC — nothing visual, nothing editorial
 │   ├── site.js        rendering, language, theme, cart, motion
 │   └── bundle.mjs     builds the whole site into one file
@@ -48,12 +49,29 @@ what a designer touches, **code** is what a developer touches, and none of them
 reach into each other. Change a price in `content/data.js` and it updates the
 landing page, the plan cards, and the signup form at once — no code edit.
 
+## Adding a real store to the marketplace
+
+`content/data.js` exports one merchant as `SITE` (the flagship demo) and every
+merchant, including that one, as `MERCHANTS`. `marketplace.html` lists all of
+them; visiting any of `demo.html`, `store.html`, or `product.html` with
+`?m=<id>` switches the whole page to that merchant — same code, same markup,
+just a different entry in the array. Add a new merchant by copying one of the
+existing `MERCHANTS` entries (own `id`, `handle`, products, `whatsapp`) — no
+other file needs to change. Each merchant's cart is stored separately
+(`nzm.cart.<id>`), so a customer's cart on one store never appears on another.
+
 ## Running it
 
 ```bash
-npx serve projects/rentstore/pages          # or open pages/index.html directly
+npx serve projects/rentstore                # then open /pages/index.html
 node projects/rentstore/code/bundle.mjs     # → standalone.html, the whole site in one file
 ```
+
+Serve `projects/rentstore` itself, not `projects/rentstore/pages` — the pages load
+`../content/data.js` and `../code/site.js` by relative path, which a dev server
+resolves as outside its root (and refuses) if `pages/` is the served directory.
+Opening `pages/index.html` directly as a `file://` URL works either way, since
+there's no server root to escape.
 
 `bundle.mjs` inlines the CSS and JS and swaps page links for hash routes
 (`#/`, `#/signup`, `#/setup`, `#/demo`, `#/store`, `#/product?id=…`), producing a
