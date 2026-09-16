@@ -1,0 +1,375 @@
+{
+  "name": "MAP · Your week",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "### ⚠️ Map, not automation\n\nEvery node here is a **No-Op**: it does nothing, sends nothing, charges nobody. It exists so the business can be read on a canvas.\n\nPress **Execute Workflow** to walk the path.\n\n**Never set this Active.** The workflows that actually run are the numbered ones in the folder above.",
+        "width": 300,
+        "height": 300,
+        "color": 7
+      },
+      "id": "sticky-0",
+      "name": "Note 1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 📥 What arrives",
+        "width": 510,
+        "height": 190,
+        "color": 4
+      },
+      "id": "sticky-1",
+      "name": "Note 2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        40,
+        110
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Step 1️⃣ The inbox\n\nEverything arrives on WhatsApp. Most of it needs minutes, not hours.",
+        "width": 590,
+        "height": 340,
+        "color": 7
+      },
+      "id": "sticky-2",
+      "name": "Note 3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 🛠️ Hand work",
+        "width": 510,
+        "height": 190,
+        "color": 3
+      },
+      "id": "sticky-3",
+      "name": "Note 4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        800,
+        110
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Step 2️⃣ The build\n\nThe part that is genuinely your job — and the part that will eventually break.",
+        "width": 590,
+        "height": 340,
+        "color": 7
+      },
+      "id": "sticky-4",
+      "name": "Note 5",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        760,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 📣 Marketing",
+        "width": 290,
+        "height": 190,
+        "color": 6
+      },
+      "id": "sticky-5",
+      "name": "Note 6",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1560,
+        110
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 💬 Support",
+        "width": 290,
+        "height": 190,
+        "color": 5
+      },
+      "id": "sticky-6",
+      "name": "Note 7",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1560,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Step 3️⃣ Growing it\n\nThe promises you made on the merchant page come due here.",
+        "width": 370,
+        "height": 570,
+        "color": 7
+      },
+      "id": "sticky-7",
+      "name": "Note 8",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1520,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 🤖 Runs itself",
+        "width": 290,
+        "height": 190,
+        "color": 5
+      },
+      "id": "sticky-8",
+      "name": "Note 9",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2100,
+        110
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Step 4️⃣ What you never touch\n\nAlready automated. Do not spend your week here.",
+        "width": 370,
+        "height": 340,
+        "color": 7
+      },
+      "id": "sticky-9",
+      "name": "Note 10",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2060,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 📈 When to stop doing this by hand\n\n**O3 is the ceiling.** Ten merchants is a good week. Fifty is not a person's job.\n\nWhen O3 stops fitting in your week, self-serve product editing pays for itself — that, not features or design, is the moment to build the real backend.",
+        "width": 360,
+        "height": 280,
+        "color": 7
+      },
+      "id": "sticky-10",
+      "name": "Note 11",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2600,
+        0
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "your",
+      "name": "Your week starts",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -260,
+        200
+      ],
+      "notes": "Press Execute to walk the path. Every node is a No-Op — nothing is sent.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "o1",
+      "name": "O1 · Signups",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        80,
+        200
+      ],
+      "notes": "You build each free page from the sheet row. Minutes each.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "o2",
+      "name": "O2 · Store requests",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        300,
+        200
+      ],
+      "notes": "The payment link goes out by itself. You do nothing until money lands.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "o3",
+      "name": "O3 · You build the paid store",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        840,
+        200
+      ],
+      "notes": "THE BOTTLENECK. Hours per merchant, and the reason they pay you rather than doing it themselves.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "o4",
+      "name": "O4 · Setup cases",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1060,
+        200
+      ],
+      "notes": "The call, the documents, the filing, and four stage updates that send themselves once you post each stage.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "o5",
+      "name": "O5 · Feature and post",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1600,
+        200
+      ],
+      "notes": "Rotate who is featured, post each new store, run the seasonal campaigns.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "o6",
+      "name": "O6 · Answer merchants",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1600,
+        430
+      ],
+      "notes": "Order questions, product help, pricing advice — in working hours, which is what we promise.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "o7",
+      "name": "O7 · Renewals and suspensions",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2140,
+        200
+      ],
+      "notes": "Reminders, warnings and suspensions are automatic. You step in only for the ones that go quiet.",
+      "notesInFlow": true
+    }
+  ],
+  "connections": {
+    "Your week starts": {
+      "main": [
+        [
+          {
+            "node": "O1 · Signups",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "O1 · Signups": {
+      "main": [
+        [
+          {
+            "node": "O2 · Store requests",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "O2 · Store requests": {
+      "main": [
+        [
+          {
+            "node": "O3 · You build the paid store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "O3 · You build the paid store": {
+      "main": [
+        [
+          {
+            "node": "O4 · Setup cases",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "O4 · Setup cases": {
+      "main": [
+        [
+          {
+            "node": "O5 · Feature and post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "O5 · Feature and post": {
+      "main": [
+        [
+          {
+            "node": "O6 · Answer merchants",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "O6 · Answer merchants": {
+      "main": [
+        [
+          {
+            "node": "O7 · Renewals and suspensions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Dubai"
+  },
+  "pinData": {},
+  "tags": [
+    {
+      "name": "rentstore-map"
+    }
+  ]
+}

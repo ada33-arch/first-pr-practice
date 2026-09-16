@@ -1,0 +1,327 @@
+# Corporate Deck Design System
+
+A codified version of my house style, so that a website, a PowerPoint template,
+or anything I commission from a designer comes back looking like it belongs to
+the same family.
+
+Distilled from a 32-template reference set of corporate presentation and web
+designs. The system captures what those files have in common — one saturated
+accent hue, a near-black anchor, heavy geometric headline type, generous rounded
+corners, oversized section numerals, and soft geometric ornament.
+
+---
+
+## What's here
+
+```
+design-system/
+├── index.html             ← the site's front door — routes three audiences
+├── brief.html             ← CLIENT-facing intake: four plain questions, no code
+├── brief-standalone.html  ← the same, as one file you can email
+├── SHARING.md             ← how anyone else uses this (link / file / repo)
+├── SELLING.md             ← approval → payment → delivery, and its real limits
+├── ROADMAP.md             ← ⏳ the systems marketplace, once we have 10+ systems
+├── INTAKE.md              ← START HERE — six questions asked before any design
+├── DESIGN-BRIEF.md        ← hand this to any designer or AI tool
+├── FAVORITES.md           ← the web-landing reference set + its extra rules
+├── PHOTOS.md              ← sourcing, licensing and photo treatment rules
+├── tokens/
+│   ├── tokens.json        ← platform-agnostic tokens (Figma, Style Dictionary, builds)
+│   └── tokens.css         ← CSS custom properties + the nine accent themes
+├── css/
+│   ├── base.css           ← reset + typographic primitives
+│   ├── components.css     ← cards, stats, steps, timelines, SWOT, buttons, media
+│   ├── slides.css         ← 16:9 slide surfaces and slide archetypes
+│   └── web.css            ← gradient heroes, device mockups, rails, pricing, FAQ
+├── powerpoint/
+│   └── SPEC.md            ← pt sizes and inch positions for a 13.333" × 7.5" slide
+├── tools/
+│   └── build-standalone.js ← rebuilds the one-file intake after CSS changes
+├── examples/              ← reference demos of the system; these don't change
+│   ├── picker.html        ← the intake, interactive → outputs a scope
+│   ├── intake-standalone.html ← the intake as ONE file, works offline
+│   ├── index.html         ← corporate web page (deck layer)
+│   ├── deck.html          ← 14-slide deck
+│   └── landing.html       ← SaaS landing page (web layer)
+└── projects/              ← one folder per request — everything commissioned
+    ├── README.md          ← the naming and asset-folder convention
+    └── 001-portfolio-marin/
+        ├── SPEC.md        ← intake answers + the scope they produced
+        └── index.html
+```
+
+## Giving it to someone else
+
+Three routes, differing only in what the other person has to install — see
+[`SHARING.md`](SHARING.md).
+
+| Route | They need | Best for |
+|---|---|---|
+| **A link** — `index.html` as a site | A browser | Clients, one-off collaborators |
+| **A file** — `brief-standalone.html` | A browser | Email, offline, no internet |
+| **The repo** | git | Designers building with it repeatedly |
+
+A GitHub Pages workflow ships in `.github/workflows/pages.yml`. It needs one
+switch flipped once — **Settings → Pages → Source → "GitHub Actions"** — after
+which the site is live at `https://<owner>.github.io/<repo>/`.
+
+The intake's **Download starter file** button is what makes this useful to
+someone without the repo: instead of a scope telling them to import files they
+don't have, they get a single self-contained HTML file with the CSS inlined,
+their accent baked in, and a scaffold of their chosen sections.
+
+### Two front doors
+
+`brief.html` is for **clients**: four plain questions, a row of looks to choose
+from, and no file names, class names or CSS anywhere on the page. It copes with
+having no logo (describe it instead) and no copy (answer six questions and it
+drafts the page from your own words), and it reads a `.docx` in the browser
+without uploading it.
+
+`examples/picker.html` is the same job for **designers and AI tools** — layers,
+accent hex, class names, the scope block.
+
+### Approving and paying
+
+The client sees their page, approves it, and gets a `.zip` with the page, their
+words as a separate document, the brief and a short guide — written in the
+browser with no server involved.
+
+Checkout hands off to a payment provider. **There is no card form, deliberately:**
+a static page can't verify a payment or hold card details safely. Leave the
+provider unset and the button emails you the brief instead of pretending a
+checkout exists. [`SELLING.md`](SELLING.md) covers the setup and the one real
+limitation — a static page cannot gate a download behind a payment, so the
+provider should deliver the file.
+
+## Starting a new design
+
+Don't pick a layout first — **answer the six questions in
+[`INTAKE.md`](INTAKE.md)**, or run [`examples/picker.html`](examples/picker.html)
+and click through them. Each answer maps to a fixed setting, so the same answers
+always produce the same starting point.
+
+The output is a **scope**, not a restatement: it names the exact files to import,
+the exact classes to compose from, the one doc section to read — and says
+explicitly not to re-read or regenerate the rest of the system. That keeps each
+new page or deck cheap to produce and stops parallel CSS drifting away from the
+house style.
+
+### Photos
+
+Question 5 offers two routes beyond "I already have some":
+
+- **Upload my own** — drop a file into the picker and it renders immediately in
+  all four house treatments (notched, circle, accent wash, dark scrim with type
+  over it), in your accent theme. The file is read with `FileReader` and never
+  leaves the browser. The picker flags it if the resolution is below the floor
+  for the use, or if the crop is wrong for a hero.
+- **Find one for me** — the picker builds a search brief from your other answers
+  (subject from what you're making, mood from what the audience should feel, plus
+  the composition constraints the system needs — 16:9, negative space for the
+  headline, no baked-in text) and links straight into free-licence libraries.
+
+Sourced imagery goes through free-licence libraries or bought stock only. Pulling
+images off a search results page, a competitor's site or a social feed is how a
+takedown notice ends up with the client. [`PHOTOS.md`](PHOTOS.md) has the
+licensing rules, the resolution floors, and the treatment rules.
+
+### Colours and assets
+
+Say you have brand colours and the picker opens a **colour module**: type any hex
+and it generates the full 50→700 ramp, derives the gradient, checks contrast, and
+applies it to the page live. It outputs a `:root` block for the **project's**
+stylesheet — `tokens.css` is never edited for one project.
+
+The contrast check is the point. A mid-tone brand colour often clears 4.5:1
+against neither white nor near-black, meaning no text can sit on it at all. Better
+to learn that in the picker than in review.
+
+There's also an optional **assets module** with three separate slots — logo, copy,
+and existing material. Separate because the rules differ: a logo is previewed on
+white, ink *and* accent at once (the usual failure is one that looks fine in the
+navbar and vanishes in the dark footer), copy is checked against the 62-character
+body measure, and reference files are listed by name only.
+
+### A worked example
+
+`projects/001-portfolio-marin/` was built from a real intake run — *portfolio site ·
+trusted/established · buy or sign up · illustration* — and shows what the process
+catches. The portfolio archetype normally opens on a **portrait hero with label
+pins**, but the imagery answer was *illustration, no photography*. The imagery
+answer wins: no portrait, no photo masks, inline SVG on tinted grounds instead.
+That collision would have surfaced as a revision round; here it surfaced before
+anything was drawn.
+
+The whole page is one file. It imports the system, composes from existing
+classes, and adds five lines of scoped CSS for one hero-specific grid fix —
+nothing in `css/` or `tokens/` was touched.
+
+Open any example file directly in a browser — no build step, no dependencies,
+no network requests.
+
+### Two layers, one set of tokens
+
+| Deliverable | Import | Default accent |
+|---|---|---|
+| Presentation, PPT template, report | `+ css/slides.css` | **amber** |
+| Landing page, SaaS site, portfolio | `+ css/web.css` | **violet** |
+
+Both share `tokens.css`, so a deck and a site for the same client stay in family.
+See [`FAVORITES.md`](FAVORITES.md) for what the web layer adds and the three
+rules that differ (gradients, product-UI heroes, dark pages).
+
+---
+
+## Using it on the web
+
+```html
+<html class="theme-amber">
+  <head>
+    <link rel="stylesheet" href="design-system/tokens/tokens.css">
+    <link rel="stylesheet" href="design-system/css/base.css">
+    <link rel="stylesheet" href="design-system/css/components.css">
+    <!-- only if you are building slides -->
+    <link rel="stylesheet" href="design-system/css/slides.css">
+  </head>
+```
+
+Then compose from the existing classes:
+
+```html
+<section class="section">
+  <div class="container stack stack-6">
+    <div class="stack stack-3">
+      <span class="eyebrow">What we do</span>
+      <h2 class="h2">Four practices, one <em>rhythm</em></h2>
+      <hr class="rule">
+    </div>
+    <div class="grid grid--4">
+      <article class="card card--raised stack stack-4">
+        <span class="icon-chip"><!-- inline svg --></span>
+        <h3 class="card__title">Planning</h3>
+        <p class="card__body">Plans that survive the calendar.</p>
+      </article>
+      <!-- … -->
+    </div>
+  </div>
+</section>
+```
+
+### Re-theming
+
+Nine accent families ship with the system. Swap the class on `<html>` — or on any
+container for a scoped change — and everything downstream follows, including
+gradients, charts, buttons, icon chips and section panels.
+
+```html
+<!-- amber · violet · electric · indigo · navy · teal · green · lime · coral -->
+<html class="theme-violet">
+```
+
+Every example file includes a live theme switcher so you can see this happen.
+
+### Dark blocks
+
+Add `on-dark` alongside a dark surface and the foreground roles flip. Components
+need no dark-specific variants of their own.
+
+```html
+<section class="section section--dark on-dark"> … </section>
+```
+
+---
+
+## Building slides
+
+A `.slide` is a self-contained 16:9 canvas. Everything inside sizes in container
+query units, so a slide is identical full-screen or as a thumbnail in a grid.
+
+```html
+<div class="slide slide--chromed">
+  <div class="slide__logo">Northbrook</div>
+  <div class="slide__kicker">Who we are</div>
+  <div class="slide__pagenum">04</div>
+  <div class="slide__inner">
+    <div class="split">
+      <div class="stack stack-4">
+        <span class="eyebrow">About us</span>
+        <h2 class="h2">Let's talk about <em>who we are</em></h2>
+        <hr class="rule">
+        <p class="small">…</p>
+      </div>
+      <div class="media media--notched"><img src="…" alt="…"></div>
+    </div>
+  </div>
+</div>
+```
+
+Printing `examples/deck.html` gives one slide per landscape page.
+
+Slide archetypes provided: cover (split / bleed), agenda, section divider, split
+with media, card grids, numbered steps, stat row, timeline, SWOT, chart, team,
+testimonial, closing.
+
+---
+
+## Building a PowerPoint template
+
+`powerpoint/SPEC.md` has everything needed to build a `.potx`:
+
+- theme colour slot mapping for all six accent families
+- the type scale in points, with pre-computed tracking values
+- corner radii as PowerPoint `adj` values
+- the single approved shadow preset
+- the 14 slide-master layouts and where the furniture sits
+- chart formatting rules
+
+---
+
+## The rules, in brief
+
+The full brief is in [`DESIGN-BRIEF.md`](DESIGN-BRIEF.md). The short version:
+
+- **One accent hue per document.** Never two. It carries every point of emphasis.
+- **White or off-white dominates** — 55–70% of the page.
+- **Uppercase tracked eyebrow labels** above headlines. The most recognisable tic.
+- **Two-tone headlines** — one word flips to the accent, or from regular to black.
+- **Headlines tight and negatively tracked; body roomy and untracked.**
+- **20px card radius**, 32px on media. Sharp corners only on full-bleed colour.
+- **Photos are always masked** — rounded, circular, or notched. Never bare.
+- **Chart series 1 is the accent**, everything after it is grey.
+- **Oversized numerals** on section dividers and process steps.
+
+And the negatives, which save revision rounds: not brutalist, not neumorphic, not
+glassmorphic, not dark-mode-first, no texture or noise, no gradients as brand
+colour, no hard shadows, no mixed icon styles.
+
+---
+
+## Handing this to someone
+
+For a human designer: send `DESIGN-BRIEF.md`, plus `powerpoint/SPEC.md` if the
+deliverable is a deck template. The checklist in §9 of the brief is the
+acceptance criteria.
+
+For an AI tool, the prompt at the end of the brief works as-is:
+
+> Build this using the Corporate Deck Design System. Single accent hue
+> (`{amber|electric|navy|teal|green|coral}`), near-black ink anchor, white ground.
+> Poppins display / Inter body. Uppercase tracked eyebrow labels above headlines,
+> one two-tone headline on the cover, 20px card radius, oversized section
+> numerals, accent-filled icon chips, masked photography, charts with the accent
+> as series 1 and greys after. Follow the standard deck sequence. Import
+> `tokens/tokens.css` and use the existing component classes rather than writing
+> new CSS.
+
+---
+
+## Notes
+
+- **Fonts.** Poppins and Inter are the intended families; the stacks in
+  `tokens.css` fall back through Montserrat and Segoe UI to system sans, so
+  nothing breaks if they are unavailable. Load the real fonts in production.
+- **Accessibility.** `--accent-on` is set per theme to the text colour that
+  clears 4.5:1 on that accent. Use it rather than hard-coding white or black.
+  Decorative geometry is `aria-hidden` throughout.
+- **No dependencies.** Plain CSS, no build step, no framework, no network calls.

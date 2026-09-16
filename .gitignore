@@ -1,2 +1,4 @@
 node_modules/
 .env
+projects/rentstore/standalone.html
+__pycache__/

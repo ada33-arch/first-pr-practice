@@ -1,0 +1,482 @@
+/* ==========================================================================
+   Corporate Deck Design System — Web layer
+   Patterns from the favourites set (see FAVORITES.md) that the deck layer
+   does not cover: gradient heroes, wave dividers, device mockups, trust bars,
+   tinted feature cards, ghost step rails, pricing, FAQ, marquee, CTA bands.
+   Requires: tokens.css, base.css, components.css
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Hero surfaces
+   -------------------------------------------------------------------------- */
+
+.hero-gradient {
+  position: relative;
+  background: var(--gradient-hero);
+  color: #fff;
+  isolation: isolate;
+  overflow: hidden;
+}
+.hero-gradient .h1,
+.hero-gradient .display,
+.hero-gradient .h2 { color: #fff; }
+.hero-gradient .eyebrow { color: rgba(255, 255, 255, 0.75); }
+
+.hero-sheen { background: var(--gradient-sheen); }
+
+/* Soft blurred orb — the glow behind hero content. Ornamental. */
+.orb {
+  position: absolute;
+  border-radius: var(--radius-pill);
+  background: var(--glow-accent);
+  filter: blur(28px);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Wave divider. Sits at the bottom of a coloured hero and curves into the
+   next section. Give it the *next* section's background via `color`. */
+.wave {
+  display: block;
+  width: 100%;
+  height: clamp(40px, 6vw, 90px);
+  color: var(--surface-page);
+}
+.wave svg { display: block; width: 100%; height: 100%; }
+.wave path { fill: currentColor; }
+
+/* --------------------------------------------------------------------------
+   Badge pill above a headline — "NEW · Introducing X"
+   -------------------------------------------------------------------------- */
+
+.badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.35rem 0.35rem 0.35rem 0.85rem;
+  border-radius: var(--radius-pill);
+  background: var(--accent-50);
+  color: var(--accent-700);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+}
+.badge-pill__flag {
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-pill);
+  background: var(--accent-500);
+  color: var(--accent-on);
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.hero-gradient .badge-pill {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+
+/* Headline word with an accent underline rather than an accent fill. */
+.underlined {
+  color: var(--accent-600);
+  text-decoration: underline;
+  text-decoration-thickness: 0.09em;
+  text-underline-offset: 0.12em;
+}
+
+/* Gradient-filled headline word. Use once per page at most. */
+.gradient-text {
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* --------------------------------------------------------------------------
+   Device mockup frames — the product-UI hero visual
+   -------------------------------------------------------------------------- */
+
+.device {
+  position: relative;
+  background: var(--ink-900);
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+}
+
+.device--phone {
+  border-radius: 2.25rem;
+  padding: 0.55rem;
+  aspect-ratio: 1179 / 2556;
+  max-width: 300px;
+}
+.device--phone::before {              /* dynamic island */
+  content: "";
+  position: absolute;
+  top: 1.1rem; left: 50%;
+  transform: translateX(-50%);
+  width: 32%; height: 1.1rem;
+  border-radius: var(--radius-pill);
+  background: var(--ink-900);
+  z-index: 2;
+}
+
+.device--browser {
+  border-radius: var(--radius-md);
+  padding: 1.9rem 0.4rem 0.4rem;
+}
+.device--browser::before {            /* traffic lights */
+  content: "";
+  position: absolute;
+  top: 0.72rem; left: 0.85rem;
+  width: 2.6rem; height: 0.45rem;
+  border-radius: var(--radius-pill);
+  background:
+    radial-gradient(circle 3.5px at 3.5px 50%, var(--ink-600) 100%, transparent 0) 0 0/1rem 100% no-repeat,
+    radial-gradient(circle 3.5px at 3.5px 50%, var(--ink-600) 100%, transparent 0) 0.85rem 0/1rem 100% no-repeat,
+    radial-gradient(circle 3.5px at 3.5px 50%, var(--ink-600) 100%, transparent 0) 1.7rem 0/1rem 100% no-repeat;
+}
+
+.device__screen {
+  border-radius: inherit;
+  overflow: hidden;
+  background: var(--surface-page);
+  height: 100%;
+}
+.device--browser .device__screen { border-radius: var(--radius-sm); }
+.device__screen img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+
+/* Small stat/notification card that floats over a mockup. */
+.float-card {
+  position: absolute;
+  z-index: 3;
+  background: var(--surface-page);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--fs-caption);
+  color: var(--fg-body);
+  max-width: 200px;
+}
+.float-card__value {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: var(--fw-bold);
+  color: var(--fg-strong);
+  line-height: 1.2;
+}
+
+/* Floating label chip — the tags pinned around a portrait. */
+.pin {
+  position: absolute;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--radius-pill);
+  background: var(--surface-page);
+  box-shadow: var(--shadow-md);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  color: var(--fg-strong);
+  white-space: nowrap;
+}
+.pin--ink { background: var(--ink-900); color: #fff; }
+.pin::before {
+  content: "";
+  width: 7px; height: 7px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-500);
+}
+
+/* --------------------------------------------------------------------------
+   Trust bar — "Loved by innovative teams" + logo row
+   -------------------------------------------------------------------------- */
+
+.trustbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-8);
+  flex-wrap: wrap;
+}
+.trustbar__label {
+  font-size: var(--fs-small);
+  font-weight: var(--fw-medium);
+  color: var(--fg-muted);
+}
+.trustbar__logos {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  flex-wrap: wrap;
+  list-style: none;
+}
+.trustbar__logos li {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: var(--fw-bold);
+  color: var(--ink-400);
+  letter-spacing: -0.01em;
+}
+
+/* --------------------------------------------------------------------------
+   Tinted feature cards — each card a different soft tint
+   -------------------------------------------------------------------------- */
+
+.tint-grid { display: grid; gap: var(--space-4); grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr)); }
+
+.tint-card {
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--tint, var(--accent-50));
+}
+.tint-card__title { font-family: var(--font-display); font-weight: var(--fw-bold); color: var(--fg-strong); margin-top: var(--space-3); }
+.tint-card__body  { font-size: var(--fs-small); color: var(--fg-body); margin-top: var(--space-2); }
+
+/* Four house tints. They are *neutral supports*, not second accents — each is
+   desaturated far enough that the accent still owns every emphasis on the page. */
+.tint-1 { --tint: var(--accent-50); }
+.tint-2 { --tint: #FFF1E8; }
+.tint-3 { --tint: #E9F7EF; }
+.tint-4 { --tint: #EAF2FF; }
+
+@media (max-width: 900px) { .tint-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .tint-grid { grid-template-columns: 1fr; } }
+
+/* --------------------------------------------------------------------------
+   Step rail — oversized ghost numerals down a dotted centre line
+   Alternating sides, copy one side / visual the other.
+   -------------------------------------------------------------------------- */
+
+.rail { position: relative; display: grid; gap: var(--space-10); }
+
+.rail::before {                      /* the dotted spine */
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0; left: 50%;
+  border-left: 2px dotted var(--ink-200);
+}
+
+.rail__row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: var(--space-6);
+  align-items: center;
+}
+
+.rail__num {
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 7vw, 6rem);
+  font-weight: var(--fw-black);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--ink-100);
+  background: var(--surface-page);
+  padding-block: var(--space-3);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+.rail__num--label::before {
+  content: "STEP";
+  display: block;
+  font-size: 0.75rem;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.18em;
+  color: var(--ink-300);
+}
+
+/* Every child needs an explicit order, or the numeral keeps its default 0 and
+   lands in the first column — pushing the visual into the narrow centre one. */
+.rail__row--flip .rail__visual { order: 1; }
+.rail__row--flip .rail__num    { order: 2; }
+.rail__row--flip .rail__copy   { order: 3; }
+
+@media (max-width: 800px) {
+  .rail::before { left: 18px; }
+  .rail__row { grid-template-columns: auto 1fr; gap: var(--space-4); }
+  .rail__row .rail__num { order: 1; font-size: 2.5rem; }
+  .rail__row .rail__copy { order: 2; }
+  .rail__row .rail__visual { order: 3; grid-column: 2; }
+}
+
+/* --------------------------------------------------------------------------
+   Pricing
+   -------------------------------------------------------------------------- */
+
+.price-grid { display: grid; gap: var(--space-5); grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); align-items: start; }
+
+.price-card {
+  position: relative;
+  padding: var(--space-6);
+  border: 1px solid var(--ink-100);
+  border-radius: var(--radius-lg);
+  background: var(--surface-page);
+}
+.price-card--featured {
+  border-color: var(--accent-500);
+  border-width: 2px;
+  box-shadow: var(--shadow-lg);
+}
+.price-card__flag {
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 0.3rem 0.9rem;
+  border-radius: var(--radius-pill);
+  background: var(--accent-500);
+  color: var(--accent-on);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  white-space: nowrap;
+}
+.price-card__amount {
+  font-family: var(--font-display);
+  font-size: 2.75rem;
+  font-weight: var(--fw-black);
+  letter-spacing: -0.035em;
+  color: var(--fg-strong);
+  line-height: 1;
+}
+.price-card__period { font-size: var(--fs-small); color: var(--fg-muted); }
+
+.checklist { list-style: none; display: grid; gap: var(--space-3); font-size: var(--fs-small); }
+.checklist li { display: flex; gap: var(--space-3); align-items: flex-start; }
+.checklist li::before {
+  content: "";
+  flex: none;
+  width: 18px; height: 18px;
+  margin-top: 2px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-500);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m5 13 4 4L19 7' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px no-repeat,
+           linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m5 13 4 4L19 7' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px no-repeat,
+                linear-gradient(#000 0 0);
+          mask-composite: exclude;
+}
+
+/* --------------------------------------------------------------------------
+   FAQ accordion
+   -------------------------------------------------------------------------- */
+
+.faq { display: grid; gap: var(--space-3); }
+
+.faq__item {
+  border: 1px solid var(--ink-100);
+  border-radius: var(--radius-md);
+  background: var(--surface-page);
+  padding: var(--space-4) var(--space-5);
+}
+.faq__item[open] { border-color: var(--accent-300); }
+
+.faq__q {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--font-display);
+  font-size: var(--fs-small);
+  font-weight: var(--fw-semibold);
+  color: var(--fg-strong);
+}
+.faq__q::-webkit-details-marker { display: none; }
+.faq__q::after {
+  content: "+";
+  font-size: 1.25rem;
+  font-weight: var(--fw-regular);
+  color: var(--accent-600);
+  line-height: 1;
+}
+.faq__item[open] .faq__q::after { content: "\2212"; }
+.faq__a { font-size: var(--fs-small); color: var(--fg-body); margin-top: var(--space-3); }
+
+/* --------------------------------------------------------------------------
+   Marquee strip — the scrolling keyword band
+   -------------------------------------------------------------------------- */
+
+.marquee {
+  overflow: hidden;
+  background: var(--accent-500);
+  color: var(--accent-on);
+  padding-block: var(--space-3);
+}
+.marquee__track {
+  display: flex;
+  gap: var(--space-6);
+  width: max-content;
+  animation: marquee-scroll 26s linear infinite;
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: var(--fw-semibold);
+}
+.marquee__track > span { display: flex; align-items: center; gap: var(--space-6); }
+.marquee__track > span::after { content: "\2726"; opacity: 0.6; }
+
+@keyframes marquee-scroll { to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) {
+  .marquee__track { animation: none; }
+}
+
+/* --------------------------------------------------------------------------
+   CTA band — full-width accent slab with copy left, action right
+   -------------------------------------------------------------------------- */
+
+.cta-band {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+  padding: var(--space-7) var(--space-8);
+  border-radius: var(--radius-xl);
+  background: var(--accent-500);
+  color: var(--accent-on);
+}
+.cta-band--gradient { background: var(--gradient-hero); color: #fff; }
+.cta-band .h3 { color: inherit; }
+
+/* Newsletter input group */
+.field-group {
+  display: flex;
+  gap: var(--space-2);
+  background: var(--surface-page);
+  border: 1px solid var(--ink-200);
+  border-radius: var(--radius-pill);
+  padding: 0.3rem 0.3rem 0.3rem 1.1rem;
+  max-width: 420px;
+}
+.field-group input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: var(--fs-small);
+  color: var(--fg-strong);
+}
+.field-group input:focus { outline: none; }
+.field-group:focus-within { border-color: var(--accent-500); }
+
+/* --------------------------------------------------------------------------
+   Dark page variant
+   The favourites include a fully dark portfolio. `on-dark` flips foreground
+   roles; these few overrides carry the web components across with it.
+   -------------------------------------------------------------------------- */
+
+.on-dark .card,
+.on-dark .price-card,
+.on-dark .faq__item,
+.on-dark .float-card {
+  background: var(--ink-800);
+  border-color: rgba(255, 255, 255, 0.09);
+}
+.on-dark .tint-card { background: rgba(255, 255, 255, 0.05); }
+.on-dark .rail__num { background: var(--ink-900); color: rgba(255, 255, 255, 0.12); }
+.on-dark .rail::before { border-color: rgba(255, 255, 255, 0.16); }
+.on-dark .trustbar__logos li { color: rgba(255, 255, 255, 0.45); }
+.on-dark .badge-pill { background: rgba(255, 255, 255, 0.1); color: var(--accent-300); }
+.on-dark .field-group { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.14); }
+.on-dark .field-group input { color: #fff; }
+.on-dark .underlined { color: var(--accent-300); }
