@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en" class="theme-violet">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in</title>
+<meta name="description" content="Sign in to start a project, keep your work, and download your files.">
+<link rel="stylesheet" href="tokens/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/web.css">
+<style>
+  body { background: var(--surface-muted); display: grid; place-items: center; min-height: 100vh; }
+  .box { width: min(440px, calc(100vw - 2rem)); margin-block: var(--space-8); }
+  .prov {
+    display: flex; align-items: center; justify-content: center; gap: var(--space-3);
+    width: 100%; padding: 0.85rem 1.2rem; border-radius: var(--radius-md);
+    border: 1.5px solid var(--ink-200); background: var(--surface-page);
+    font: inherit; font-size: var(--fs-small); font-weight: var(--fw-semibold);
+    color: var(--fg-strong); cursor: pointer; text-decoration: none;
+    transition: border-color var(--duration-fast) var(--ease-standard),
+                transform var(--duration-fast) var(--ease-standard);
+  }
+  .prov:hover { border-color: var(--ink-400); transform: translateY(-1px); color: var(--fg-strong); }
+  .prov svg { width: 18px; height: 18px; flex: none; }
+  .prov--apple { background: #000; border-color: #000; color: #fff; }
+  .prov--apple:hover { background: #1a1a1a; border-color: #1a1a1a; color: #fff; }
+  .or { display: flex; align-items: center; gap: var(--space-3); color: var(--fg-muted); font-size: var(--fs-caption); }
+  .or::before, .or::after { content: ''; height: 1px; background: var(--ink-200); flex: 1; }
+  .field { display: grid; gap: var(--space-2); }
+  .field label { font-size: var(--fs-small); font-weight: var(--fw-semibold); color: var(--fg-strong); }
+  .field input {
+    font: inherit; font-size: var(--fs-small); padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--ink-200); border-radius: var(--radius-md);
+    background: var(--surface-page); color: var(--fg-strong); width: 100%;
+  }
+  .field input:focus { outline: none; border-color: var(--accent-500); }
+  .msg { font-size: var(--fs-small); line-height: 1.5; }
+  .msg--bad { color: #B3261E; }
+  .msg--good { color: var(--fg-body); }
+  .code-in { font-size: 1.4rem; letter-spacing: .3em; text-align: center; font-variant-numeric: tabular-nums; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="box stack stack-5">
+  <div class="stack stack-3" style="text-align:center">
+    <span class="navbar__brand" style="justify-content:center">
+      <span class="icon-chip icon-chip--sm" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 18 L10 8 L14 14 L20 5"/></svg>
+      </span>Design System
+    </span>
+    <h1 class="h3">Sign in to start</h1>
+    <p class="small text-muted">Your first two projects are free. No card needed.</p>
+  </div>
+
+  <div class="card card--raised stack stack-4">
+    <p class="msg msg--bad" id="err" role="alert" hidden></p>
+
+    <div class="stack stack-3" id="providers">
+      <a class="prov" id="pGoogle" href="#" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.4a5.5 5.5 0 0 1-2.4 3.6v3h3.9c2.3-2.1 3.6-5.2 3.6-8.8z"/><path fill="#34A853" d="M12 24c3.2 0 6-1.1 8-3l-3.9-3a7.2 7.2 0 0 1-10.7-3.8h-4v3.1A12 12 0 0 0 12 24z"/><path fill="#FBBC05" d="M5.3 14.3a7.1 7.1 0 0 1 0-4.6V6.6h-4a12 12 0 0 0 0 10.8l4-3.1z"/><path fill="#EA4335" d="M12 4.8c1.8 0 3.4.6 4.6 1.8l3.5-3.5A12 12 0 0 0 1.3 6.6l4 3.1A7.2 7.2 0 0 1 12 4.8z"/></svg>
+        Continue with Google
+      </a>
+
+      <a class="prov prov--apple" id="pApple" href="#" hidden>
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.05 12.54c-.02-2.3 1.88-3.4 1.96-3.46-1.07-1.56-2.73-1.78-3.32-1.8-1.41-.14-2.76.83-3.48.83-.72 0-1.83-.81-3-.79-1.55.02-2.98.9-3.77 2.29-1.61 2.79-.41 6.92 1.15 9.18.76 1.11 1.67 2.35 2.86 2.3 1.15-.04 1.58-.74 2.97-.74s1.78.74 3 .72c1.24-.02 2.02-1.13 2.78-2.24.88-1.29 1.24-2.54 1.26-2.6-.03-.01-2.41-.93-2.41-3.69zM14.8 5.4c.63-.77 1.06-1.83.94-2.9-.91.04-2.02.61-2.67 1.37-.58.68-1.09 1.77-.96 2.81 1.02.08 2.06-.52 2.69-1.28z"/></svg>
+        Continue with Apple
+      </a>
+
+      <div class="or" id="orLine">or</div>
+    </div>
+
+    <form class="stack stack-4" id="emailForm">
+      <div class="field">
+        <label for="email">Your email</label>
+        <input id="email" type="email" autocomplete="email" required placeholder="you@company.com">
+      </div>
+      <button class="btn btn--primary" type="submit" id="sendBtn">Email me a link</button>
+      <p class="msg msg--good" id="sent" hidden></p>
+    </form>
+
+    <form class="stack stack-4" id="codeForm" hidden>
+      <div class="field">
+        <label for="code">Enter the 6-digit code</label>
+        <input id="code" class="code-in" inputmode="numeric" autocomplete="one-time-code"
+               maxlength="6" pattern="[0-9]{6}" placeholder="000000">
+      </div>
+      <button class="btn btn--primary" type="submit">Sign me in</button>
+      <button class="btn btn--ghost" type="button" id="backBtn">Use a different email</button>
+    </form>
+  </div>
+
+  <p class="caption" style="text-align:center">
+    We only ever use your address to sign you in and send your files.
+  </p>
+</div>
+
+<script type="module">
+const params = new URLSearchParams(location.search);
+const returnTo = /^\/(?!\/)/.test(params.get('returnTo') || '') ? params.get('returnTo') : '/start';
+
+const $ = id => document.getElementById(id);
+const show = (el, on = true) => { el.hidden = !on; };
+
+function fail(message) {
+  $('err').textContent = message;
+  show($('err'), Boolean(message));
+}
+
+if (params.get('error')) fail(params.get('error'));
+
+/* Only offer a provider the server actually has credentials for. A button that
+   leads to a configuration error is worse than no button. */
+const me = await fetch('/api/me').then(r => r.json()).catch(() => null);
+
+if (me?.signedIn) {
+  location.replace(returnTo);
+} else {
+  const providers = me?.providers || { google: false, apple: false, email: true };
+  if (providers.google) {
+    $('pGoogle').href = `/auth/google?returnTo=${encodeURIComponent(returnTo)}`;
+    show($('pGoogle'));
+  }
+  if (providers.apple) {
+    $('pApple').href = `/auth/apple?returnTo=${encodeURIComponent(returnTo)}`;
+    show($('pApple'));
+  }
+  show($('orLine'), providers.google || providers.apple);
+}
+
+$('emailForm').onsubmit = async e => {
+  e.preventDefault();
+  fail('');
+  const btn = $('sendBtn');
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+
+  const res = await fetch('/auth/magic', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: $('email').value, returnTo }),
+  });
+  const data = await res.json().catch(() => ({}));
+
+  btn.disabled = false;
+  btn.textContent = 'Email me a link';
+
+  if (!res.ok) { fail(data.error || 'We could not send that. Try again shortly.'); return; }
+
+  $('sent').textContent = data.message;
+  show($('sent'));
+  show($('codeForm'));
+  $('code').focus();
+
+  // Development only: with no mail provider the link would be unreachable.
+  if (data.devLink) {
+    $('sent').innerHTML += ` <a href="${data.devLink}">Open the link</a> (dev only, code ${data.devCode}).`;
+  }
+};
+
+$('codeForm').onsubmit = async e => {
+  e.preventDefault();
+  fail('');
+  const res = await fetch('/auth/code', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: $('email').value, code: $('code').value }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) { fail(data.error || 'That code did not work.'); return; }
+  location.replace(returnTo);
+};
+
+$('backBtn').onclick = () => {
+  show($('codeForm'), false);
+  show($('sent'), false);
+  $('email').focus();
+};
+</script>
+
+</body>
+</html>

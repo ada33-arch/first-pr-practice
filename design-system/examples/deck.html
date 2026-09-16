@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en" class="theme-amber">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Corporate Deck Design System — Slide Deck</title>
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/components.css">
+<link rel="stylesheet" href="../css/slides.css">
+<style>
+  body { background: var(--surface-sunken); }
+  .page { max-width: 1320px; margin-inline: auto; padding: var(--space-8) var(--space-5) var(--space-12); }
+  .page__head { display:flex; justify-content:space-between; align-items:flex-end; gap:var(--space-6); flex-wrap:wrap; margin-bottom: var(--space-8); }
+  .theme-switch { display:flex; gap:var(--space-2); }
+  .theme-switch button { width:30px; height:30px; border-radius:var(--radius-pill); border:2px solid var(--ink-200); cursor:pointer; padding:0; }
+  .theme-switch button[aria-pressed="true"] { border-color: var(--ink-900); transform: scale(1.14); }
+  .swatch-amber{background:#F5B21A}.swatch-electric{background:#2B50EE}.swatch-navy{background:#2B4A8B}
+  .swatch-teal{background:#22BCCE}.swatch-green{background:#17A673}.swatch-coral{background:#E85D33}
+  .ph { background: var(--ink-100); display:grid; place-items:center; color: var(--ink-400); font-size:1.2cqw; letter-spacing:.14em; text-transform:uppercase; width:100%; height:100%; }
+  .slide--dark .ph, .slide--accent .ph { background: rgba(255,255,255,.12); color: rgba(255,255,255,.6); }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="page__head">
+    <div class="stack stack-2">
+      <span class="eyebrow">Reference deck</span>
+      <h1 class="h2">Fourteen slide archetypes</h1>
+      <p class="small text-muted measure">Every slide below is composed from system classes only — no bespoke CSS. Print this page to get one slide per landscape page.</p>
+    </div>
+    <div class="theme-switch" role="group" aria-label="Accent theme">
+      <button class="swatch-amber"    data-theme="amber"    aria-pressed="true"  aria-label="Amber"></button>
+      <button class="swatch-electric" data-theme="electric" aria-pressed="false" aria-label="Electric"></button>
+      <button class="swatch-navy"     data-theme="navy"     aria-pressed="false" aria-label="Navy"></button>
+      <button class="swatch-teal"     data-theme="teal"     aria-pressed="false" aria-label="Teal"></button>
+      <button class="swatch-green"    data-theme="green"    aria-pressed="false" aria-label="Green"></button>
+      <button class="swatch-coral"    data-theme="coral"    aria-pressed="false" aria-label="Coral"></button>
+    </div>
+  </header>
+
+  <div class="deck deck--wide">
+
+    <!-- 01 COVER — split -->
+    <div class="deck__slide">
+      <div class="slide">
+        <div class="slide-cover">
+          <div class="slide-cover__type has-deco">
+            <div class="deco deco-circle deco-circle--soft" style="width:26cqw;height:26cqw;bottom:-13cqw;left:-10cqw;" aria-hidden="true"></div>
+            <span class="eyebrow">Inspirational business presentation</span>
+            <h1 class="display headline-pair">
+              <span class="headline-pair__light">Doing everything</span>
+              <span class="headline-pair__heavy text-accent">Right</span>
+            </h1>
+            <hr class="rule">
+            <p class="small text-muted" style="margin-top:1cqw;">
+              Presented by <strong class="text-strong">Elizabeth Jones</strong><br>
+              25 September 2025 · London, UK
+            </p>
+          </div>
+          <div class="slide-cover__media"><div class="ph">Cover photography</div></div>
+        </div>
+      </div>
+      <p class="deck__caption">01 — Cover, split</p>
+    </div>
+
+    <!-- 02 COVER — bleed -->
+    <div class="deck__slide">
+      <div class="slide slide--dark">
+        <div class="slide-cover slide-cover--bleed">
+          <div class="slide-cover__media media--dim"><div class="ph">Full-bleed photo</div></div>
+          <div class="slide-cover__type">
+            <span class="eyebrow" style="color:var(--accent-300);">Annual review</span>
+            <h1 class="display">Business <em>Report</em> 2025</h1>
+            <p class="small" style="color:rgba(255,255,255,.7);">Nullam eu tempor purus. Nunc a leo magna, sit amet consequat risus.</p>
+          </div>
+        </div>
+      </div>
+      <p class="deck__caption">02 — Cover, full bleed</p>
+    </div>
+
+    <!-- 03 AGENDA -->
+    <div class="deck__slide">
+      <div class="slide slide--chromed">
+        <div class="slide__logo"><span class="icon-chip icon-chip--sm" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 18 L10 8 L14 14 L20 5"/></svg></span>Northbrook</div>
+        <div class="slide__kicker">Contents</div>
+        <div class="slide__pagenum">02</div>
+        <div class="slide__inner">
+          <div class="stack stack-5">
+            <div class="stack stack-2">
+              <span class="eyebrow">Table of contents</span>
+              <h2 class="h1">What we will cover</h2>
+            </div>
+            <div class="agenda">
+              <div class="agenda__item"><span class="agenda__num">01</span><span class="agenda__label">Who we are</span></div>
+              <div class="agenda__item"><span class="agenda__num">04</span><span class="agenda__label">The numbers</span></div>
+              <div class="agenda__item"><span class="agenda__num">02</span><span class="agenda__label">Our services</span></div>
+              <div class="agenda__item"><span class="agenda__num">05</span><span class="agenda__label">Roadmap</span></div>
+              <div class="agenda__item"><span class="agenda__num">03</span><span class="agenda__label">How we work</span></div>
+              <div class="agenda__item"><span class="agenda__num">06</span><span class="agenda__label">Next steps</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="deck__caption">03 — Agenda</p>
+    </div>
+
+    <!-- 04 SECTION DIVIDER -->
+    <div class="deck__slide">
+      <div class="slide">
+        <div class="slide-section">
+          <div class="slide-section__panel">
+            <span class="numeral">01</span>
+            <h2 class="h1">Who we are</h2>
+            <p class="small" style="color:color-mix(in srgb, var(--accent-on) 75%, transparent);">A short read on the firm, the bench, and how we staff.</p>
+          </div>
+          <div class="slide-cover__media"><div class="ph">Section photo</div></div>
+        </div>
+      </div>
+      <p class="deck__caption">04 — Section divider</p>
+    </div>
+
+    <!-- 05 SPLIT, MEDIA RIGHT -->
+    <div class="deck__slide">
+      <div class="slide slide--chromed">
+        <div class="slide__logo">Northbrook</div>
+        <div class="slide__kicker">Who we are</div>
+        <div class="slide__pagenum">04</div>
+        <div class="slide__inner">
+          <div class="split">
+            <div class="stack stack-4">
+              <span class="eyebrow">About us</span>
+              <h2 class="h2">Let's talk about <em>who we are</em></h2>
+              <hr class="rule">
+              <p class="small">We are a twenty-person operating firm. Every engagement is led by a partner who stays on the work from diagnosis through delivery — there is no handoff to a junior bench, because there isn't one.</p>
+              <p class="small">We take on six clients a year. That is the constraint, and we are not trying to solve it.</p>
+            </div>
+            <div class="media media--notched" style="aspect-ratio:4/3;"><div class="ph">Team photo</div></div>
+          </div>
+        </div>
+      </div>
+      <p class="deck__caption">05 — Split, media right</p>
+    </div>
+
+    <!-- 06 THREE CARDS -->
+    <div class="deck__slide">
+      <div class="slide slide--muted slide--chromed">
+        <div class="slide__logo">Northbrook</div>
+        <div class="slide__kicker">Our services</div>
+        <div class="slide__pagenum">05</div>
+        <div class="slide__inner">
+          <div class="stack stack-5">
+            <div class="stack stack-2">
+              <span class="eyebrow">What we do</span>
+              <h2 class="h2">Three practices</h2>
+            </div>
+            <div class="grid grid--3">
+              <article class="card stack stack-3">
+                <span class="icon-chip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+                <h3 class="card__title">Planning</h3>
+                <p class="card__body">Annual and quarterly plans that survive contact with the calendar.</p>
+              </article>
+              <article class="card card--capped stack stack-3">
+                <span class="icon-chip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V9m5 10V5m5 14v-7m5 7V8"/></svg></span>
+                <h3 class="card__title">Analytics</h3>
+                <p class="card__body">The three numbers that matter, reported the same way every week.</p>
+              </article>
+              <article class="card stack stack-3">
+                <span class="icon-chip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 13 4 4L19 7"/></svg></span>
+                <h3 class="card__title">Delivery</h3>
+                <p class="card__body">We stay through execution. Plans without follow-through are decks.</p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="deck__caption">06 — Three cards</p>
+    </div>
+
+    <!-- 07 NUMBERED STEPS -->
+    <div class="deck__slide">
+      <div class="slide slide--chromed">
+        <div class="slide__logo">Northbrook</div>
+        <div class="slide__kicker">How we work</div>
+        <div class="slide__pagenum">06</div>
+        <div class="slide__inner">
+          <div class="stack stack-5">
+            <div class="stack stack-2">
+              <span class="eyebrow">Our process</span>
+              <h2 class="h2">Three phases, <em>twelve weeks</em></h2>
+            </div>
+            <div class="steps">
+              <div class="step">
+                <h3 class="step__title">Diagnose</h3>
+                <p class="step__body">Two weeks inside the business. Interviews, data pull, and an honest read on what is blocking the quarter.</p>
+              </div>
+              <div class="step">
+                <h3 class="step__title">Design</h3>
+                <p class="step__body">A plan with named owners and dated milestones, reviewed until there are no open questions.</p>
+              </div>
+              <div class="step">
+                <h3 class="step__title">Deliver</h3>
+                <p class="step__body">Eight weeks embedded, running the weekly cadence until it runs without us.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="deck__caption">07 — Numbered steps</p>
+    </div>
+
+    <!-- 08 STAT ROW, DARK -->
+    <div class="deck__slide">
+      <div class="slide slide--dark on-dark slide--chromed has-deco">
+        <div class="deco deco-dots" style="width:14cqw;height:9cqw;top:16cqw;right:6.5cqw;" aria-hidden="true"></div>
+        <div class="slide__logo">Northbrook</div>
+        <div class="slide__kicker">The numbers</div>
+        <div class="slide__pagenum">07</div>
+        <div class="slide__inner">
+          <div class="stack stack-6">
+            <div class="stack stack-2">
+              <span class="eyebrow" style="color:var(--accent-300);">By the numbers</span>
+              <h2 class="h2">Four years, measured</h2>
+            </div>
+            <div class="stat-row stat-row--divided">
+              <div class="stat"><span class="stat__value">$1.4B</span><span class="stat__label">Revenue influenced</span></div>
+              <div class="stat"><span class="stat__value">168</span><span class="stat__label">Engagements</span></div>
+              <div class="stat"><span class="stat__value">11.5</span><span class="stat__label">Weeks to impact</span></div>
+              <div class="stat"><span class="stat__value">94%</span><span class="stat__label">Clients retained</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="deck__caption">08 — Stat row, dark</p>
+    </div>
+
+    <!-- 09 TIMELINE -->
+    <div class="deck__slide">
+      <div class="slide slide--chromed">
+        <div class="slide__logo">Northbrook</div>
+        <div class="slide__kicker">Roadmap</div>
+        <div class="slide__pagenum">08</div>
+        <div class="slide__inner">
+          <div class="stack stack-6">
+            <div class="stack stack-2">
+              <span class="eyebrow">Our story so far</span>
+              <h2 class="h2">A little bit of history</h2>
+            </div>
+            <div class="timeline">
+              <div class="timeline__item"><div class="timeline__date">2019</div><p class="timeline__body">Founded with three partners and one client.</p></div>
+              <div class="timeline__item"><div class="timeline__date">2021</div><p class="timeline__body">Analytics practice opens; first retained engagement.</p></div>
+              <div class="timeline__item"><div class="timeline__date">2023</div><p class="timeline__body">London office. Bench grows to fourteen.</p></div>
+              <div class="timeline__item"><div class="timeline__date">2025</div><p class="timeline__body">Twenty people, six clients a year, capped deliberately.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="deck__caption">09 — Timeline</p>
+    </div>
+
+    <!-- 10 SWOT -->
+    <div class="deck__slide">
+      <div class="slide slide--muted slide--chromed">
+        <div class="slide__logo">Northbrook</div>
+        <div class="slide__kicker">Position</div>
+        <div class="slide__pagenum">09</div>
+        <div class="slide__inner">
+          <div class="stack stack-5">
+            <div class="stack stack-2">
+              <span class="eyebrow">Where we stand</span>
+              <h2 class="h2">SWOT <em>analysis</em></h2>
+            </div>
+            <div class="swot">
+              <div class="swot__s"><div class="swot__label">Strengths</div><p class="swot__body">Senior bench on every engagement; repeatable operating cadence.</p></div>
+              <div class="swot__w"><div class="swot__label">Weaknesses</div><p class="swot__body">Deliberately small — capacity is the binding constraint.</p></div>
+              <div class="swot__o"><div class="swot__label">Opportunities</div><p class="swot__body">Mid-market operators underserved by the major firms.</p></div>
+              <div class="swot__t"><div class="swot__label">Threats</div><p class="swot__body">In-house strategy teams maturing quickly.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="deck__caption">10 — SWOT</p>
+    </div>
+
+    <!-- 11 CHART -->
+    <div class="deck__slide">
+      <div class="slide slide--chromed">
+        <div class="slide__logo">Northbrook</div>
+        <div class="slide__kicker">Financials</div>
+        <div class="slide__pagenum">10</div>
+        <div class="slide__inner">
+          <div class="split">
+            <div class="stack stack-4">
+              <span class="eyebrow">Financial overview</span>
+              <h2 class="h2">Revenue by year</h2>
+              <hr class="rule">
+              <p class="small">Series one carries the accent; every other series recedes to grey so the eye lands where the argument is.</p>
+            </div>
+            <svg viewBox="0 0 400 220" role="img" aria-label="Bar chart of revenue by year, rising from 2021 to 2025">
+              <g stroke="var(--chart-grid)" stroke-width="1">
+                <line x1="40" y1="20"  x2="390" y2="20"/>
+                <line x1="40" y1="65"  x2="390" y2="65"/>
+                <line x1="40" y1="110" x2="390" y2="110"/>
+                <line x1="40" y1="155" x2="390" y2="155"/>
+                <line x1="40" y1="185" x2="390" y2="185"/>
+              </g>
+              <g fill="var(--chart-2)">
+                <rect x="56"  y="128" width="24" height="57" rx="3"/>
+                <rect x="126" y="112" width="24" height="73" rx="3"/>
+                <rect x="196" y="86"  width="24" height="99" rx="3"/>
+                <rect x="266" y="70"  width="24" height="115" rx="3"/>
+              </g>
+              <g fill="var(--chart-1)">
+                <rect x="84"  y="112" width="24" height="73" rx="3"/>
+                <rect x="154" y="88"  width="24" height="97" rx="3"/>
+                <rect x="224" y="54"  width="24" height="131" rx="3"/>
+                <rect x="294" y="30"  width="24" height="155" rx="3"/>
+              </g>
+              <g fill="var(--chart-axis)" font-size="11" font-family="var(--font-body)" text-anchor="middle">
+                <text x="82"  y="204">2022</text>
+                <text x="152" y="204">2023</text>
+                <text x="222" y="204">2024</text>
+                <text x="292" y="204">2025</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <p class="deck__caption">11 — Chart</p>
+    </div>
+
+    <!-- 12 TEAM -->
+    <div class="deck__slide">
+      <div class="slide slide--chromed">
+        <div class="slide__logo">Northbrook</div>
+        <div class="slide__kicker">The team</div>
+        <div class="slide__pagenum">11</div>
+        <div class="slide__inner">
+          <div class="stack stack-5">
+            <div class="stack stack-2 text-center">
+              <span class="eyebrow">Our people</span>
+              <h2 class="h2">The <em>team</em></h2>
+            </div>
+            <div class="grid grid--3">
+              <article class="card text-center stack stack-3">
+                <div class="avatar avatar--ring" style="margin-inline:auto;"><div class="ph">IL</div></div>
+                <h3 class="card__title">Isabella Linton</h3>
+                <p class="caption">Managing Partner</p>
+              </article>
+              <article class="card text-center stack stack-3">
+                <div class="avatar avatar--ring" style="margin-inline:auto;"><div class="ph">AD</div></div>
+                <h3 class="card__title">Arthur Dodger</h3>
+                <p class="caption">Head of Analytics</p>
+              </article>
+              <article class="card text-center stack stack-3">
+                <div class="avatar avatar--ring" style="margin-inline:auto;"><div class="ph">EJ</div></div>
+                <h3 class="card__title">Elizabeth Jones</h3>
+                <p class="caption">Delivery Lead</p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="deck__caption">12 — Team</p>
+    </div>
+
+    <!-- 13 TESTIMONIAL -->
+    <div class="deck__slide">
+      <div class="slide slide--cream slide--chromed">
+        <div class="slide__logo">Northbrook</div>
+        <div class="slide__kicker">Testimonials</div>
+        <div class="slide__pagenum">12</div>
+        <div class="slide__inner">
+          <div class="split split--even">
+            <div class="media media--notched" style="aspect-ratio:1;"><div class="ph">Client photo</div></div>
+            <blockquote class="quote">
+              They did not hand us a deck and leave. Eleven weeks later the cadence was still running, and it was our team running it.
+              <footer class="quote__cite">
+                <span><span class="quote__name">Marta Reyes</span>COO, Halden Group</span>
+              </footer>
+            </blockquote>
+          </div>
+        </div>
+      </div>
+      <p class="deck__caption">13 — Testimonial</p>
+    </div>
+
+    <!-- 14 CLOSING -->
+    <div class="deck__slide">
+      <div class="slide slide--accent has-deco">
+        <div class="deco deco-circle" style="width:30cqw;height:30cqw;top:-12cqw;right:-10cqw;background:color-mix(in srgb, var(--accent-on) 12%, transparent);" aria-hidden="true"></div>
+        <div class="slide-close">
+          <span class="eyebrow" style="color:color-mix(in srgb, var(--accent-on) 70%, transparent);">For watching</span>
+          <h2 class="display">Thank <em style="color:var(--accent-on);opacity:.55;">you</em></h2>
+          <p class="small" style="color:color-mix(in srgb, var(--accent-on) 78%, transparent);">
+            hello@northbrook.example · +44 20 7946 0100 · northbrook.example
+          </p>
+        </div>
+      </div>
+      <p class="deck__caption">14 — Closing</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const root = document.documentElement;
+  document.querySelectorAll('.theme-switch button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      root.className = 'theme-' + btn.dataset.theme;
+      document.querySelectorAll('.theme-switch button')
+        .forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+    });
+  });
+</script>
+
+</body>
+</html>
