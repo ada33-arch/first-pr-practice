@@ -89,6 +89,7 @@
   var ICONS = {
     chevron: '<path d="M9 6l6 6-6 6"/>',
     check: '<path d="M20 6L9 17l-5-5"/>',
+    alert: '<path d="M12 3.8l8.6 14.9H3.4L12 3.8z"/><path d="M12 9.4v4"/><circle cx="12" cy="15.9" r="1" fill="currentColor" stroke="none"/>',
     search: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>',
     close: '<path d="M18 6L6 18M6 6l12 12"/>',
     cart: '<circle cx="9" cy="20" r="1.6"/><circle cx="18" cy="20" r="1.6"/><path d="M2 3h3l2.6 12.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.55L21 8H6"/>',
@@ -241,14 +242,35 @@
 
   /* -------------------------------------------------------------- toast -- */
   var toastTimer;
-  function toast(message) {
+  /* Two kinds of message come through here, and they were both wearing a tick.
+     A tick next to "type your page name first" confirms the one thing that did
+     not happen, so `stop` swaps the mark for a warning sign. The shape carries
+     it, not the colour: the toast keeps one hue in both themes. */
+  function toast(message, tone) {
     var el = qs("#toast");
     if (!el) return;
-    el.innerHTML = icon("check") + "<span></span>";
+    var stop = tone === "stop";
+    el.classList.toggle("is-stop", stop);
+    el.innerHTML = icon(stop ? "alert" : "check") + "<span></span>";
     qs("span", el).textContent = message;
     el.classList.add("is-on");
     clearTimeout(toastTimer);
     toastTimer = setTimeout(function () { el.classList.remove("is-on"); }, 2600);
+  }
+
+  /* --------------------------------------------------------- navigation -- */
+  /* The single-file build replaces page files with hash routes by intercepting
+     clicks on anchors. A scripted navigation (`location.href = ...`) walks past
+     that interceptor and asks for a file that does not exist in the bundle, so
+     it goes through a real anchor instead: one code path that is a normal
+     navigation in the multi-page site and a routed one in the bundle. */
+  function goTo(href) {
+    var link = document.createElement("a");
+    link.setAttribute("href", href);
+    link.hidden = true;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 
   /* ------------------------------------------------------------- chrome -- */
@@ -608,7 +630,12 @@
        haze    feTurbulence + feGaussianBlur across the ranges' feet. This is
                the depth cue: it is what makes the far range far.
        dunes   three ridges, the near one darkest, the middle crest catching
-               the sun. Their curves run toward the phone mock.
+               the sun.
+     The sun sits off the centre axis, at about 69% of the frame. That is a
+     contrast decision before it is a compositional one: the hero copy is a
+     centred column, and a centred sun would put the brightest part of the sky
+     directly behind the headline. Off-axis, the symmetric type reads against an
+     asymmetric picture and the scrim has less work to do.
      Nothing here moves: the landing page runs MOTION 1. */
 
   var SKY_DEFS =
@@ -627,7 +654,7 @@
         '<stop class="k-wash-b0" offset="0"/><stop class="k-wash-b1" offset="1"/>' +
       "</radialGradient>" +
       /* mesh node C: the bloom. Flat and wide, so it hugs the horizon instead
-         of climbing into the headline. */
+         of climbing into the headline, and carried off-centre with the sun. */
       '<radialGradient id="rsBloom" cx=".5" cy=".5" r=".5">' +
         '<stop class="k-bloom-0" offset="0"/><stop class="k-bloom-1" offset=".42"/>' +
         '<stop class="k-bloom-2" offset="1"/>' +
@@ -664,9 +691,9 @@
         '<stop class="k-haze-0" offset="0"/><stop class="k-haze-1" offset=".44"/>' +
         '<stop class="k-haze-2" offset="1"/>' +
       "</linearGradient>" +
-      /* the crest is lit from the middle of the frame, where the sun is */
+      /* the crest is lit from wherever the sun is, which is not the middle */
       '<linearGradient id="rsCrest" x1="0" y1="0" x2="1" y2="0">' +
-        '<stop class="k-crest-0" offset="0"/><stop class="k-crest-1" offset=".45"/>' +
+        '<stop class="k-crest-0" offset="0"/><stop class="k-crest-1" offset=".69"/>' +
         '<stop class="k-crest-2" offset="1"/>' +
       "</linearGradient>" +
       /* Haze. Far lower frequency and a far larger blur than the clouds, so it
@@ -722,8 +749,8 @@
         '<rect width="1600" height="900" fill="url(#rsWashA)"/>' +
         '<rect width="1600" height="900" fill="url(#rsWashB)"/>' +
         '<rect x="0" y="30" width="1600" height="480" fill="url(#rsCloudFade)" filter="url(#rsCloudFx)"/>' +
-        '<ellipse cx="800" cy="580" rx="870" ry="292" fill="url(#rsBloom)"/>' +
-        '<ellipse cx="800" cy="574" rx="200" ry="76" fill="url(#rsCore)"/>' +
+        '<ellipse cx="1104" cy="582" rx="830" ry="286" fill="url(#rsBloom)"/>' +
+        '<ellipse cx="1104" cy="576" rx="196" ry="74" fill="url(#rsCore)"/>' +
       "</svg>" +
 
       /* The seam for a raster sky. Empty by design; see styles.css. */
@@ -741,6 +768,89 @@
         '<path class="k-dune-near" d="' + DUNE_NEAR_CREST + TO_FLOOR + '"/>' +
       "</svg>" +
     "</div>";
+  }
+
+  /* ------------------------------------------------------ the handle bar -- */
+  /* What a handle is allowed to contain. The landing bar and the signup field
+     run the same rule so a name typed on one never changes shape on the other. */
+  /* Whitespace becomes a hyphen rather than vanishing: a merchant who types
+     their full name expects ahmed-al-ameri, not ahmedal-ameri. Runs of
+     separators collapse, and leading or trailing ones are trimmed, so the
+     name never comes out starting with punctuation. */
+  /* keepTrailing is for the field being typed into. Trimming the trailing
+     separator on every keystroke makes a space impossible to type: the space
+     is removed before it can become a hyphen, so "ahmed al ameri" collapses
+     to "ahmedalameri" one character at a time. While typing, the trailing
+     hyphen stays; submitting drops it. */
+  function cleanHandle(raw, keepTrailing) {
+    var s = String(raw || "")
+      .replace(/^\s+/, "")
+      .replace(/\s+/g, "-")
+      .replace(/[^a-zA-Z0-9._-]/g, "")
+      .replace(/-{2,}/g, "-")
+      .replace(/^[._-]+/, "");
+    if (!keepTrailing) s = s.replace(/[._-]+$/, "");
+    return s.toLowerCase();
+  }
+
+  /* The hero's one focal element, and the only thing it asks for. It is a form
+     rather than a pair of buttons because the merchant's page name is the first
+     real decision in the product, and typing it is a smaller commitment than
+     "create an account".
+
+     It does not, and cannot, say the name is free: there is no service to ask.
+     All it does is carry what was typed to the signup form, which is what the
+     note underneath says in both languages. Anything more would be a claim with
+     nothing behind it.
+
+     Direction: a web address reads left to right in Arabic too, so the prefix
+     and the input are locked into one LTR cluster while the bar itself follows
+     the page, which puts the submit at the inline end in both languages. */
+  function handleClaim() {
+    return '<form class="claim reveal" action="signup.html" method="get" data-claim novalidate>' +
+        '<label class="sr-only" for="claim-handle" data-i18n="land.claimLabel"></label>' +
+        '<div class="claim__field">' +
+          '<span class="claim__prefix">' + esc((P.domain || "") + "/@") + "</span>" +
+          '<input class="claim__input" id="claim-handle" name="handle" type="text" dir="ltr"' +
+            ' inputmode="latin" autocomplete="off" autocapitalize="off" spellcheck="false"' +
+            ' aria-describedby="claim-note" data-i18n-ph="land.claimPh">' +
+        "</div>" +
+        '<button class="btn btn--primary claim__go" type="submit" data-i18n="land.claimGo"></button>' +
+      "</form>";
+  }
+
+  function wireClaim(root) {
+    var form = qs("[data-claim]", root);
+    if (!form) return;
+    var input = qs(".claim__input", form);
+
+    /* A handle is part of a web address, so it cannot carry Arabic. On an
+       Arabic-first page that is a trap: the merchant types their own name,
+       every character is stripped as they type, and an empty-field message
+       then tells them to write the thing they just wrote. Remember that the
+       field was emptied by the rule rather than left blank, so the message
+       can say which alphabet to use instead. */
+    var strippedAll = false;
+
+    /* typed live rather than on submit, so the bar always shows the address the
+       merchant would actually get */
+    input.addEventListener("input", function () {
+      var raw = input.value;
+      var clean = cleanHandle(raw, true);
+      strippedAll = !!raw.trim() && !clean;
+      if (clean !== raw) input.value = clean;
+    });
+
+    form.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var clean = cleanHandle(input.value);
+      if (!clean) {
+        toast(t(strippedAll ? "land.claimLatin" : "land.claimEmpty"), "stop");
+        input.focus();
+        return;
+      }
+      goTo("signup.html?handle=" + encodeURIComponent(clean));
+    });
   }
 
   /* A sketch of the seller page, drawn from the demo profile's own rows, so the
@@ -814,25 +924,27 @@
     if (!root) return;
 
     root.innerHTML =
-      /* 1. Hero. Page ground, widest measure, asymmetric: the claim on one side,
-            the thing itself on the other, the prices ruled off underneath. */
+      /* 1. Hero. Page ground, widest measure, one centred column standing on the
+            landscape: eyebrow, the claim at display size, the lede, the handle
+            bar, and one line of small print. The prices are ruled off under it.
+
+            It is centred rather than split because the page has exactly one
+            focal element now, and a mock on the opposite side would have been a
+            second one competing with the art for the same glance. The mock is
+            not gone: it moved to step two, where it illustrates a step instead
+            of decorating a headline. */
       '<section class="hero hero--landing shell shell--wide">' +
-        /* The stage carries the art and the two halves that sit on it; the
-           fact rail stays outside it, on the page's own ground. */
+        /* The stage carries the art and the column standing on it; the fact
+           rail stays outside it, on the page's own ground. */
         '<div class="hero__stage">' +
           heroScene() +
           '<div class="hero__copy">' +
             '<p class="eyebrow reveal" data-i18n="land.eyebrow"></p>' +
             '<h1 class="reveal" data-i18n="land.title"></h1>' +
             '<p class="hero__lede reveal" data-i18n="land.sub"></p>' +
-            '<div class="hero__cta reveal">' +
-              '<a class="btn btn--primary" href="signup.html" data-i18n="land.ctaMain"></a>' +
-              '<a class="btn btn--ghost" href="demo.html" data-i18n="land.ctaDemo"></a>' +
-            "</div>" +
-            '<p class="tiny muted reveal">' + icon("check", "inline-tick") +
-              '<span data-i18n="land.noCard"></span></p>' +
+            handleClaim() +
+            '<p class="hero__note tiny muted reveal" id="claim-note" data-i18n="land.claimNote"></p>' +
           "</div>" +
-          '<div class="hero__art reveal">' + phoneMock() + "</div>" +
         "</div>" +
         '<dl class="facts reveal">' +
           fact(t("plan.freePrice"), t("land.factFree")) +
@@ -858,21 +970,34 @@
       "</section>" +
 
       /* 3. How you open. Back to the page ground and the wide measure, as ruled
-            rows rather than three matching cards: the process is a sequence. */
+            rows rather than three matching cards: the process is a sequence.
+
+            The phone mock lives here, beside the rows. It came out of the hero
+            when that went centred, and this is where it earns its place: it is
+            the page step two produces, drawn from the demo profile's own rows,
+            with the link to that demo directly under it. The asymmetry also
+            gives the section a composition no other section on the page has. */
       '<section class="sect shell shell--wide" id="how">' +
         '<div class="sect__head">' +
           '<h2 class="sect__title" data-i18n="land.steps"></h2>' +
           '<p class="sect__sub" data-i18n="land.stepsSub"></p>' +
         "</div>" +
-        '<ol class="ladder">' +
-          (P.steps || []).map(function (step, i) {
-            return '<li class="rung reveal">' +
-                '<span class="rung__n" aria-hidden="true">' + (i + 1) + "</span>" +
-                "<h3>" + esc(tx(step.title)) + "</h3>" +
-                "<p>" + esc(tx(step.body)) + "</p>" +
-              "</li>";
-          }).join("") +
-        "</ol>" +
+        '<div class="opens">' +
+          '<ol class="ladder">' +
+            (P.steps || []).map(function (step, i) {
+              return '<li class="rung reveal">' +
+                  '<span class="rung__n" aria-hidden="true">' + (i + 1) + "</span>" +
+                  "<h3>" + esc(tx(step.title)) + "</h3>" +
+                  "<p>" + esc(tx(step.body)) + "</p>" +
+                "</li>";
+            }).join("") +
+          "</ol>" +
+          '<figure class="opens__art reveal">' +
+            phoneMock() +
+            '<figcaption class="opens__cap tiny muted" data-i18n="land.stepArt"></figcaption>' +
+            '<a class="btn btn--ghost btn--sm" href="demo.html" data-i18n="land.ctaDemo"></a>' +
+          "</figure>" +
+        "</div>" +
       "</section>" +
 
       /* 4. What it costs. One raised tier against two flat ones, because the
@@ -941,6 +1066,8 @@
         "</div>" +
       "</section>" +
       footerHTML();
+
+    wireClaim(root);
   }
 
   /* -------------------------------------------------------------- setup -- */
@@ -1041,10 +1168,15 @@
   function renderSignup() {
     var root = qs("[data-page-root]");
     if (!root) return;
-    var asked = new URLSearchParams(
+    /* the bundle routes by hash, so the query can arrive either side of the # */
+    var query = new URLSearchParams(
       window.location.search || (window.location.hash.split("?")[1] || "")
-    ).get("plan");
+    );
+    var asked = query.get("plan");
     var wanted = ["free", "store", "setup"].indexOf(asked) === -1 ? "free" : asked;
+    /* a name typed into the landing hero's bar arrives here and fills the
+       field; it is re-cleaned because a URL can carry anything */
+    var given = cleanHandle(query.get("handle"));
 
     function choice(key, label) {
       var on = wanted === key;
@@ -1062,8 +1194,10 @@
           '<label class="field"><span data-i18n="signup.name"></span>' +
             '<input name="name" autocomplete="name" required></label>' +
           '<label class="field"><span data-i18n="signup.handle"></span>' +
-            '<input name="handle" class="ltr" inputmode="latin" placeholder="ahmed" required>' +
-            '<small class="field__hint ltr" data-handle-preview>' + esc(P.domain || "") + "/@</small></label>" +
+            '<input name="handle" class="ltr" inputmode="latin" data-i18n-ph="signup.handlePh"' +
+              ' value="' + esc(given) + '" required>' +
+            '<small class="field__hint ltr" data-handle-preview>' +
+              esc((P.domain || "") + "/@" + given) + "</small></label>" +
           '<label class="field"><span data-i18n="signup.contact"></span>' +
             '<input name="phone" class="ltr" type="tel" inputmode="tel" placeholder="+971 50 000 0000" required></label>' +
           '<label class="field"><span data-i18n="signup.what"></span>' +
@@ -1092,7 +1226,7 @@
     var preview = qs("[data-handle-preview]", form);
 
     function paintPreview() {
-      var clean = handle.value.trim().replace(/[^a-zA-Z0-9._-]/g, "").toLowerCase();
+      var clean = cleanHandle(handle.value);
       handle.value = clean;
       preview.textContent = (P.domain || "") + "/@" + clean;
     }

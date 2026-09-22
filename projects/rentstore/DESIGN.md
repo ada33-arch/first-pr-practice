@@ -185,25 +185,53 @@ with a phone floating on it and nothing saying where any of this happens. The
 landscape puts the product somewhere without naming a city, and gives the
 phone mock something to stand in front of.
 
+### The hero is one centred column, with one thing to do
+
+Eyebrow, headline at display size, lede, the handle bar, one line of small
+print. Centred rather than split, because the page has exactly one focal
+element and a mock on the opposite side would be a second one competing with
+the art for the same glance. The phone mock is not gone — it moved to step
+two, where it illustrates a step instead of decorating a headline.
+
+The handle bar is the focal element. It asks for the merchant's page name
+because that is the first real decision in the product, and typing it is a
+smaller commitment than "create an account". Two rules govern it:
+
+- **It cannot say the name is free.** There is no service to ask. It carries
+  what was typed to the signup form, and the note underneath says exactly
+  that, in both languages. Anything more is a claim with nothing behind it.
+- **A handle is part of a web address, so it cannot carry Arabic.** On an
+  Arabic-first page that is a trap: the merchant types their own name, every
+  character is stripped as they type, and an empty-field message then tells
+  them to write the thing they just wrote. The field distinguishes "blank"
+  from "emptied by the rule" and names the alphabet to use. Whitespace becomes
+  a hyphen rather than vanishing, and the trailing separator survives while
+  typing — trimming it per keystroke makes a space impossible to type at all,
+  so `ahmed al ameri` collapses to `ahmedalameri` one character at a time.
+
 ### The scrims are a contrast device, not decoration
 
 Five text elements sit on this art. No honest set of art values clears 4.5:1
 for all of them unaided, so `--scene-veil-1/2/3` pull the art back toward the
-page ground under the copy column and let it run clear across the rest.
-Measured worst cases, sampled from the rendered pixels behind each element
-rather than estimated:
+page ground under the copy and let it run clear across the rest. Measured
+worst cases, sampled from the rendered pixels behind each element rather than
+estimated — all 40 pairings across eight states pass:
 
 | State | Tightest element | Ratio |
 |---|---|---|
-| Arabic dark, 1440 | lede | 5.63:1 |
-| English dark, 1440 | lede | 6.41:1 |
-| Arabic dark, 390 | eyebrow | 7.93:1 |
-| **Arabic light, 1440** | **lede** | **4.72:1** |
+| Arabic dark, 1440 | eyebrow | 7.59:1 |
+| Arabic dark, 390 | small print | 7.30:1 |
+| English dark, 1440 | lede | 7.01:1 |
+| Arabic light, 1440 | small print | 5.05:1 |
+| Arabic light, 390 | small print | 5.47:1 |
+| **English light, 1440** | **small print** | **4.70:1** |
 
-**4.72:1 is the binding constraint on the whole design.** It is what stops the
+**4.70:1 is the binding constraint on the whole design.** It is what stops the
 veils being loosened further to show more of the picture. Any change to
 `--scene-veil-*`, `--art-*`, or `--ink-soft` has to re-measure that number, and
-it may not go below 4.5:1.
+it may not go below 4.5:1. The light themes are the tight ones; dark has
+roughly 2.5:1 of headroom, so a change that looks safe in dark mode has
+proved nothing.
 
 ### Two things that will break it
 

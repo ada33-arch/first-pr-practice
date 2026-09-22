@@ -141,12 +141,6 @@ ul, ol { list-style: none; padding: 0; }
 
 html[lang="en"] { --font: var(--font-en); }
 
-/* The hero art's copy-side scrim is a linear gradient, and CSS gradients have
-   no logical direction. This is the one value that flips with the mirror; the
-   picture itself is identical in both. */
-:root            { --scene-scrim-dir: to right; }
-html[dir="rtl"]  { --scene-scrim-dir: to left; }
-
 /* ----------------------------------------------------------------- base -- */
 body {
   font-family: var(--font);
@@ -745,6 +739,9 @@ html[dir="rtl"] .drawer { transform: translateX(-110%); }
 }
 .toast.is-on { opacity: 1; transform: none; visibility: visible; }
 .toast svg { width: 17px; height: 17px; color: var(--ok); flex: none; }
+/* the stop mark is ink, not a second hue: the triangle already distinguishes
+   it from the tick, and --warn does not clear 3:1 on the light toast ground */
+.toast.is-stop svg { color: var(--ink); }
 
 /* ---------------------------------------------------------------- footer -- */
 .footer {
@@ -841,32 +838,115 @@ html[dir="rtl"] .backlink svg { transform: none; }
   --hero-pad-top: 3.5rem;
   display: grid;
   gap: 2.5rem;
-  text-align: start;
-  padding: var(--hero-pad-top) 0 2rem;
+  text-align: center;
+  padding-block: var(--hero-pad-top) 2rem;
 }
+/* The size is the argument. A centred column with a display-scale headline
+   reads as one statement; the old split hero read as a claim next to a picture
+   of a phone, and the eye had to choose. Everything else in the column defers
+   to it: the eyebrow is small, the lede is a third of its size, the small print
+   smaller still. */
 .hero--landing h1 {
-  font-size: clamp(2rem, 5.4vw, 3.2rem);
+  font-size: clamp(2.15rem, 7.4vw, 4.9rem);
   text-wrap: balance;
-  margin-top: .6rem;
+  margin-block-start: .7rem;
 }
-.hero--landing p { margin: 1rem 0 0; max-width: 46ch; }
-.hero__cta { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.6rem; }
+/* The measure cap and the balanced rag are wide-screen rules. On a phone the
+   column is already the measure, and balancing four lines of display type into
+   equal widths breaks the English headline mid-sentence; `pretty` only stops
+   the orphan and otherwise lets the sentences fall where they fall. */
+@media (max-width: 699px) {
+  .hero--landing h1 { text-wrap: pretty; }
+}
+@media (min-width: 700px) {
+  .hero--landing h1 { max-inline-size: 18ch; margin-inline: auto; }
+}
+.hero--landing p { margin-block-start: 1rem; margin-inline: auto; max-width: 46ch; }
+.hero__cta { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.6rem; justify-content: center; }
 .inline-tick { display: inline-block; width: 14px; height: 14px; color: var(--ok); vertical-align: -2px; margin-inline-end: .35rem; }
 .hero__art { display: grid; place-items: center; }
+/* one line of small print, and it is the honest one: what the bar above it
+   does, and what it does not do */
+.hero__note { max-width: 52ch; margin-block-start: 1.1rem; }
 
-/* The stage holds the art and the two halves standing on it. The fact rail is
+/* The stage holds the art and the column standing on it. The fact rail is
    deliberately outside it, back on the page's own flat ground: the rail is
-   where the picture stops and the argument starts. */
-.hero__stage { position: relative; display: grid; gap: 2.5rem; }
-.hero__copy, .hero__art { position: relative; z-index: 1; }
+   where the picture stops and the argument starts. The block padding is what
+   leaves the dunes visible under the column instead of behind it. */
+.hero__stage {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  padding-block: clamp(1rem, 3vw, 2.5rem) clamp(3.5rem, 9vw, 5.5rem);
+}
+.hero__copy { position: relative; z-index: 1; inline-size: 100%; }
 
-@media (min-width: 900px) {
-  .hero--landing { --hero-pad-top: 4.5rem; padding-block-end: 2.5rem; }
-  .hero__stage {
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
-    align-items: center;
-    gap: 3.5rem;
-  }
+/* ---------------------------------------------------------- handle bar -- */
+/* The hero's focal element. It replaced two side-by-side buttons: a pair of
+   CTAs makes the reader choose before they have decided anything, and this
+   asks for the one thing they already know, their own name.
+
+   It is a raised, opaque surface rather than a translucent one on purpose. It
+   is a control you type into, standing on a picture; a frosted panel would put
+   the art behind the caret and make both the text and the contrast unreadable.
+   Opaque also means the ratios below are the tokens' own and not a function of
+   whatever the sky is doing that day. */
+.claim {
+  display: grid;
+  gap: .6rem;
+  inline-size: min(100%, 36rem);
+  margin-block-start: 1.9rem;
+  margin-inline: auto;
+  text-align: start;
+}
+.claim__field {
+  /* A web address runs left to right in Arabic too, so the prefix and the name
+     are one LTR cluster. The grid around it stays logical, which is what puts
+     the submit at the inline end in both directions. */
+  direction: ltr;
+  display: flex;
+  align-items: center;
+  min-block-size: 56px;
+  padding-inline: 1rem .45rem;
+  border-radius: 14px;
+  background: var(--bg-elev);
+  border: 1px solid var(--hairline);
+  box-shadow: var(--shadow-lg);
+}
+.claim__prefix {
+  font-family: var(--font-en);
+  font-size: clamp(.9rem, 2.4vw, 1rem);
+  color: var(--ink-soft);
+  white-space: nowrap;
+  user-select: none;
+}
+.claim__input {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  border: 0;
+  background: none;
+  padding-block: .55rem;
+  padding-inline: 0 .15rem;
+  font: inherit;
+  font-family: var(--font-en);
+  font-size: clamp(.9rem, 2.4vw, 1rem);
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: .01em;
+}
+.claim__input::placeholder { color: var(--ink-soft); font-weight: 400; opacity: 1; }
+/* The ring moves to the wrapper so the whole address reads as the focused
+   thing, which is the replacement R-32 asks for when an outline is dropped. */
+.claim__input:focus-visible { outline: none; }
+.claim__field:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+.claim__go { min-block-size: 52px; justify-content: center; }
+
+@media (min-width: 560px) {
+  .claim { grid-template-columns: minmax(0, 1fr) auto; }
+  .claim__go { min-block-size: 56px; }
 }
 
 /* ============================================================== hero art == */
@@ -983,21 +1063,24 @@ html[dir="rtl"] .backlink svg { transform: none; }
     var(--bg) 100%);
 }
 
-/* Inline scrim. This is the contrast device, and it is here for one reason:
-   the H1, the lede, the eyebrow and the no-card line all sit over this
-   picture, and no honest set of art values clears 4.5:1 for all four of them
-   in both themes. The veil pulls the art back toward the page ground under
-   the copy column and lets it run clear on the other half, so the picture
-   still reads across the full width. Direction-agnostic: the copy is always
-   on the inline start side, and --scene-scrim-dir is the only thing that
-   mirrors. */
+/* Column scrim. This is the contrast device, and it is here for one reason:
+   the eyebrow, the H1, the lede and the small print all sit over this picture,
+   and no honest set of art values clears 4.5:1 for all of them in both themes.
+
+   It used to be a linear gradient running from the copy side to the other,
+   because the copy used to be on one side. The copy is now a centred column,
+   so the veil is an upright oval of page ground centred on that column: dense
+   through the type, gone by the frame's edges and by the foreground dunes, so
+   the picture still reads across the full width and down to the bottom.
+
+   The upside of centring it: an ellipse has no direction, so unlike the linear
+   gradient it replaced, nothing here has to flip for the mirror. */
 .scene::after {
-  background: linear-gradient(var(--scene-scrim-dir),
-    color-mix(in srgb, var(--bg) var(--scene-veil-1), transparent) 0,
-    color-mix(in srgb, var(--bg) var(--scene-veil-1), transparent) 26%,
-    color-mix(in srgb, var(--bg) var(--scene-veil-2), transparent) 44%,
-    color-mix(in srgb, var(--bg) var(--scene-veil-3), transparent) 62%,
-    transparent 78%);
+  background: radial-gradient(45% 49% at 50% 50%,
+    color-mix(in srgb, var(--bg) var(--scene-veil-1), transparent) 0 32%,
+    color-mix(in srgb, var(--bg) var(--scene-veil-2), transparent) 74%,
+    color-mix(in srgb, var(--bg) var(--scene-veil-3), transparent) 90%,
+    transparent 100%);
 }
 
 /* Stacked, the hero is a column, and a wide landscape cropped to a phone-width
@@ -1025,12 +1108,19 @@ html[dir="rtl"] .backlink svg { transform: none; }
     block-size: auto;
     aspect-ratio: 16 / 9;
   }
+  /* Stacked, the column runs almost the full height of the box, so the phone's
+     veil is a vertical ramp rather than the desktop oval: dense through the
+     copy, open over the strip of landscape parked below it. */
   .scene::after {
     background: linear-gradient(to bottom,
-      color-mix(in srgb, var(--bg) var(--scene-veil-2), transparent) 0 40%,
-      color-mix(in srgb, var(--bg) var(--scene-veil-3), transparent) 72%,
-      transparent 94%);
+      color-mix(in srgb, var(--bg) var(--scene-veil-1), transparent) 0 34%,
+      color-mix(in srgb, var(--bg) var(--scene-veil-2), transparent) 68%,
+      color-mix(in srgb, var(--bg) var(--scene-veil-3), transparent) 88%,
+      transparent 100%);
   }
+  /* and the column is given room to finish above the picture, so the small
+     print is never set on the ranges */
+  .hero__stage { padding-block-end: 8.5rem; }
 }
 
 /* ----------------------------------------------------------------- phone -- */
@@ -1466,8 +1556,8 @@ html[lang="ar"] .footer { font-size: .9rem; }
 .measure--wide { max-width: 44rem; }
 
 /* no single-word last lines in the running text */
-.sect__sub, .hero__lede, .fact__k, .rung p, .ledger__do p,
-.ledger__limit, .tier__note, .faq--flat p { text-wrap: pretty; }
+.sect__sub, .hero__lede, .hero__note, .fact__k, .rung p, .ledger__do p,
+.ledger__limit, .tier__note, .opens__cap, .faq--flat p { text-wrap: pretty; }
 
 .sect { padding-block: 2.75rem; }
 .sect + .sect { padding-block-start: 1.25rem; }
@@ -1507,13 +1597,18 @@ html[lang="ar"] .footer { font-size: .9rem; }
 }
 
 /* ------------------------------------------------------------------ hero -- */
-.hero--landing { padding-block: 2.75rem 0; gap: 2.5rem; }
-.hero--landing h1 { font-size: clamp(2.05rem, 6vw, 3.3rem); margin-block-start: .7rem; }
+/* The landing hero's own register. Its structure (the centred column, the
+   stage, the handle bar) is up in the components section; what belongs here is
+   the scale, because the scale is what makes this page's hero different from
+   the setup page's. --hero-pad-top is read by .scene, which starts the picture
+   above the hero's own top edge and behind the sticky bar. */
+.hero--landing { --hero-pad-top: 2.75rem; padding-block-end: 0; gap: 2.5rem; }
 .hero__lede {
   color: var(--ink-soft);
-  font-size: clamp(1rem, 2.1vw, 1.1rem);
+  font-size: clamp(1.02rem, 2.4vw, 1.2rem);
+  line-height: 1.6;
 }
-@media (min-width: 900px) { .hero--landing { padding-block: 4rem 0; } }
+@media (min-width: 900px) { .hero--landing { --hero-pad-top: 4rem; } }
 
 /* The three numbers the whole offer rests on, ruled off under the hero and
    stated once. They are read from the plans, not written into the page. */
@@ -1605,6 +1700,30 @@ html[lang="ar"] .footer { font-size: .9rem; }
   .rung__n { grid-row: auto; }
   .rung h3 { font-size: 1.12rem; padding-block-start: .1rem; }
   .rung p { padding-block-start: .15rem; }
+}
+
+/* The mock that used to float beside the hero headline. Here it is a figure
+   with a caption and a link, standing next to the step it illustrates, which
+   is the only reason it is still on the page. It is an aside, so it sits at the
+   inline end and only once there is width for it; below that it stacks under
+   the rows and keeps its caption. */
+.opens { display: grid; gap: 2.5rem; }
+.opens__art {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  margin: 0;
+  align-content: start;
+}
+.opens__cap { max-width: 30ch; text-align: center; }
+
+@media (min-width: 1000px) {
+  .opens {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 20rem);
+    gap: 3.5rem;
+    align-items: start;
+  }
+  .opens__art { position: sticky; top: calc(var(--topbar-h) + 1.5rem); }
 }
 
 /* ------------------------------------------------------------ prices (4) -- */
