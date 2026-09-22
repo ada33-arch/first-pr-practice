@@ -1,0 +1,211 @@
+{
+  "name": "YouTube Plan · 2 - Request approval",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "### 🔑 Credentials this workflow needs\n\nSet these up once in n8n → Credentials, then select them in the nodes below.\n\n**Google Sheets** — same credential as workflow 1.\n\n**Telegram** — a bot token from @BotFather, plus your own chat id (message @userinfobot to get it).",
+        "width": 380,
+        "height": 260,
+        "color": 7
+      },
+      "id": "note--280--260",
+      "name": "Note -280--260",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        -260
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Workflow 2 · Request approval\n\nStep 4, the ask: once a day, ping you on Telegram for every item that's Claude-edited, titled and dated but not yet confirmed.",
+        "width": 940,
+        "height": 160,
+        "color": 4
+      },
+      "id": "note--280-60",
+      "name": "Note -280-60",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * *"
+            }
+          ]
+        }
+      },
+      "id": "cron2",
+      "name": "Every day 9am",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        260
+      ],
+      "notes": "Runs once a day. Change the cron expression for a different review time.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "operation": "readRows",
+        "documentId": {
+          "mode": "list",
+          "value": "REPLACE_WITH_SHEET_ID"
+        },
+        "sheetName": {
+          "mode": "list",
+          "value": "Content Calendar"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "status",
+              "lookupValue": "Scheduled"
+            }
+          ]
+        }
+      },
+      "id": "read2",
+      "name": "Find items due for review",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        0,
+        260
+      ],
+      "notes": "Rows you moved to 'Scheduled' in the Sheet — Claude-edited, then titled and dated by you, just not yet approved.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "chatId": "REPLACE_WITH_YOUR_TELEGRAM_CHAT_ID",
+        "text": "=🎬 *{{ $json.title }}*\\nPillar: {{ $json.pillar }} · Format: {{ $json.format }}\\nScheduled: {{ $json.scheduled_datetime }}\\n\\n{{ $json.edited_file_link }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        },
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "✅ Approve",
+                    "additionalFields": {
+                      "callback_data": "=approve|{{ $json.row_number }}"
+                    }
+                  },
+                  {
+                    "text": "❌ Reject",
+                    "additionalFields": {
+                      "callback_data": "=reject|{{ $json.row_number }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "id": "tg2",
+      "name": "Send approval request",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        280,
+        260
+      ],
+      "notes": "The confirm-before-publish gate from Step 4. Exact field names for the inline keyboard can shift between n8n versions — check the Telegram node's own UI if this doesn't match.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "mode": "list",
+          "value": "REPLACE_WITH_SHEET_ID"
+        },
+        "sheetName": {
+          "mode": "list",
+          "value": "Content Calendar"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "row_number"
+          ],
+          "value": {
+            "row_number": "={{ $('Find items due for review').item.json.row_number }}",
+            "status": "Awaiting Approval",
+            "telegram_message_id": "={{ $json.message_id }}"
+          }
+        }
+      },
+      "id": "update2",
+      "name": "Mark Awaiting Approval",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        560,
+        260
+      ],
+      "notes": "So this row is not asked about twice tomorrow, and workflow 3 can find it again by message id.",
+      "notesInFlow": true
+    }
+  ],
+  "connections": {
+    "Every day 9am": {
+      "main": [
+        [
+          {
+            "node": "Find items due for review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find items due for review": {
+      "main": [
+        [
+          {
+            "node": "Send approval request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send approval request": {
+      "main": [
+        [
+          {
+            "node": "Mark Awaiting Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "tags": [
+    {
+      "name": "youtube-automation"
+    }
+  ]
+}

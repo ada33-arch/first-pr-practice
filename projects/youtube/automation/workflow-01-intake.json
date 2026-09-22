@@ -1,0 +1,180 @@
+{
+  "name": "YouTube Plan · 1 - Intake and log",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "### 🔑 Credentials this workflow needs\n\nSet these up once in n8n → Credentials, then select them in the nodes below.\n\n**Google Drive** — OAuth2, read access to the Raw Uploads folder.\n\n**Google Sheets** — OAuth2, edit access to the Content Calendar sheet.",
+        "width": 380,
+        "height": 260,
+        "color": 7
+      },
+      "id": "note--280--260",
+      "name": "Note -280--260",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        -260
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 📋 Shared state: the \"Content Calendar\" Google Sheet\n\nEvery workflow below reads/writes ONE sheet. Create it first with these column headers, in this order:\n\n`date_added` `pillar` `format` `raw_file_link` `edited_file_link` `title` `description` `tags` `thumbnail_link` `scheduled_datetime` `status` `telegram_message_id` `youtube_url`\n\n**status** moves through: `Needs edit` → **[you ping Claude — not an n8n workflow — to generate the soundtrack, assemble via Creatomate, and upscale]** → `Ready to schedule` → (you fill in title, description, tags, thumbnail_link, scheduled_datetime, set status to `Scheduled`) → `Awaiting Approval` → `Approved` or `Rejected` → `Published`.\n\nThe auto-edit step isn't here because it needs Higgsfield's tools, which only exist through Claude's chat connection — there's no confirmed public REST endpoint to call from n8n directly.",
+        "width": 460,
+        "height": 320,
+        "color": 7
+      },
+      "id": "note-140--260",
+      "name": "Note 140--260",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        140,
+        -260
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Workflow 1 · Intake & log\n\nStep 2 of the plan: turn a dropped-in file into a tracked row, automatically.",
+        "width": 920,
+        "height": 160,
+        "color": 4
+      },
+      "id": "note--280-60",
+      "name": "Note -280-60",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "mode": "list",
+          "value": "REPLACE_WITH_RAW_UPLOADS_FOLDER_ID"
+        },
+        "event": "fileCreated"
+      },
+      "id": "g1trig",
+      "name": "New file in Raw Uploads",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        260
+      ],
+      "notes": "Fires when a new video or photo lands in the 'Raw Uploads' Drive folder. Replace the folder ID with your own once the folder exists.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "pillar",
+              "type": "string",
+              "value": "={{ $json.name.split('_')[0] }}"
+            },
+            {
+              "name": "format",
+              "type": "string",
+              "value": "={{ $json.mimeType.includes('video') ? ($json.name.toLowerCase().includes('short') ? 'short' : 'long') : 'photo' }}"
+            },
+            {
+              "name": "raw_file_link",
+              "type": "string",
+              "value": "={{ $json.webViewLink }}"
+            }
+          ]
+        }
+      },
+      "id": "set1",
+      "name": "Guess pillar & format from filename",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        0,
+        260
+      ],
+      "notes": "Cheap first guess only — assumes files are named like 'pillarname_2026-09-08_topic.mp4'. Rename the row's pillar/format by hand in the Sheet if the guess is wrong.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "mode": "list",
+          "value": "REPLACE_WITH_SHEET_ID"
+        },
+        "sheetName": {
+          "mode": "list",
+          "value": "Content Calendar"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "date_added": "={{ $now.toISODate() }}",
+            "pillar": "={{ $json.pillar }}",
+            "format": "={{ $json.format }}",
+            "raw_file_link": "={{ $json.raw_file_link }}",
+            "status": "Needs edit"
+          }
+        }
+      },
+      "id": "append1",
+      "name": "Log into Content Calendar",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        280,
+        260
+      ],
+      "notes": "One new row per raw file, status 'Needs edit'. From here it's picked up by Claude (you ping to trigger it — see the sheet note) rather than by another n8n workflow.",
+      "notesInFlow": true
+    }
+  ],
+  "connections": {
+    "New file in Raw Uploads": {
+      "main": [
+        [
+          {
+            "node": "Guess pillar & format from filename",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guess pillar & format from filename": {
+      "main": [
+        [
+          {
+            "node": "Log into Content Calendar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "tags": [
+    {
+      "name": "youtube-automation"
+    }
+  ]
+}

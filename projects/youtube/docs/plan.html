@@ -1,0 +1,230 @@
+<title>Channel Growth Plan</title>
+<style>
+  :root{
+    --bg:#faf9f7; --panel:#fff; --ink:#1c1b19; --sub:#6b6660; --line:#e8e4de;
+    --green:#e5f3ea; --green-ink:#1f6b3d;
+    --blue:#e8eefb; --blue-ink:#25518f;
+    --purple:#f0eaf9; --purple-ink:#5d3a99;
+    --red:#fbe9e7; --red-ink:#a13a2c;
+    --yellow:#fbf3d9; --yellow-ink:#8a6d16;
+    --grey:#f1efeb; --grey-ink:#59544d;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#171614; --panel:#211f1c; --ink:#f2efe9; --sub:#a9a29a; --line:#33302b;
+      --green:#173324; --green-ink:#7fd8a3;
+      --blue:#182a45; --blue-ink:#8fb5ea;
+      --purple:#2a2140; --purple-ink:#c7a9f5;
+      --red:#3a2119; --red-ink:#f0a08f;
+      --yellow:#332c10; --yellow-ink:#e8c85a;
+      --grey:#2a2824; --grey-ink:#c9c3ba;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#171614; --panel:#211f1c; --ink:#f2efe9; --sub:#a9a29a; --line:#33302b;
+    --green:#173324; --green-ink:#7fd8a3;
+    --blue:#182a45; --blue-ink:#8fb5ea;
+    --purple:#2a2140; --purple-ink:#c7a9f5;
+    --red:#3a2119; --red-ink:#f0a08f;
+    --yellow:#332c10; --yellow-ink:#e8c85a;
+    --grey:#2a2824; --grey-ink:#c9c3ba;
+  }
+  body{ background:var(--bg); color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; }
+  .wrap{ max-width:920px; margin:0 auto; padding:40px 20px 80px; }
+  .hero h1{ font-size:1.9rem; margin:0 0 6px; letter-spacing:-0.01em; }
+  .hero p{ color:var(--sub); margin:0 0 28px; font-size:1.02rem; line-height:1.5; }
+  .callout{ background:var(--grey); border:1px solid var(--line); border-radius:12px; padding:14px 18px; margin-bottom:32px; font-size:.92rem; color:var(--grey-ink); line-height:1.55; }
+  .callout b{ color:var(--ink); }
+  .phase{ margin-bottom:34px; border:1px solid var(--line); border-radius:16px; background:var(--panel); overflow:hidden; }
+  .phase__head{ display:flex; align-items:baseline; gap:10px; padding:18px 22px 6px; }
+  .phase__n{ font-size:.72rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--sub); background:var(--grey); padding:3px 9px; border-radius:999px; }
+  .phase__head h2{ margin:0; font-size:1.2rem; }
+  .phase__note{ margin:0 22px 16px; color:var(--sub); font-size:.9rem; line-height:1.5; }
+  .groups{ display:grid; gap:14px; padding:0 22px 22px; }
+  .group{ border-radius:12px; padding:14px 16px; border:1px solid var(--line); }
+  .group h3{ margin:0 0 10px; font-size:.85rem; }
+  .group--input{ background:var(--green); } .group--input h3{ color:var(--green-ink); }
+  .group--prepare{ background:var(--blue); } .group--prepare h3{ color:var(--blue-ink); }
+  .group--engine{ background:var(--purple); } .group--engine h3{ color:var(--purple-ink); }
+  .group--create{ background:var(--red); } .group--create h3{ color:var(--red-ink); }
+  .group--optional{ background:var(--yellow); } .group--optional h3{ color:var(--yellow-ink); }
+  .flow{ list-style:none; margin:0; padding:0; display:grid; gap:8px; }
+  .item{ display:flex; gap:10px; align-items:flex-start; background:var(--panel); border-radius:9px; padding:9px 12px; }
+  .item.off{ opacity:.6; }
+  .item__tag{ font-size:.68rem; font-weight:700; color:var(--sub); white-space:nowrap; padding-top:2px; }
+  .item__body h4{ margin:0 0 2px; font-size:.88rem; }
+  .item__body p{ margin:0; font-size:.82rem; color:var(--sub); line-height:1.45; }
+  .badge-off{ font-size:.65rem; text-transform:uppercase; letter-spacing:.05em; color:var(--sub); border:1px solid var(--line); border-radius:6px; padding:1px 6px; margin-left:6px; }
+  .asides{ display:grid; gap:16px; margin-top:8px; grid-template-columns:1fr 1fr; }
+  @media (max-width:640px){ .asides{ grid-template-columns:1fr; } }
+  .aside{ background:var(--grey); border:1px solid var(--line); border-radius:12px; padding:16px 18px; }
+  .aside h3{ margin:0 0 8px; font-size:.9rem; }
+  .aside p, .aside li{ font-size:.85rem; color:var(--grey-ink); line-height:1.55; }
+  .aside ul{ margin:0; padding-left:18px; }
+</style>
+
+<div class="wrap">
+  <div class="hero">
+    <h1>Grow the channel into an income source</h1>
+    <p>Organize what's shot, calendar it, confirm every item before it goes out, then let it publish on schedule. Growth first — the monetization switches are the last step, not the first.</p>
+  </div>
+
+  <div class="callout">
+    ⚠️ <b>This is the plan, not a running automation.</b> It shows the shape of the pipeline — no video, schedule, or post exists yet. Answer the open questions at the bottom, then it's ready to build for real (e.g. as an n8n workflow or a shared calendar + upload tool).
+  </div>
+
+  <div class="phase">
+    <div class="phase__head"><span class="phase__n">Step 1</span><h2>Set the foundation</h2></div>
+    <p class="phase__note">Everything downstream — the calendar, the edits, the growth push — assumes these are already decided.</p>
+    <div class="groups">
+      <div class="group group--input">
+        <h3>🎯 Define the channel</h3>
+        <ul class="flow">
+          <li class="item"><div class="item__body"><h4>Confirm the niche</h4><p>The topic and the audience the channel is for. Every pillar in Step 3 should trace back to this.</p></div></li>
+          <li class="item"><div class="item__body"><h4>Baseline the numbers</h4><p>Current subscribers, average views, watch hours — the line everything else is measured against.</p></div></li>
+        </ul>
+      </div>
+      <div class="group group--prepare">
+        <h3>🎨 Brand it</h3>
+        <ul class="flow">
+          <li class="item"><div class="item__body"><h4>Channel art & bio</h4><p>Banner, profile image, description, links — the shop window.</p></div></li>
+          <li class="item"><div class="item__body"><h4>Pick 3–5 content pillars</h4><p>Recurring themes so the calendar in Step 3 has categories to fill, not a blank page.</p></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase__head"><span class="phase__n">Step 2</span><h2>Collect and log the raw material</h2></div>
+    <p class="phase__note">The bottleneck for most channels: footage exists but is scattered. One library, one naming rule, logged automatically.</p>
+    <div class="groups">
+      <div class="group group--input">
+        <h3>📥 Bring it in</h3>
+        <ul class="flow">
+          <li class="item"><div class="item__body"><h4>Shoot / gather footage</h4><p>Video and photo, tagged at the point of capture with the pillar it belongs to.</p></div></li>
+          <li class="item"><div class="item__body"><h4>Drop into the library</h4><p>One shared folder, named by date + pillar, so nothing is "somewhere on someone's phone".</p></div></li>
+        </ul>
+      </div>
+      <div class="group group--prepare">
+        <h3>✂️ Log it</h3>
+        <ul class="flow">
+          <li class="item"><div class="item__body"><h4>Sort by format</h4><p>Long-form vs. Shorts vs. photo/community post — guessed from the filename, correctable in the calendar.</p></div></li>
+          <li class="item"><div class="item__body"><h4>Row added, status "Needs edit"</h4><p>Picked up automatically by the auto-edit step next — no manual cutting required.</p></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase__head"><span class="phase__n">Step 2b</span><h2>Auto-edit, enhance, add a soundtrack</h2></div>
+    <p class="phase__note">Not an n8n workflow — this step runs when you ping Claude in chat. Claude generates a soundtrack and upscales via Higgsfield, assembles the cut via a Creatomate template, then reads/writes the row directly through a Google Drive + Sheets connector.</p>
+    <div class="groups">
+      <div class="group group--engine">
+        <h3>🎬 Assemble automatically</h3>
+        <ul class="flow">
+          <li class="item"><div class="item__body"><h4>Generate a soundtrack</h4><p>A short generated track matched to the video's pillar/mood, made before assembly so it can be baked into the template render.</p></div></li>
+          <li class="item"><div class="item__body"><h4>Assemble from a template</h4><p>The raw clip, the generated soundtrack, and a title overlay are composited by a template-based render engine — mechanical assembly, not creative editing.</p></div></li>
+        </ul>
+      </div>
+      <div class="group group--engine">
+        <h3>✨ Enhance</h3>
+        <ul class="flow">
+          <li class="item"><div class="item__body"><h4>Upscale for quality</h4><p>The assembled render is upscaled before it's filed as the finished cut.</p></div></li>
+          <li class="item"><div class="item__body"><h4>File as Ready to schedule</h4><p>Dropped into the Edited folder and logged back to the calendar by Claude — nothing left but the title and the publish date.</p></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase__head"><span class="phase__n">Step 3</span><h2>Build the posting calendar</h2></div>
+    <p class="phase__note">The one thing still done by hand: picking a title and a publish date for each auto-edited item.</p>
+    <div class="groups">
+      <div class="group group--prepare">
+        <h3>🗓️ Fill the queue</h3>
+        <ul class="flow">
+          <li class="item"><div class="item__body"><h4>Slot into the calendar</h4><p>Mix the pillars across the week; place Shorts on high-frequency days, long-form on fewer, bigger days.</p></div></li>
+          <li class="item"><div class="item__body"><h4>Write title, tags, description</h4><p>The SEO pass — done once per item, in the calendar tool, not improvised at publish time.</p></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase__head"><span class="phase__n">Step 4</span><h2>Confirm before anything goes out</h2></div>
+    <p class="phase__note">The one mandatory human checkpoint. Nothing in Step 5 fires until this gate is passed.</p>
+    <div class="groups">
+      <div class="group group--input">
+        <h3>✅ Review gate</h3>
+        <ul class="flow">
+          <li class="item"><div class="item__body"><h4>Preview each item</h4><p>Watch it back, check the thumbnail and title against the channel's actual voice.</p></div></li>
+          <li class="item"><div class="item__body"><h4>Approve or send back</h4><p>Approved = queued for its scheduled time. Sent back = returns to Step 2 for another edit pass.</p></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase__head"><span class="phase__n">Step 5</span><h2>Publish on schedule</h2></div>
+    <p class="phase__note">Once approved, this runs without anyone watching the clock.</p>
+    <div class="groups">
+      <div class="group group--engine">
+        <h3>🚀 Auto-publish</h3>
+        <ul class="flow">
+          <li class="item"><div class="item__body"><h4>Goes live at its scheduled time</h4><p>YouTube upload set to the calendar slot from Step 3 — no manual click needed.</p></div></li>
+          <li class="item"><div class="item__body"><h4>Cross-post the cut-downs</h4><p>Shorts / clips mirrored to other platforms the same day, pointing back to the channel.</p></div></li>
+        </ul>
+      </div>
+      <div class="group group--engine">
+        <h3>📊 Feed the numbers back</h3>
+        <ul class="flow">
+          <li class="item"><div class="item__body"><h4>Watch retention & subscriber delta</h4><p>Per-video performance flows back into which pillars get more slots next week — Step 1's baseline, updated.</p></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase__head"><span class="phase__n">Step 6</span><h2>Grow it, then earn from it</h2></div>
+    <p class="phase__note">Growth first — income follows the audience, not the other way round.</p>
+    <div class="groups">
+      <div class="group group--engine">
+        <h3>🤝 Compound the audience</h3>
+        <ul class="flow">
+          <li class="item"><div class="item__body"><h4>Reply & community posts</h4><p>Comments and community tab in the hours after publish — this is what the algorithm rewards early.</p></div></li>
+          <li class="item"><div class="item__body"><h4>Collabs & cross-promo</h4><p>Borrow another channel's audience in exchange for the same back.</p></div></li>
+        </ul>
+      </div>
+      <div class="group group--create">
+        <h3>💰 Turn on income</h3>
+        <ul class="flow">
+          <li class="item"><div class="item__body"><h4>Hit Partner Program eligibility</h4><p>1,000 subscribers + 4,000 public watch hours in 12 months, OR 10M Shorts views in 90 days — YouTube's current thresholds.</p></div></li>
+          <li class="item"><div class="item__body"><h4>Turn on ads</h4><p>The first, lowest-effort income switch once eligible.</p></div></li>
+        </ul>
+      </div>
+      <div class="group group--optional">
+        <h3>🧪 Other income, once the audience exists</h3>
+        <ul class="flow">
+          <li class="item off"><div class="item__body"><h4>Sponsorships outreach <span class="badge-off">optional</span></h4><p>Brands pay for a mention once view counts make it worth their time.</p></div></li>
+          <li class="item off"><div class="item__body"><h4>Affiliate links <span class="badge-off">optional</span></h4><p>Description links to products already used on camera.</p></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="asides">
+    <div class="aside">
+      <h3>📌 Numbers this plan relies on</h3>
+      <p><b>YouTube Partner Program (2026 thresholds):</b> 1,000 subscribers <b>and</b> 4,000 public watch hours in the trailing 12 months, <b>or</b> 10M Shorts views in the trailing 90 days.</p>
+    </div>
+    <div class="aside">
+      <h3>❓ Open questions — answer before Step 1 is real</h3>
+      <ul>
+        <li>What is the channel's niche/topic?</li>
+        <li>Current subscribers, views, watch hours today?</li>
+        <li>Who shoots vs. edits vs. approves — one person or several?</li>
+        <li>How many uploads a week is sustainable?</li>
+      </ul>
+    </div>
+  </div>
+</div>

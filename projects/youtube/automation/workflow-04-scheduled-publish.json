@@ -1,0 +1,287 @@
+{
+  "name": "YouTube Plan · 4 - Scheduled publish",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "### 🔑 Credentials this workflow needs\n\nSet these up once in n8n → Credentials, then select them in the nodes below.\n\n**YouTube Data API v3** — Google Cloud Console → new project → enable 'YouTube Data API v3' → OAuth consent screen → OAuth2 credentials → add to n8n as a YouTube credential, authorize with the channel's own Google account.\n\n**Google Drive / Sheets / Telegram** — same credentials as workflows 1-3.",
+        "width": 420,
+        "height": 320,
+        "color": 7
+      },
+      "id": "note--280--300",
+      "name": "Note -280--300",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        -300
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Workflow 4 · Auto-publish\n\nStep 5 of the plan: nothing here needs a person once an item is Approved — it goes live on its own at the scheduled time.",
+        "width": 1900,
+        "height": 160,
+        "color": 4
+      },
+      "id": "note--280-60",
+      "name": "Note -280-60",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "id": "cron4",
+      "name": "Every 15 minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        260
+      ],
+      "notes": "How close to the scheduled minute a video actually goes live depends on this interval.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "operation": "readRows",
+        "documentId": {
+          "mode": "list",
+          "value": "REPLACE_WITH_SHEET_ID"
+        },
+        "sheetName": {
+          "mode": "list",
+          "value": "Content Calendar"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "status",
+              "lookupValue": "Approved"
+            }
+          ]
+        }
+      },
+      "id": "read4",
+      "name": "Find items due now",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        0,
+        260
+      ],
+      "notes": "Approved rows only. A second check below drops anything not due yet.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ new Date($json.scheduled_datetime) <= new Date() }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ]
+        }
+      },
+      "id": "if4",
+      "name": "Scheduled time reached?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        280,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "mode": "id",
+          "value": "={{ $json.edited_file_link }}"
+        }
+      },
+      "id": "dl4",
+      "name": "Download edited file",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 1,
+      "position": [
+        560,
+        160
+      ],
+      "notes": "Pulls the finished, Claude-enhanced cut from Drive, ready to hand to YouTube.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "upload",
+        "title": "={{ $json.title }}",
+        "regionCode": "US",
+        "categoryId": "22",
+        "options": {
+          "description": "={{ $json.description }}",
+          "tags": "={{ $json.tags }}",
+          "privacyStatus": "public"
+        }
+      },
+      "id": "yt4",
+      "name": "Upload to YouTube",
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        840,
+        160
+      ],
+      "notes": "Needs a Google Cloud project with the YouTube Data API v3 enabled and OAuth2 credentials in n8n — see the setup note. Not set up yet, so this node will fail until it is.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "mode": "list",
+          "value": "REPLACE_WITH_SHEET_ID"
+        },
+        "sheetName": {
+          "mode": "list",
+          "value": "Content Calendar"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "row_number"
+          ],
+          "value": {
+            "row_number": "={{ $('Find items due now').item.json.row_number }}",
+            "status": "Published",
+            "youtube_url": "=https://youtu.be/{{ $json.id }}"
+          }
+        }
+      },
+      "id": "upd4",
+      "name": "Mark Published",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        160
+      ],
+      "notes": "Closes the loop — this row is done, and watching the numbers starts here.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "chatId": "REPLACE_WITH_YOUR_TELEGRAM_CHAT_ID",
+        "text": "=✅ Published: {{ $json.title }}\\nhttps://youtu.be/{{ $json.id }}"
+      },
+      "id": "tg4",
+      "name": "Notify it went live",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        1400,
+        160
+      ]
+    }
+  ],
+  "connections": {
+    "Every 15 minutes": {
+      "main": [
+        [
+          {
+            "node": "Find items due now",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find items due now": {
+      "main": [
+        [
+          {
+            "node": "Scheduled time reached?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scheduled time reached?": {
+      "main": [
+        [
+          {
+            "node": "Download edited file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Download edited file": {
+      "main": [
+        [
+          {
+            "node": "Upload to YouTube",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to YouTube": {
+      "main": [
+        [
+          {
+            "node": "Mark Published",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Published": {
+      "main": [
+        [
+          {
+            "node": "Notify it went live",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "tags": [
+    {
+      "name": "youtube-automation"
+    }
+  ]
+}

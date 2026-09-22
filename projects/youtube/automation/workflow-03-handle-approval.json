@@ -1,0 +1,267 @@
+{
+  "name": "YouTube Plan · 3 - Handle approval reply",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "### 🔑 Credentials this workflow needs\n\nSet these up once in n8n → Credentials, then select them in the nodes below.\n\n**Telegram** — same bot as workflow 2. This workflow needs a public webhook URL (n8n cloud has one; self-hosted needs a reachable HTTPS endpoint or n8n's tunnel for testing).",
+        "width": 400,
+        "height": 280,
+        "color": 7
+      },
+      "id": "note--280--260",
+      "name": "Note -280--260",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        -260
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Workflow 3 · Handle the reply\n\nThe other half of Step 4's gate: what happens the instant you tap the button.",
+        "width": 1180,
+        "height": 160,
+        "color": 4
+      },
+      "id": "note--280-60",
+      "name": "Note -280-60",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "updates": [
+          "callback_query"
+        ]
+      },
+      "id": "tgtrig3",
+      "name": "Approval button tapped",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        260
+      ],
+      "notes": "Fires the instant you tap Approve or Reject on the Telegram message from workflow 2.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "decision",
+              "type": "string",
+              "value": "={{ $json.callback_query.data.split('|')[0] }}"
+            },
+            {
+              "name": "row_number",
+              "type": "number",
+              "value": "={{ Number($json.callback_query.data.split('|')[1]) }}"
+            }
+          ]
+        }
+      },
+      "id": "set3",
+      "name": "Read the tap",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        0,
+        260
+      ],
+      "notes": "Splits the callback_data 'approve|7' or 'reject|7' back into a decision and a row.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.decision }}",
+              "rightValue": "approve",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ]
+        }
+      },
+      "id": "if3rep",
+      "name": "Approved?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        280,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "mode": "list",
+          "value": "REPLACE_WITH_SHEET_ID"
+        },
+        "sheetName": {
+          "mode": "list",
+          "value": "Content Calendar"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "row_number"
+          ],
+          "value": {
+            "row_number": "={{ $json.row_number }}",
+            "status": "Approved"
+          }
+        }
+      },
+      "id": "upd3a",
+      "name": "Mark Approved",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        560,
+        160
+      ],
+      "notes": "Workflow 4 picks this up at the row's scheduled_datetime and publishes it.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "mode": "list",
+          "value": "REPLACE_WITH_SHEET_ID"
+        },
+        "sheetName": {
+          "mode": "list",
+          "value": "Content Calendar"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "row_number"
+          ],
+          "value": {
+            "row_number": "={{ $json.row_number }}",
+            "status": "Needs edit"
+          }
+        }
+      },
+      "id": "upd3b",
+      "name": "Send back for editing",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        560,
+        380
+      ],
+      "notes": "Rejected items go back to 'Needs edit' — the next time you ping Claude to process pending rows, this one gets another auto-edit pass.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "resource": "callback",
+        "operation": "answerQuery",
+        "queryId": "={{ $('Approval button tapped').item.json.callback_query.id }}",
+        "text": "Got it."
+      },
+      "id": "ack3",
+      "name": "Acknowledge the tap",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        840,
+        260
+      ],
+      "notes": "Stops Telegram showing a spinner on the button forever.",
+      "notesInFlow": true
+    }
+  ],
+  "connections": {
+    "Approval button tapped": {
+      "main": [
+        [
+          {
+            "node": "Read the tap",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read the tap": {
+      "main": [
+        [
+          {
+            "node": "Approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approved?": {
+      "main": [
+        [
+          {
+            "node": "Mark Approved",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send back for editing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Approved": {
+      "main": [
+        [
+          {
+            "node": "Acknowledge the tap",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send back for editing": {
+      "main": [
+        [
+          {
+            "node": "Acknowledge the tap",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "tags": [
+    {
+      "name": "youtube-automation"
+    }
+  ]
+}

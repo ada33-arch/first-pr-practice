@@ -1,0 +1,974 @@
+{
+  "name": "YouTube Plan · Visual (numbered steps)",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "### 📥 Watch & guess",
+        "width": 510,
+        "height": 190,
+        "color": 4
+      },
+      "id": "sticky-40-110",
+      "name": "Note 40-110",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        40,
+        110
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 📝 Log it",
+        "width": 290,
+        "height": 190,
+        "color": 5
+      },
+      "id": "sticky-40-340",
+      "name": "Note 40-340",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        40,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Step 1️⃣ Bring footage in\n\nA new file dropped in Drive becomes a tracked row — nothing edited yet.",
+        "width": 590,
+        "height": 570,
+        "color": 7
+      },
+      "id": "sticky-0-0",
+      "name": "Note 0-0",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 🗓️ Daily check",
+        "width": 510,
+        "height": 190,
+        "color": 5
+      },
+      "id": "sticky-800-110",
+      "name": "Note 800-110",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        800,
+        110
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### ✅ Ask for approval",
+        "width": 510,
+        "height": 190,
+        "color": 4
+      },
+      "id": "sticky-800-340",
+      "name": "Note 800-340",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        800,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 👆 Handle the tap",
+        "width": 730,
+        "height": 190,
+        "color": 4
+      },
+      "id": "sticky-800-570",
+      "name": "Note 800-570",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        800,
+        570
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 🔀 Apply the decision",
+        "width": 730,
+        "height": 190,
+        "color": 3
+      },
+      "id": "sticky-800-800",
+      "name": "Note 800-800",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        800,
+        800
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Step 2️⃣ Confirm before publish\n\nThe mandatory human checkpoint — nothing reaches Step 3 without a tap here.",
+        "width": 810,
+        "height": 1030,
+        "color": 7
+      },
+      "id": "sticky-760-0",
+      "name": "Note 760-0",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        760,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 🔍 Find due now",
+        "width": 730,
+        "height": 190,
+        "color": 5
+      },
+      "id": "sticky-1780-110",
+      "name": "Note 1780-110",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1780,
+        110
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 🚀 Publish it",
+        "width": 950,
+        "height": 190,
+        "color": 3
+      },
+      "id": "sticky-1780-340",
+      "name": "Note 1780-340",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1780,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Step 3️⃣ Publish on schedule\n\nRuns on its own once an item is Approved — no one has to click publish.",
+        "width": 1030,
+        "height": 570,
+        "color": 7
+      },
+      "id": "sticky-1740-0",
+      "name": "Note 1740-0",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1740,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🤖 Between Step 1 and Step 2 — Claude does this, not n8n\n\n`Needs edit` rows aren't picked up automatically. **You ping Claude** to process them: it generates a soundtrack and upscales via Higgsfield, assembles the cut via a Creatomate template, then reads/writes the row directly through a Google Drive + Sheets connector, setting status to `Ready to schedule`. No n8n node calls Higgsfield — there's no confirmed public endpoint for it reachable from n8n — and this runs on request, not on a schedule.",
+        "width": 590,
+        "height": 260,
+        "color": 1
+      },
+      "id": "sticky-0-610",
+      "name": "Note 0-610",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        610
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🗺️ How to read this canvas\n\nThree numbered n8n steps, left to right, plus one step that ISN'T n8n (see the note below Step 1). Inside each step, colour tells you what a box does: 🟩 green = something a person gives it or approves · 🟦 blue = finding/deciding what's due · 🟪 purple = automated work · 🟥 red = the irreversible action (writing, publishing) · 🟨 yellow = a safety branch.\n\nSteps are separate n8n triggers under the hood (a Drive watch, two schedules, a Telegram webhook) — they hand off to each other only through the **status** column of the shared \"Content Calendar\" Google Sheet, never through a wire on the canvas.",
+        "width": 640,
+        "height": 320,
+        "color": 7
+      },
+      "id": "sticky--400--360",
+      "name": "Note -400--360",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        -360
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🚦 Do this first — nothing runs without these\n\n**1. Google Drive** — folders `Raw Uploads` and `Edited`; copy each ID from its URL into the matching `REPLACE_WITH_..._FOLDER_ID` field.\n\n**2. Google Sheet** `Content Calendar` with headers: `date_added pillar format raw_file_link edited_file_link title description tags thumbnail_link scheduled_datetime status telegram_message_id youtube_url`. Copy its ID into every `REPLACE_WITH_SHEET_ID`.\n\n**3. n8n credentials** — one Google OAuth2 (Drive+Sheets scopes), one Telegram bot (via @BotFather) plus your chat id (via @userinfobot).\n\n**4. YouTube Data API v3** — Google Cloud Console → new project → enable the API → OAuth consent screen → OAuth client → connect it as a YouTube credential in n8n, signed in as the channel's own account. See Step 3's note for the full sequence.\n\n**5. Claude's own Google connector + Creatomate** — see the note below Step 1.",
+        "width": 700,
+        "height": 340,
+        "color": 7
+      },
+      "id": "sticky-260--380",
+      "name": "Note 260--380",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        260,
+        -380
+      ]
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "mode": "list",
+          "value": "REPLACE_WITH_RAW_UPLOADS_FOLDER_ID"
+        },
+        "event": "fileCreated"
+      },
+      "id": "g1trig",
+      "name": "New file in Raw Uploads",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        80,
+        200
+      ],
+      "notes": "Fires when a new video or photo lands in the 'Raw Uploads' Drive folder. Replace the folder ID with your own once the folder exists.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "pillar",
+              "type": "string",
+              "value": "={{ $json.name.split('_')[0] }}"
+            },
+            {
+              "name": "format",
+              "type": "string",
+              "value": "={{ $json.mimeType.includes('video') ? ($json.name.toLowerCase().includes('short') ? 'short' : 'long') : 'photo' }}"
+            },
+            {
+              "name": "raw_file_link",
+              "type": "string",
+              "value": "={{ $json.webViewLink }}"
+            }
+          ]
+        }
+      },
+      "id": "set1",
+      "name": "Guess pillar & format from filename",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        300,
+        200
+      ],
+      "notes": "Cheap first guess only — assumes files are named like 'pillarname_2026-09-08_topic.mp4'. Rename the row's pillar/format by hand in the Sheet if the guess is wrong.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "mode": "list",
+          "value": "REPLACE_WITH_SHEET_ID"
+        },
+        "sheetName": {
+          "mode": "list",
+          "value": "Content Calendar"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "date_added": "={{ $now.toISODate() }}",
+            "pillar": "={{ $json.pillar }}",
+            "format": "={{ $json.format }}",
+            "raw_file_link": "={{ $json.raw_file_link }}",
+            "status": "Needs edit"
+          }
+        }
+      },
+      "id": "append1",
+      "name": "Log into Content Calendar",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        80,
+        430
+      ],
+      "notes": "One new row per raw file, status 'Needs edit'. From here it's picked up by Claude (you ping to trigger it — see the sheet note) rather than by another n8n workflow.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * *"
+            }
+          ]
+        }
+      },
+      "id": "cron2",
+      "name": "Every day 9am",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        840,
+        200
+      ],
+      "notes": "Runs once a day. Change the cron expression for a different review time.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "operation": "readRows",
+        "documentId": {
+          "mode": "list",
+          "value": "REPLACE_WITH_SHEET_ID"
+        },
+        "sheetName": {
+          "mode": "list",
+          "value": "Content Calendar"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "status",
+              "lookupValue": "Scheduled"
+            }
+          ]
+        }
+      },
+      "id": "read2",
+      "name": "Find items due for review",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        1060,
+        200
+      ],
+      "notes": "Rows you moved to 'Scheduled' in the Sheet — Claude-edited, then titled and dated by you, just not yet approved.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "chatId": "REPLACE_WITH_YOUR_TELEGRAM_CHAT_ID",
+        "text": "=🎬 *{{ $json.title }}*\\nPillar: {{ $json.pillar }} · Format: {{ $json.format }}\\nScheduled: {{ $json.scheduled_datetime }}\\n\\n{{ $json.edited_file_link }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        },
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "✅ Approve",
+                    "additionalFields": {
+                      "callback_data": "=approve|{{ $json.row_number }}"
+                    }
+                  },
+                  {
+                    "text": "❌ Reject",
+                    "additionalFields": {
+                      "callback_data": "=reject|{{ $json.row_number }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "id": "tg2",
+      "name": "Send approval request",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        840,
+        430
+      ],
+      "notes": "The confirm-before-publish gate from Step 4. Exact field names for the inline keyboard can shift between n8n versions — check the Telegram node's own UI if this doesn't match.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "mode": "list",
+          "value": "REPLACE_WITH_SHEET_ID"
+        },
+        "sheetName": {
+          "mode": "list",
+          "value": "Content Calendar"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "row_number"
+          ],
+          "value": {
+            "row_number": "={{ $('Find items due for review').item.json.row_number }}",
+            "status": "Awaiting Approval",
+            "telegram_message_id": "={{ $json.message_id }}"
+          }
+        }
+      },
+      "id": "update2",
+      "name": "Mark Awaiting Approval",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        1060,
+        430
+      ],
+      "notes": "So this row is not asked about twice tomorrow, and workflow 3 can find it again by message id.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "updates": [
+          "callback_query"
+        ]
+      },
+      "id": "tgtrig3",
+      "name": "Approval button tapped",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1,
+      "position": [
+        840,
+        660
+      ],
+      "notes": "Fires the instant you tap Approve or Reject on the Telegram message from workflow 2.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "decision",
+              "type": "string",
+              "value": "={{ $json.callback_query.data.split('|')[0] }}"
+            },
+            {
+              "name": "row_number",
+              "type": "number",
+              "value": "={{ Number($json.callback_query.data.split('|')[1]) }}"
+            }
+          ]
+        }
+      },
+      "id": "set3",
+      "name": "Read the tap",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        1060,
+        660
+      ],
+      "notes": "Splits the callback_data 'approve|7' or 'reject|7' back into a decision and a row.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.decision }}",
+              "rightValue": "approve",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ]
+        }
+      },
+      "id": "if3rep",
+      "name": "Approved?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1280,
+        660
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "mode": "list",
+          "value": "REPLACE_WITH_SHEET_ID"
+        },
+        "sheetName": {
+          "mode": "list",
+          "value": "Content Calendar"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "row_number"
+          ],
+          "value": {
+            "row_number": "={{ $json.row_number }}",
+            "status": "Approved"
+          }
+        }
+      },
+      "id": "upd3a",
+      "name": "Mark Approved",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        840,
+        890
+      ],
+      "notes": "Workflow 4 picks this up at the row's scheduled_datetime and publishes it.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "mode": "list",
+          "value": "REPLACE_WITH_SHEET_ID"
+        },
+        "sheetName": {
+          "mode": "list",
+          "value": "Content Calendar"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "row_number"
+          ],
+          "value": {
+            "row_number": "={{ $json.row_number }}",
+            "status": "Needs edit"
+          }
+        }
+      },
+      "id": "upd3b",
+      "name": "Send back for editing",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        1060,
+        890
+      ],
+      "notes": "Rejected items go back to 'Needs edit' — the next time you ping Claude to process pending rows, this one gets another auto-edit pass.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "resource": "callback",
+        "operation": "answerQuery",
+        "queryId": "={{ $('Approval button tapped').item.json.callback_query.id }}",
+        "text": "Got it."
+      },
+      "id": "ack3",
+      "name": "Acknowledge the tap",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        890
+      ],
+      "notes": "Stops Telegram showing a spinner on the button forever.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "id": "cron4",
+      "name": "Every 15 minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        1820,
+        200
+      ],
+      "notes": "How close to the scheduled minute a video actually goes live depends on this interval.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "operation": "readRows",
+        "documentId": {
+          "mode": "list",
+          "value": "REPLACE_WITH_SHEET_ID"
+        },
+        "sheetName": {
+          "mode": "list",
+          "value": "Content Calendar"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "status",
+              "lookupValue": "Approved"
+            }
+          ]
+        }
+      },
+      "id": "read4",
+      "name": "Find items due now",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        2040,
+        200
+      ],
+      "notes": "Approved rows only. A second check below drops anything not due yet.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ new Date($json.scheduled_datetime) <= new Date() }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ]
+        }
+      },
+      "id": "if4",
+      "name": "Scheduled time reached?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2260,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "mode": "id",
+          "value": "={{ $json.edited_file_link }}"
+        }
+      },
+      "id": "dl4",
+      "name": "Download edited file",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 1,
+      "position": [
+        1820,
+        430
+      ],
+      "notes": "Pulls the finished, Claude-enhanced cut from Drive, ready to hand to YouTube.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "upload",
+        "title": "={{ $json.title }}",
+        "regionCode": "US",
+        "categoryId": "22",
+        "options": {
+          "description": "={{ $json.description }}",
+          "tags": "={{ $json.tags }}",
+          "privacyStatus": "public"
+        }
+      },
+      "id": "yt4",
+      "name": "Upload to YouTube",
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        2040,
+        430
+      ],
+      "notes": "Needs a Google Cloud project with the YouTube Data API v3 enabled and OAuth2 credentials in n8n — see the setup note. Not set up yet, so this node will fail until it is.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "mode": "list",
+          "value": "REPLACE_WITH_SHEET_ID"
+        },
+        "sheetName": {
+          "mode": "list",
+          "value": "Content Calendar"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "row_number"
+          ],
+          "value": {
+            "row_number": "={{ $('Find items due now').item.json.row_number }}",
+            "status": "Published",
+            "youtube_url": "=https://youtu.be/{{ $json.id }}"
+          }
+        }
+      },
+      "id": "upd4",
+      "name": "Mark Published",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        2260,
+        430
+      ],
+      "notes": "Closes the loop — this row is done, and watching the numbers starts here.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "chatId": "REPLACE_WITH_YOUR_TELEGRAM_CHAT_ID",
+        "text": "=✅ Published: {{ $json.title }}\\nhttps://youtu.be/{{ $json.id }}"
+      },
+      "id": "tg4",
+      "name": "Notify it went live",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        2480,
+        430
+      ]
+    }
+  ],
+  "connections": {
+    "New file in Raw Uploads": {
+      "main": [
+        [
+          {
+            "node": "Guess pillar & format from filename",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guess pillar & format from filename": {
+      "main": [
+        [
+          {
+            "node": "Log into Content Calendar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Every day 9am": {
+      "main": [
+        [
+          {
+            "node": "Find items due for review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find items due for review": {
+      "main": [
+        [
+          {
+            "node": "Send approval request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send approval request": {
+      "main": [
+        [
+          {
+            "node": "Mark Awaiting Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approval button tapped": {
+      "main": [
+        [
+          {
+            "node": "Read the tap",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read the tap": {
+      "main": [
+        [
+          {
+            "node": "Approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approved?": {
+      "main": [
+        [
+          {
+            "node": "Mark Approved",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send back for editing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Approved": {
+      "main": [
+        [
+          {
+            "node": "Acknowledge the tap",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send back for editing": {
+      "main": [
+        [
+          {
+            "node": "Acknowledge the tap",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Every 15 minutes": {
+      "main": [
+        [
+          {
+            "node": "Find items due now",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find items due now": {
+      "main": [
+        [
+          {
+            "node": "Scheduled time reached?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scheduled time reached?": {
+      "main": [
+        [
+          {
+            "node": "Download edited file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Download edited file": {
+      "main": [
+        [
+          {
+            "node": "Upload to YouTube",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to YouTube": {
+      "main": [
+        [
+          {
+            "node": "Mark Published",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Published": {
+      "main": [
+        [
+          {
+            "node": "Notify it went live",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "tags": [
+    {
+      "name": "youtube-automation"
+    }
+  ]
+}
