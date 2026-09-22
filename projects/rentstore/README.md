@@ -5,8 +5,11 @@ Shoppers browse everything in one place; merchants join free, then pay monthly t
 open a store inside it — and we do the work they can't do alone: build the store,
 market it, secure it, support it.
 
-This folder is the whole project. Nothing here needs a build step, a framework,
-or a server: open a page and it runs.
+This folder is the whole project. The site itself needs no build step, no
+framework, and no server: open a page and it runs. `automation-editor/` is
+the one exception — a separate, self-contained sub-project with its own
+`package.json`, kept apart from everything else here so this stays true for
+the rest.
 
 ## Where everything lives
 
@@ -36,6 +39,8 @@ projects/rentstore/
 │   ├── 05-setup-and-licence.json
 │   ├── README.md      credentials, sheet schema, the WhatsApp 24-hour rule
 │   └── maps/          the business drawn on an n8n canvas — maps, not automations
+├── automation-editor/  a @workflowbuilder/sdk visual editor for 01-signup-free.json
+│   └── README.md      what it is, how to run it — its own package.json, needs a build step
 └── docs/            THE THINKING
     ├── idea.md        the business: offerings, promises, roadmap, open decisions
     ├── idea-map.html  every path through the idea, numbered for correction

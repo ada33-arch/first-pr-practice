@@ -12,7 +12,10 @@ runs here. Five workflows, importable into any n8n (cloud or self-hosted).
 | `05-setup-and-licence.json` | Someone buys the full setup, and again each time you move their case forward | Customer, owner |
 
 Each workflow carries sticky notes on the canvas explaining its own logic — open
-one in n8n and read it there.
+one in n8n and read it there. `01-signup-free.json` also has a visual, editable
+copy at [`../automation-editor/`](../automation-editor/) — a
+`@workflowbuilder/sdk` graph editor, useful if you want to see or tweak its
+shape without n8n open (it doesn't run anything or write back to this file).
 
 ## Import
 
