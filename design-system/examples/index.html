@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en" class="theme-amber">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Corporate Deck Design System — Web Template</title>
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/components.css">
+<style>
+  /* Page-level composition only. Everything else comes from the system. */
+  .hero { padding-block: var(--space-10) var(--space-12); }
+  .hero__media { aspect-ratio: 4 / 5; background: linear-gradient(140deg, var(--accent-300), var(--accent-600)); }
+  .theme-switch { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+  .theme-switch button {
+    width: 34px; height: 34px; border-radius: var(--radius-pill);
+    border: 2px solid var(--ink-200); cursor: pointer; padding: 0;
+  }
+  .theme-switch button[aria-pressed="true"] { border-color: var(--ink-900); transform: scale(1.12); }
+  .swatch-amber{background:#F5B21A}.swatch-electric{background:#2B50EE}.swatch-navy{background:#2B4A8B}
+  .swatch-teal{background:#22BCCE}.swatch-green{background:#17A673}.swatch-coral{background:#E85D33}
+  .placeholder { background: var(--ink-100); display: grid; place-items: center; color: var(--ink-400); font-size: var(--fs-caption); letter-spacing: .1em; text-transform: uppercase; }
+  .footer { padding-block: var(--space-8); border-top: 1px solid var(--ink-100); }
+</style>
+</head>
+<body>
+
+<header class="container">
+  <nav class="navbar">
+    <a class="navbar__brand" href="#">
+      <span class="icon-chip icon-chip--sm" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 18 L10 8 L14 14 L20 5"/></svg>
+      </span>
+      Northbrook
+    </a>
+    <ul class="navbar__links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#process">Process</a></li>
+      <li><a href="#numbers">Results</a></li>
+      <li><a href="#team">Team</a></li>
+    </ul>
+    <a class="btn btn--primary" href="#">Book a call</a>
+  </nav>
+</header>
+
+<!-- HERO — asymmetric split, eyebrow, two-tone headline -->
+<section class="container hero">
+  <div class="split split--wide-l has-deco">
+    <div class="deco deco-circle deco-circle--soft" style="width:340px;height:340px;top:-140px;left:-160px;" aria-hidden="true"></div>
+    <div class="stack stack-5">
+      <span class="eyebrow">Strategy &amp; Operations</span>
+      <h1 class="h1">Doing everything <em>right</em>, from day one.</h1>
+      <p class="body-lg measure">
+        We help operators turn a messy quarter into a plan the whole company can
+        follow — then we stay on to make sure it actually ships.
+      </p>
+      <div style="display:flex;gap:var(--space-3);flex-wrap:wrap;">
+        <a class="btn btn--primary btn--lg" href="#">Start a project</a>
+        <a class="btn btn--outline btn--lg" href="#">See our work</a>
+      </div>
+      <div class="stat-row stat-row--divided" style="margin-top:var(--space-4);">
+        <div class="stat"><span class="stat__value">168</span><span class="stat__label">Engagements</span></div>
+        <div class="stat"><span class="stat__value">29</span><span class="stat__label">Countries</span></div>
+        <div class="stat"><span class="stat__value">94%</span><span class="stat__label">Retained</span></div>
+      </div>
+    </div>
+    <div class="offset-block">
+      <div class="media media--xl hero__media placeholder">Photography</div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES — icon cards -->
+<section class="section section--muted" id="services">
+  <div class="container stack stack-6">
+    <div class="stack stack-3" style="max-width:52ch;">
+      <span class="eyebrow">What we do</span>
+      <h2 class="h2">Four practices, one operating rhythm</h2>
+      <hr class="rule">
+    </div>
+    <div class="grid grid--4">
+      <article class="card card--raised stack stack-4">
+        <span class="icon-chip" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        </span>
+        <h3 class="card__title">Planning</h3>
+        <p class="card__body">Annual and quarterly plans that survive contact with the calendar.</p>
+      </article>
+      <article class="card card--raised stack stack-4">
+        <span class="icon-chip" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V9m5 10V5m5 14v-7m5 7V8"/></svg>
+        </span>
+        <h3 class="card__title">Analytics</h3>
+        <p class="card__body">The three numbers that matter, reported the same way every week.</p>
+      </article>
+      <article class="card card--raised stack stack-4">
+        <span class="icon-chip" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0M17 11h4M19 9v4"/></svg>
+        </span>
+        <h3 class="card__title">Org design</h3>
+        <p class="card__body">Structures that match the work, not last year's headcount.</p>
+      </article>
+      <article class="card card--accent stack stack-4">
+        <span class="icon-chip icon-chip--dark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 13 4 4L19 7"/></svg>
+        </span>
+        <h3 class="card__title">Delivery</h3>
+        <p class="card__body">We stay through execution. Plans without follow-through are decks.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS — numbered steps -->
+<section class="section" id="process">
+  <div class="container stack stack-6">
+    <div class="stack stack-3" style="max-width:52ch;">
+      <span class="eyebrow">How it works</span>
+      <h2 class="h2">Three phases, twelve weeks</h2>
+      <hr class="rule">
+    </div>
+    <div class="steps">
+      <div class="step">
+        <h3 class="step__title">Diagnose</h3>
+        <p class="step__body">Two weeks inside the business. Interviews, data pull, and an honest read on what is actually blocking the quarter.</p>
+      </div>
+      <div class="step">
+        <h3 class="step__title">Design</h3>
+        <p class="step__body">A plan with named owners and dated milestones. Reviewed with the leadership team until there are no open questions.</p>
+      </div>
+      <div class="step">
+        <h3 class="step__title">Deliver</h3>
+        <p class="step__body">Eight weeks embedded with your team, running the weekly cadence until it runs without us.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NUMBERS — dark stat slab -->
+<section class="section section--dark on-dark" id="numbers">
+  <div class="container stack stack-6 has-deco">
+    <div class="deco deco-dots" style="width:180px;height:120px;top:0;right:0;" aria-hidden="true"></div>
+    <div class="stack stack-3" style="max-width:52ch;">
+      <span class="eyebrow">By the numbers</span>
+      <h2 class="h2">What the last four years looked like</h2>
+      <hr class="rule">
+    </div>
+    <div class="stat-row stat-row--divided">
+      <div class="stat">
+        <span class="stat__value">$1.4B</span>
+        <span class="stat__label">Revenue influenced</span>
+      </div>
+      <div class="stat">
+        <span class="stat__value">168</span>
+        <span class="stat__label">Engagements closed</span>
+      </div>
+      <div class="stat">
+        <span class="stat__value">11.5</span>
+        <span class="stat__label">Avg. weeks to impact</span>
+      </div>
+      <div class="stat">
+        <span class="stat__value">94%</span>
+        <span class="stat__label">Clients who return</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT + METERS -->
+<section class="section section--muted">
+  <div class="container split">
+    <div class="stack stack-5">
+      <span class="eyebrow">Capability mix</span>
+      <h2 class="h2">Where the team is <em>strongest</em></h2>
+      <p class="body measure">
+        We publish our own capability scores twice a year and staff engagements
+        against them, so you know exactly what you are getting.
+      </p>
+    </div>
+    <div class="stack stack-5">
+      <div class="meter-row">
+        <div class="meter-row__head"><span>Operating strategy</span><span>92%</span></div>
+        <div class="meter"><div class="meter__fill" style="width:92%"></div></div>
+      </div>
+      <div class="meter-row">
+        <div class="meter-row__head"><span>Financial modelling</span><span>85%</span></div>
+        <div class="meter"><div class="meter__fill" style="width:85%"></div></div>
+      </div>
+      <div class="meter-row">
+        <div class="meter-row__head"><span>Org &amp; talent design</span><span>78%</span></div>
+        <div class="meter"><div class="meter__fill" style="width:78%"></div></div>
+      </div>
+      <div class="meter-row">
+        <div class="meter-row__head"><span>Go-to-market</span><span>71%</span></div>
+        <div class="meter"><div class="meter__fill" style="width:71%"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section class="section" id="team">
+  <div class="container stack stack-6">
+    <div class="stack stack-3" style="max-width:52ch;">
+      <span class="eyebrow">The team</span>
+      <h2 class="h2">Senior people, on the work</h2>
+      <hr class="rule">
+    </div>
+    <div class="grid grid--3">
+      <article class="card text-center stack stack-3">
+        <div class="placeholder avatar avatar--ring" style="margin-inline:auto;">IL</div>
+        <h3 class="card__title">Isabella Linton</h3>
+        <p class="caption">Managing Partner</p>
+      </article>
+      <article class="card text-center stack stack-3">
+        <div class="placeholder avatar avatar--ring" style="margin-inline:auto;">AD</div>
+        <h3 class="card__title">Arthur Dodger</h3>
+        <p class="caption">Head of Analytics</p>
+      </article>
+      <article class="card text-center stack stack-3">
+        <div class="placeholder avatar avatar--ring" style="margin-inline:auto;">EJ</div>
+        <h3 class="card__title">Elizabeth Jones</h3>
+        <p class="caption">Delivery Lead</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIAL -->
+<section class="section section--cream">
+  <div class="container split split--even">
+    <blockquote class="quote">
+      They did not hand us a deck and leave. Eleven weeks later the weekly
+      cadence was still running, and it was our team running it.
+      <footer class="quote__cite">
+        <div class="placeholder avatar avatar--sm">MR</div>
+        <span><span class="quote__name">Marta Reyes</span>COO, Halden Group</span>
+      </footer>
+    </blockquote>
+    <div class="swot">
+      <div class="swot__s"><div class="swot__label">Strengths</div><p class="swot__body">Senior bench, repeatable operating cadence.</p></div>
+      <div class="swot__w"><div class="swot__label">Weaknesses</div><p class="swot__body">Deliberately small — capacity is the constraint.</p></div>
+      <div class="swot__o"><div class="swot__label">Opportunities</div><p class="swot__body">Mid-market operators underserved by the majors.</p></div>
+      <div class="swot__t"><div class="swot__label">Threats</div><p class="swot__body">In-house strategy teams maturing quickly.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section section--accent">
+  <div class="container text-center stack stack-5">
+    <h2 class="h2" style="color:var(--accent-on);">Ready to fix the quarter?</h2>
+    <p class="body-lg measure" style="margin-inline:auto;color:color-mix(in srgb, var(--accent-on) 80%, transparent);">
+      Tell us what is stuck. We will come back within two days with a view on
+      whether we are the right people for it.
+    </p>
+    <div><a class="btn btn--ink btn--lg" href="#">Book a call</a></div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container" style="display:flex;gap:var(--space-6);justify-content:space-between;align-items:center;flex-wrap:wrap;">
+    <p class="caption">Corporate Deck Design System — reference web template.</p>
+    <div class="stack stack-2">
+      <span class="caption">Switch accent theme</span>
+      <div class="theme-switch" role="group" aria-label="Accent theme">
+        <button class="swatch-amber"    data-theme="amber"    aria-pressed="true"  aria-label="Amber"></button>
+        <button class="swatch-electric" data-theme="electric" aria-pressed="false" aria-label="Electric"></button>
+        <button class="swatch-navy"     data-theme="navy"     aria-pressed="false" aria-label="Navy"></button>
+        <button class="swatch-teal"     data-theme="teal"     aria-pressed="false" aria-label="Teal"></button>
+        <button class="swatch-green"    data-theme="green"    aria-pressed="false" aria-label="Green"></button>
+        <button class="swatch-coral"    data-theme="coral"    aria-pressed="false" aria-label="Coral"></button>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Proof that the whole page re-themes from the accent ramp alone.
+  const root = document.documentElement;
+  document.querySelectorAll('.theme-switch button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      root.className = 'theme-' + btn.dataset.theme;
+      document.querySelectorAll('.theme-switch button')
+        .forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+    });
+  });
+</script>
+
+</body>
+</html>
