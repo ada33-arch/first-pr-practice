@@ -67,3 +67,20 @@ Authorizing a project MCP server is an interactive, one-time step per environmen
 ## Conventions
 
 - The default branch is `main`. Following the repo's purpose, make changes on a feature branch and propose them via pull request rather than committing directly to `main`.
+
+## Agents
+
+- `.claude/agents/rentstore.md` — owns `projects/rentstore/`. Route any change to that project's pages, styles, content, rendering, bundle, or automations through it; it carries the content/design/code split and the Arabic/English × dark/light contract.
+
+<!-- antislop:start -->
+## antislop
+
+For UI, copy, people, mobile layout, or code comments work, read `.claude/skills/antislop/SKILL.md` (core) and then the skill for the task:
+- UI / visual: `.claude/skills/antislop-ui/SKILL.md`
+- Copy & text: `.claude/skills/antislop-copywriting/SKILL.md`
+- People: `.claude/skills/antislop-human/SKILL.md`
+- Mobile / responsive: `.claude/skills/antislop-layoutmobile/SKILL.md`
+- Code comments: `.claude/skills/antislop-code/SKILL.md`
+
+antislop filters; it does not supply direction. Read the project's `DESIGN.md` for that — `projects/rentstore/DESIGN.md` for the marketplace. Before starting, ask the user when antislop applies: during the work, or after it is done.
+<!-- antislop:end -->
