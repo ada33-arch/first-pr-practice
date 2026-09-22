@@ -4,6 +4,25 @@ Not selling the channel. Growing it — subscribers, watch time — and turning
 that growth into income, in that order. Income follows the audience; it
 isn't the first lever.
 
+## Content source — a decision worth recording
+
+Two ways rows enter the Content Calendar:
+
+- **Footage path** (Steps 1–2 below) — the user shoots raw video, Claude
+  auto-edits it with vidIQ.
+- **Trend-research path** — Claude searches for trending topics in the
+  channel's niche and generates the entire video (script, voiceover, visuals,
+  music) with vidIQ, no filming involved. See
+  `.claude/skills/youtube-trend-content/SKILL.md` for the procedure.
+
+**The owner explicitly chose to use the trend-research path**, aware of the
+tradeoff: YouTube's Partner Program monetization policy penalizes
+"inauthentic" or mass-produced content, and channels built entirely on
+formulaic AI video have had monetization denied or revoked under that rule —
+a real risk to the eligibility this whole plan is built around (see the
+numbers below). Both paths feed the same Sheet, the same calendar step, and
+the same Telegram approval gate before anything publishes.
+
 ## The pipeline
 
 1. **Foundation** — confirm the niche, baseline current subscribers/views/
