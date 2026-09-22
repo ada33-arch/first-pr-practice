@@ -161,9 +161,62 @@ Per antislop's Liveliness Toolkit, the landing page runs:
 - Tap targets ≥ 44px. Visible focus everywhere — `:focus-visible` already has an
   accent ring; do not remove it for looks.
 
-## 7. What this file does not decide
+## 7. The hero art
 
-Left open on purpose: section order, hero composition, whether the marquee is
-replaced or removed, photography vs. illustration, and how the plan cards are
-laid out. Those are design decisions. This file constrains them; it does not
-make them.
+Decided, not open. The hero carries a full-bleed original landscape: layered
+dune ridges, a distant range, warm haze, a low sun. It is drawn in SVG —
+a gradient mesh sky, `feTurbulence` for cloud and haze — and reads its colours
+from `--art-*` tokens, so it themes with the page instead of being a fixed
+picture.
+
+**No recognizable buildings. This is a rule, not a preference.** Not the Burj
+Khalifa, not the Burj Al Arab, not the Museum of the Future, not a skyline
+that resolves into any of them. Two reasons, both binding:
+
+1. The UAE has no broad freedom-of-panorama exception, and the obvious
+   candidates are actively enforced marks. A marketplace taking merchants'
+   money should not put that on its front page.
+2. A famous-landmark hero is the most reused image in UAE marketing. It is
+   the opposite of distinctive. The horizon belongs to nobody, which is
+   exactly why it can belong to this.
+
+The art's purpose, per the filter's purpose test: the hero was a flat ground
+with a phone floating on it and nothing saying where any of this happens. The
+landscape puts the product somewhere without naming a city, and gives the
+phone mock something to stand in front of.
+
+### The scrims are a contrast device, not decoration
+
+Five text elements sit on this art. No honest set of art values clears 4.5:1
+for all of them unaided, so `--scene-veil-1/2/3` pull the art back toward the
+page ground under the copy column and let it run clear across the rest.
+Measured worst cases, sampled from the rendered pixels behind each element
+rather than estimated:
+
+| State | Tightest element | Ratio |
+|---|---|---|
+| Arabic dark, 1440 | lede | 5.63:1 |
+| English dark, 1440 | lede | 6.41:1 |
+| Arabic dark, 390 | eyebrow | 7.93:1 |
+| **Arabic light, 1440** | **lede** | **4.72:1** |
+
+**4.72:1 is the binding constraint on the whole design.** It is what stops the
+veils being loosened further to show more of the picture. Any change to
+`--scene-veil-*`, `--art-*`, or `--ink-soft` has to re-measure that number, and
+it may not go below 4.5:1.
+
+### Two things that will break it
+
+- **Enlarging the art on mobile.** The SVG viewBox is 16:9 and the element is
+  16:9, so nothing is cropped. Scaling it up turns a wide landscape into a
+  centre crop of about a fifth of the picture, which is mush. Fit by width.
+- **Dropping in a raster sky carelessly.** `.scene__raster` exists for that and
+  is documented in `design/styles.css`. It sits above the drawn sky and behind
+  the land, and it is masked at the horizon. Set it per theme — a dusk
+  photograph under the light theme breaks every number in the table above.
+
+## 8. What this file does not decide
+
+Left open on purpose: section order, how the plan cards are laid out, and
+whether the category band stays a sentence. Those are design decisions. This
+file constrains them; it does not make them.

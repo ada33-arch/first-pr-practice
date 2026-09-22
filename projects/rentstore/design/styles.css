@@ -38,6 +38,33 @@ ul, ol { list-style: none; padding: 0; }
   --ok:   #6bcf9a;
   --warn: #e5a663;
 
+  /* ---- hero landscape -------------------------------------------------
+     The landing hero's art reads its every colour from here, which is the
+     reason it is inline SVG in the DOM: a data: URI cannot see these.
+     Dark is dusk. The ramp runs near-black at the top to ember at the
+     horizon, and nothing in it is brighter than the sun itself. */
+  --art-sky-0:     #0a0807;
+  --art-sky-1:     #1a120e;
+  --art-sky-2:     #54301a;
+  --art-sky-3:     #2a1710;
+  --art-wash-cool: #0e0d0f;
+  --art-wash-warm: #3d2413;
+  --art-bloom:     #c07a2e;
+  --art-core:      #eab963;
+  --art-cloud:     #3a2618;
+  --art-haze:      #6e4020;
+  --art-crest:     #c98a3c;
+  --art-range-far:  #241a17;
+  --art-range-near: #150f0c;
+  --art-dune-far:  #2a1c13;
+  --art-dune-mid:  #120c09;
+  --art-dune-near: #0a0706;
+  /* how much page ground the scrim lays over the art. 1 is under the copy,
+     3 is where the art runs clear. Measured, not guessed: see DESIGN.md §7. */
+  --scene-veil-1: 84%;
+  --scene-veil-2: 40%;
+  --scene-veil-3: 4%;
+
   --r-sm: 12px;
   --r-md: 18px;
   --r-lg: 24px;
@@ -55,6 +82,7 @@ ul, ol { list-style: none; padding: 0; }
 
   --page: 560px;
   --wide: 1120px;
+  --topbar-h: 67px;
   --ease: cubic-bezier(.22, .61, .36, 1);
 }
 
@@ -81,12 +109,43 @@ ul, ol { list-style: none; padding: 0; }
   /* #fffaf0 on #9a7433 is only 4.10:1, so the CTA surface starts a step deeper */
   --accent-solid: #8a6728;
 
+  /* ---- hero landscape -------------------------------------------------
+     Light is not the dark art turned down: it is a different hour. A hazy
+     morning over the same ground, high-key throughout, because on the cream
+     ground the text is near-black and the art has to stay ABOVE it in
+     luminance, not below. Same geometry, different sky. */
+  --art-sky-0:     #d9dcdc;
+  --art-sky-1:     #ece4d7;
+  --art-sky-2:     #fce9c9;
+  --art-sky-3:     #f7e0bb;
+  --art-wash-cool: #dcdedb;
+  --art-wash-warm: #fbe6c4;
+  --art-bloom:     #fbdca2;
+  --art-core:      #fff8ea;
+  --art-cloud:     #fffdf8;
+  --art-haze:      #fdf4e4;
+  --art-crest:     #fffaee;
+  --art-range-far:  #cfc8bc;
+  --art-range-near: #b6a994;
+  --art-dune-far:  #ece2cd;
+  --art-dune-mid:  #e3d5b9;
+  --art-dune-near: #d6c6a4;
+  --scene-veil-1: 88%;
+  --scene-veil-2: 50%;
+  --scene-veil-3: 10%;
+
   --shadow-sm: 0 2px 10px rgba(60, 48, 24, .08);
   --shadow-md: 0 12px 30px rgba(60, 48, 24, .12);
   --shadow-lg: 0 26px 60px rgba(60, 48, 24, .16);
 }
 
 html[lang="en"] { --font: var(--font-en); }
+
+/* The hero art's copy-side scrim is a linear gradient, and CSS gradients have
+   no logical direction. This is the one value that flips with the mirror; the
+   picture itself is identical in both. */
+:root            { --scene-scrim-dir: to right; }
+html[dir="rtl"]  { --scene-scrim-dir: to left; }
 
 /* ----------------------------------------------------------------- base -- */
 body {
@@ -140,6 +199,8 @@ h1, .hero h1, .profile__name, .final h2 { font-family: var(--font-display); font
   align-items: center;
   justify-content: space-between;
   gap: .75rem;
+  /* pinned, because the hero art has to know how far to reach up to meet it */
+  min-block-size: var(--topbar-h);
   padding: .85rem 0;
   backdrop-filter: blur(14px);
   background: color-mix(in srgb, var(--bg) 78%, transparent);
@@ -777,10 +838,11 @@ html[dir="rtl"] .backlink svg { transform: none; }
 
 /* ------------------------------------------------------------------ hero -- */
 .hero--landing {
+  --hero-pad-top: 3.5rem;
   display: grid;
   gap: 2.5rem;
   text-align: start;
-  padding: 3.5rem 0 2rem;
+  padding: var(--hero-pad-top) 0 2rem;
 }
 .hero--landing h1 {
   font-size: clamp(2rem, 5.4vw, 3.2rem);
@@ -792,12 +854,182 @@ html[dir="rtl"] .backlink svg { transform: none; }
 .inline-tick { display: inline-block; width: 14px; height: 14px; color: var(--ok); vertical-align: -2px; margin-inline-end: .35rem; }
 .hero__art { display: grid; place-items: center; }
 
+/* The stage holds the art and the two halves standing on it. The fact rail is
+   deliberately outside it, back on the page's own flat ground: the rail is
+   where the picture stops and the argument starts. */
+.hero__stage { position: relative; display: grid; gap: 2.5rem; }
+.hero__copy, .hero__art { position: relative; z-index: 1; }
+
 @media (min-width: 900px) {
-  .hero--landing {
+  .hero--landing { --hero-pad-top: 4.5rem; padding-block-end: 2.5rem; }
+  .hero__stage {
     grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
     align-items: center;
     gap: 3.5rem;
-    padding: 4.5rem 0 2.5rem;
+  }
+}
+
+/* ============================================================== hero art == */
+/* An original UAE landscape: dune ridges, a distant jagged range, a low sun,
+   warm haze. No recognisable building appears in it, by decision, and that is
+   not a style preference: see DESIGN.md §7. The markup is in site.js.
+
+   The art's job on this page is not decoration. The hero was a flat ground
+   with a phone floating on it and nothing saying where any of this happens.
+   The landscape puts the product somewhere, without naming a city, and it
+   gives the phone mock something to sit in front of so the mock is clearly
+   the focal point rather than the only object. */
+.scene {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  /* Full-bleed out of the 1120px shell. Symmetric, so the composition never
+     depends on which side the copy landed on. */
+  inset-inline: calc(50% - 50vw);
+  /* up past the hero's top padding AND the sticky topbar, so the picture
+     starts at the top of the page and the bar floats on it; down to just
+     short of the fact rail, where the block scrim has already finished
+     dissolving the dunes into the page ground */
+  inset-block: calc(-1 * (var(--hero-pad-top) + var(--topbar-h))) -1.5rem;
+}
+.scene__svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+/* the sky keeps going above the picture wherever the box is taller than it */
+.scene { background: linear-gradient(to bottom, var(--bg), var(--art-sky-0)) no-repeat; }
+/* the drawn sky, which the raster seam below can replace outright */
+.scene__sky { opacity: var(--scene-mesh-opacity, 1); }
+
+/* --- gradient mesh: four nodes, not a two-stop ramp ---------------------- */
+.k-sky-0 { stop-color: var(--art-sky-0); }
+.k-sky-1 { stop-color: var(--art-sky-1); }
+.k-sky-2 { stop-color: var(--art-sky-2); }
+.k-sky-3 { stop-color: var(--art-sky-3); }
+.k-wash-a0 { stop-color: var(--art-wash-cool); stop-opacity: .85; }
+.k-wash-a1 { stop-color: var(--art-wash-cool); stop-opacity: 0; }
+.k-wash-b0 { stop-color: var(--art-wash-warm); stop-opacity: .5; }
+.k-wash-b1 { stop-color: var(--art-wash-warm); stop-opacity: 0; }
+.k-bloom-0 { stop-color: var(--art-bloom); stop-opacity: .5; }
+.k-bloom-1 { stop-color: var(--art-bloom); stop-opacity: .2; }
+.k-bloom-2 { stop-color: var(--art-bloom); stop-opacity: 0; }
+.k-core-0 { stop-color: var(--art-core); stop-opacity: .55; }
+.k-core-1 { stop-color: var(--art-core); stop-opacity: .22; }
+.k-core-2 { stop-color: var(--art-core); stop-opacity: 0; }
+.k-cloud-0 { stop-color: var(--art-cloud); stop-opacity: 0; }
+.k-cloud-1 { stop-color: var(--art-cloud); stop-opacity: .55; }
+.k-cloud-2 { stop-color: var(--art-cloud); stop-opacity: .3; }
+.k-cloud-3 { stop-color: var(--art-cloud); stop-opacity: 0; }
+.k-haze-0 { stop-color: var(--art-haze); stop-opacity: 0; }
+.k-haze-1 { stop-color: var(--art-haze); stop-opacity: .34; }
+.k-haze-2 { stop-color: var(--art-haze); stop-opacity: 0; }
+.k-crest-0 { stop-color: var(--art-crest); stop-opacity: 0; }
+.k-crest-1 { stop-color: var(--art-crest); stop-opacity: .6; }
+.k-crest-2 { stop-color: var(--art-crest); stop-opacity: 0; }
+
+/* --- the land ----------------------------------------------------------- */
+.k-range-far  { fill: var(--art-range-far); }
+.k-range-near { fill: var(--art-range-near); }
+.k-dune-far   { fill: var(--art-dune-far); }
+.k-dune-mid   { fill: var(--art-dune-mid); }
+.k-dune-near  { fill: var(--art-dune-near); }
+
+/* --- the seam for a raster sky ------------------------------------------ */
+/* This element is empty and paints nothing. It exists so a raster sky can be
+   dropped in later as a CSS change and not a rebuild, and it sits exactly
+   where a photograph or a generated painting belongs: above the drawn sky,
+   BEHIND the ranges, the haze and the dunes, so the whole land layer still
+   reads in front of it.
+
+   To use it, set these and change nothing else:
+       --scene-sky-raster:  url("img/sky-dusk.avif")   the image
+       --scene-sky-opacity: 1                          blend with the drawn sky
+       --scene-mesh-opacity: 0                         if the raster brings its
+                                                       own sun, take ours out
+   Set them on [data-theme="dark"] and [data-theme="light"] separately: a dusk
+   photograph under the light theme would break every contrast number in §7.
+   The mask stops the raster at our horizon, so it can never paint over the
+   dunes however tall the file is. */
+.scene__raster {
+  position: absolute;
+  inset: 0;
+  background-image: var(--scene-sky-raster, none);
+  background-size: cover;
+  background-position: 50% 64%;
+  opacity: var(--scene-sky-opacity, 1);
+  /* only the alpha of these stops is read; --ink is used because it is a
+     token and is opaque in both themes */
+  -webkit-mask-image: linear-gradient(to bottom, var(--ink) 0 58%, transparent 70%);
+  mask-image: linear-gradient(to bottom, var(--ink) 0 58%, transparent 70%);
+}
+
+/* --- the scrims --------------------------------------------------------- */
+.scene::before,
+.scene::after { content: ""; position: absolute; inset: 0; }
+
+/* Block scrim. Two jobs, both structural. At the top it keeps the art from
+   fighting the sticky topbar, whose own ground is only 78% opaque. At the
+   bottom it dissolves the dunes into the page ground before the fact rail's
+   hairline, so the horizon and the rail are never two lines arguing. */
+.scene::before {
+  background: linear-gradient(to bottom,
+    color-mix(in srgb, var(--bg) var(--scene-veil-1), transparent) 0,
+    color-mix(in srgb, var(--bg) var(--scene-veil-3), transparent) 15%,
+    transparent 44%,
+    color-mix(in srgb, var(--bg) var(--scene-veil-2), transparent) 86%,
+    var(--bg) 100%);
+}
+
+/* Inline scrim. This is the contrast device, and it is here for one reason:
+   the H1, the lede, the eyebrow and the no-card line all sit over this
+   picture, and no honest set of art values clears 4.5:1 for all four of them
+   in both themes. The veil pulls the art back toward the page ground under
+   the copy column and lets it run clear on the other half, so the picture
+   still reads across the full width. Direction-agnostic: the copy is always
+   on the inline start side, and --scene-scrim-dir is the only thing that
+   mirrors. */
+.scene::after {
+  background: linear-gradient(var(--scene-scrim-dir),
+    color-mix(in srgb, var(--bg) var(--scene-veil-1), transparent) 0,
+    color-mix(in srgb, var(--bg) var(--scene-veil-1), transparent) 26%,
+    color-mix(in srgb, var(--bg) var(--scene-veil-2), transparent) 44%,
+    color-mix(in srgb, var(--bg) var(--scene-veil-3), transparent) 62%,
+    transparent 78%);
+}
+
+/* Stacked, the hero is a column, and a wide landscape cropped to a phone-width
+   window is a 5x enlargement of about a fifth of the picture: mush. So on a
+   phone the picture is fitted by WIDTH and parked at the foot of the hero,
+   where the phone mock stands in front of it. The whole landscape is visible,
+   at the size it was drawn for, and the sky simply carries on above it.
+   The copy then sits on that sky rather than on the land, which is also why
+   the block veil below is gentler than the desktop inline one. */
+@media (max-width: 899px) {
+  .scene {
+    /* the sky ramp fills everything above the picture, and joins it seamlessly
+       because the picture's own top row is --art-sky-0 too */
+    background-size: 100% calc(100% - 56.25vw);
+  }
+  .scene__svg,
+  .scene__raster {
+    /* Exactly the viewBox's own 16:9, at the full width of the viewport, so
+       meet and slice coincide and nothing is cropped at all: the whole
+       landscape, ranges to foreground dune, at the foot of the hero. Any
+       enlargement here is what turned the picture to mush on a phone. */
+    inset-block-start: auto;
+    inset-inline: 0;
+    inline-size: 100%;
+    block-size: auto;
+    aspect-ratio: 16 / 9;
+  }
+  .scene::after {
+    background: linear-gradient(to bottom,
+      color-mix(in srgb, var(--bg) var(--scene-veil-2), transparent) 0 40%,
+      color-mix(in srgb, var(--bg) var(--scene-veil-3), transparent) 72%,
+      transparent 94%);
   }
 }
 

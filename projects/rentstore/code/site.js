@@ -587,6 +587,162 @@
 
   /* ------------------------------------------------------------- pages -- */
   /* ------------------------------------------------------------ landing -- */
+  /* ----------------------------------------------------------- hero art -- */
+  /* The ground the landing hero stands on: an original UAE landscape, drawn
+     here rather than photographed. Dune ridges, a distant jagged range, a low
+     sun, warm haze. No building appears in it and none ever should: a Burj
+     hero is the most-reused image in UAE marketing, so it says nothing about
+     this product, and it is a live trademark. The landscape says Gulf and
+     belongs to nobody. DESIGN.md §7 records the decision.
+
+     Why it is inline in the DOM and not a background-image: every colour in it
+     is a CSS custom property, and a `data:` URI cannot read this document's
+     tokens. Inline, styles.css paints it and it re-themes with the page.
+
+     What each layer is for:
+       sky     one source of light. A four-node gradient mesh, not a two-stop
+               ramp, so the sky has a direction.
+       clouds  feTurbulence. Smooth ellipses read as vector art; noise reads
+               as sky.
+       ranges  two ridges at two depths. Geography without a landmark.
+       haze    feTurbulence + feGaussianBlur across the ranges' feet. This is
+               the depth cue: it is what makes the far range far.
+       dunes   three ridges, the near one darkest, the middle crest catching
+               the sun. Their curves run toward the phone mock.
+     Nothing here moves: the landing page runs MOTION 1. */
+
+  var SKY_DEFS =
+    "<defs>" +
+      /* the sky ramp: top, upper, lower, horizon */
+      '<linearGradient id="rsSky" x1="0" y1="0" x2="0" y2="1">' +
+        '<stop class="k-sky-0" offset="0"/><stop class="k-sky-1" offset=".40"/>' +
+        '<stop class="k-sky-2" offset=".72"/><stop class="k-sky-3" offset="1"/>' +
+      "</linearGradient>" +
+      /* mesh node A: the corner opposite the sun, where the light has gone */
+      '<radialGradient id="rsWashA" cx=".16" cy=".04" r=".8">' +
+        '<stop class="k-wash-a0" offset="0"/><stop class="k-wash-a1" offset="1"/>' +
+      "</radialGradient>" +
+      /* mesh node B: warm air banked up on the far side */
+      '<radialGradient id="rsWashB" cx=".92" cy=".5" r=".62">' +
+        '<stop class="k-wash-b0" offset="0"/><stop class="k-wash-b1" offset="1"/>' +
+      "</radialGradient>" +
+      /* mesh node C: the bloom. Flat and wide, so it hugs the horizon instead
+         of climbing into the headline. */
+      '<radialGradient id="rsBloom" cx=".5" cy=".5" r=".5">' +
+        '<stop class="k-bloom-0" offset="0"/><stop class="k-bloom-1" offset=".42"/>' +
+        '<stop class="k-bloom-2" offset="1"/>' +
+      "</radialGradient>" +
+      /* mesh node D: the sun itself, never a hard disc */
+      '<radialGradient id="rsCore" cx=".5" cy=".5" r=".5">' +
+        '<stop class="k-core-0" offset="0"/><stop class="k-core-1" offset=".5"/>' +
+        '<stop class="k-core-2" offset="1"/>' +
+      "</radialGradient>" +
+      /* cloud band: nothing at the top edge, dense in the middle, gone again
+         before the horizon so the clouds do not smother the sun */
+      '<linearGradient id="rsCloudFade" x1="0" y1="0" x2="0" y2="1">' +
+        '<stop class="k-cloud-0" offset="0"/><stop class="k-cloud-1" offset=".3"/>' +
+        '<stop class="k-cloud-2" offset=".74"/><stop class="k-cloud-3" offset="1"/>' +
+      "</linearGradient>" +
+      /* Cloud texture. Turbulence becomes an alpha field, floored so the thin
+         noise drops out and only the dense parts survive as cloud, blurred so
+         the edges are soft, then intersected with the band above. */
+      '<filter id="rsCloudFx" x="-6%" y="-20%" width="112%" height="140%" color-interpolation-filters="sRGB">' +
+        '<feTurbulence type="fractalNoise" baseFrequency="0.0034 0.0125" numOctaves="4" seed="19" result="t"/>' +
+        '<feColorMatrix in="t" type="luminanceToAlpha" result="la"/>' +
+        '<feComponentTransfer in="la" result="ct">' +
+          '<feFuncA type="table" tableValues="0 0 0.08 0.46 0.92 1"/>' +
+        "</feComponentTransfer>" +
+        '<feGaussianBlur in="ct" stdDeviation="6" result="soft"/>' +
+        '<feComposite in="SourceGraphic" in2="soft" operator="in"/>' +
+      "</filter>" +
+    "</defs>";
+
+  var LAND_DEFS =
+    "<defs>" +
+      /* horizon haze: densest on the ranges' feet, gone by the near dune */
+      '<linearGradient id="rsHazeFade" x1="0" y1="0" x2="0" y2="1">' +
+        '<stop class="k-haze-0" offset="0"/><stop class="k-haze-1" offset=".44"/>' +
+        '<stop class="k-haze-2" offset="1"/>' +
+      "</linearGradient>" +
+      /* the crest is lit from the middle of the frame, where the sun is */
+      '<linearGradient id="rsCrest" x1="0" y1="0" x2="1" y2="0">' +
+        '<stop class="k-crest-0" offset="0"/><stop class="k-crest-1" offset=".45"/>' +
+        '<stop class="k-crest-2" offset="1"/>' +
+      "</linearGradient>" +
+      /* Haze. Far lower frequency and a far larger blur than the clouds, so it
+         reads as air rather than as cloud. */
+      '<filter id="rsHazeFx" x="-8%" y="-40%" width="116%" height="180%" color-interpolation-filters="sRGB">' +
+        '<feTurbulence type="fractalNoise" baseFrequency="0.0015 0.0055" numOctaves="3" seed="5" result="t"/>' +
+        '<feColorMatrix in="t" type="luminanceToAlpha" result="la"/>' +
+        '<feComponentTransfer in="la" result="ct">' +
+          '<feFuncA type="table" tableValues="0.12 0.4 0.68 0.9 1"/>' +
+        "</feComponentTransfer>" +
+        '<feGaussianBlur in="ct" stdDeviation="24" result="soft"/>' +
+        '<feComposite in="SourceGraphic" in2="soft" operator="in"/>' +
+      "</filter>" +
+      /* the far range is softened outright: that is distance, not an effect */
+      '<filter id="rsFarFx" x="-4%" y="-14%" width="108%" height="128%" color-interpolation-filters="sRGB">' +
+        '<feGaussianBlur stdDeviation="2.6"/>' +
+      "</filter>" +
+      '<filter id="rsCrestFx" x="-4%" y="-60%" width="108%" height="220%" color-interpolation-filters="sRGB">' +
+        '<feGaussianBlur stdDeviation="3.5"/>' +
+      "</filter>" +
+    "</defs>";
+
+  /* Each massif rises over a short steep windward side, tops out, then falls
+     away on a longer notched talus. The summits are at different heights and
+     the spacing is uneven: an even zigzag is what makes a drawn range read as
+     bunting rather than as rock. The near range's ridgeline is offset from the
+     far one's so no two peaks stack. */
+  var RANGE_FAR =
+    "M0,548 66,505 99,516 156,447 189,462 236,404 290,441 335,464 368,453 " +
+    "422,499 470,490 536,548 546,516 574,526 622,468 650,480 690,432 738,463 " +
+    "778,482 808,473 856,511 899,504 958,552 989,438 1024,454 1074,392 " +
+    "1126,432 1170,457 1202,444 1254,494 1300,484 1364,546 1385,479 1412,489 " +
+    "1450,448 1477,475 1500,491 1516,483 1543,515 1567,509 1600,550 " +
+    "1600,660 0,660Z";
+
+  var RANGE_NEAR =
+    "M0,590 100,588 192,564 239,570 318,532 364,540 430,508 498,529 555,542 " +
+    "597,535 666,561 726,556 810,588 878,547 920,554 980,528 1043,545 " +
+    "1096,555 1134,550 1197,570 1253,566 1330,592 1372,538 1408,546 1460,516 " +
+    "1485,535 1506,547 1522,541 1547,565 1569,560 1600,590 1600,680 0,680Z";
+
+  /* the dunes are the one place with no straight line in the whole picture */
+  var DUNE_FAR_CREST = "M0,614 C214,586 372,626 556,610 C756,592 898,632 1092,616 C1284,600 1442,628 1600,608";
+  var DUNE_MID_CREST = "M0,676 C186,638 328,690 512,672 C700,654 836,724 1026,698 C1222,672 1374,728 1600,692";
+  var DUNE_NEAR_CREST = "M0,772 C204,726 346,796 566,772 C796,746 958,820 1188,790 C1386,764 1486,810 1600,786";
+  var TO_FLOOR = " L1600,900 L0,900 Z";
+
+  function heroScene() {
+    return '<div class="scene" aria-hidden="true">' +
+      '<svg class="scene__svg scene__sky" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" focusable="false">' +
+        SKY_DEFS +
+        '<rect width="1600" height="900" fill="url(#rsSky)"/>' +
+        '<rect width="1600" height="900" fill="url(#rsWashA)"/>' +
+        '<rect width="1600" height="900" fill="url(#rsWashB)"/>' +
+        '<rect x="0" y="30" width="1600" height="480" fill="url(#rsCloudFade)" filter="url(#rsCloudFx)"/>' +
+        '<ellipse cx="800" cy="580" rx="870" ry="292" fill="url(#rsBloom)"/>' +
+        '<ellipse cx="800" cy="574" rx="200" ry="76" fill="url(#rsCore)"/>' +
+      "</svg>" +
+
+      /* The seam for a raster sky. Empty by design; see styles.css. */
+      '<div class="scene__raster"></div>' +
+
+      '<svg class="scene__svg scene__land" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" focusable="false">' +
+        LAND_DEFS +
+        '<path class="k-range-far" d="' + RANGE_FAR + '" filter="url(#rsFarFx)"/>' +
+        '<path class="k-range-near" d="' + RANGE_NEAR + '"/>' +
+        '<rect x="0" y="484" width="1600" height="184" fill="url(#rsHazeFade)" filter="url(#rsHazeFx)"/>' +
+        '<path class="k-dune-far" d="' + DUNE_FAR_CREST + TO_FLOOR + '"/>' +
+        '<path class="k-crest" d="' + DUNE_FAR_CREST + '" fill="none" stroke="url(#rsCrest)" stroke-width="2" filter="url(#rsCrestFx)"/>' +
+        '<path class="k-dune-mid" d="' + DUNE_MID_CREST + TO_FLOOR + '"/>' +
+        '<path class="k-crest" d="' + DUNE_MID_CREST + '" fill="none" stroke="url(#rsCrest)" stroke-width="3" filter="url(#rsCrestFx)"/>' +
+        '<path class="k-dune-near" d="' + DUNE_NEAR_CREST + TO_FLOOR + '"/>' +
+      "</svg>" +
+    "</div>";
+  }
+
   /* A sketch of the seller page, drawn from the demo profile's own rows, so the
      hero shows the thing being sold rather than a stock illustration. */
   function phoneMock() {
@@ -661,18 +817,23 @@
       /* 1. Hero. Page ground, widest measure, asymmetric: the claim on one side,
             the thing itself on the other, the prices ruled off underneath. */
       '<section class="hero hero--landing shell shell--wide">' +
-        '<div class="hero__copy">' +
-          '<p class="eyebrow reveal" data-i18n="land.eyebrow"></p>' +
-          '<h1 class="reveal" data-i18n="land.title"></h1>' +
-          '<p class="hero__lede reveal" data-i18n="land.sub"></p>' +
-          '<div class="hero__cta reveal">' +
-            '<a class="btn btn--primary" href="signup.html" data-i18n="land.ctaMain"></a>' +
-            '<a class="btn btn--ghost" href="demo.html" data-i18n="land.ctaDemo"></a>' +
+        /* The stage carries the art and the two halves that sit on it; the
+           fact rail stays outside it, on the page's own ground. */
+        '<div class="hero__stage">' +
+          heroScene() +
+          '<div class="hero__copy">' +
+            '<p class="eyebrow reveal" data-i18n="land.eyebrow"></p>' +
+            '<h1 class="reveal" data-i18n="land.title"></h1>' +
+            '<p class="hero__lede reveal" data-i18n="land.sub"></p>' +
+            '<div class="hero__cta reveal">' +
+              '<a class="btn btn--primary" href="signup.html" data-i18n="land.ctaMain"></a>' +
+              '<a class="btn btn--ghost" href="demo.html" data-i18n="land.ctaDemo"></a>' +
+            "</div>" +
+            '<p class="tiny muted reveal">' + icon("check", "inline-tick") +
+              '<span data-i18n="land.noCard"></span></p>' +
           "</div>" +
-          '<p class="tiny muted reveal">' + icon("check", "inline-tick") +
-            '<span data-i18n="land.noCard"></span></p>' +
+          '<div class="hero__art reveal">' + phoneMock() + "</div>" +
         "</div>" +
-        '<div class="hero__art reveal">' + phoneMock() + "</div>" +
         '<dl class="facts reveal">' +
           fact(t("plan.freePrice"), t("land.factFree")) +
           fact(money(P.plans.store.price), t("land.factStore")) +
