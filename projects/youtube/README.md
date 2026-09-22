@@ -38,11 +38,12 @@ Four things run inside n8n. One thing deliberately doesn't.
 1. **Intake** — a Drive watch logs every new raw file as a tracked row,
    status `Needs edit`.
 2. **Auto-edit, enhance, add a soundtrack** — **not an n8n workflow.** It
-   needs Higgsfield's generation tools (soundtrack + upscale), which only
-   exist through Claude's own chat connection, plus a Creatomate template
-   for the actual cut/assembly. You ping Claude to process pending rows;
-   it reads/writes the Sheet directly through a Google Drive + Sheets
-   connector and leaves the row at `Ready to schedule`.
+   uses vidIQ's generation tools (`vidiq_generate_music` for the soundtrack,
+   `vidiq_compose` to assemble the clip + music + title overlay into a
+   rendered MP4), which only exist through Claude's own chat connection. You
+   ping Claude to process pending rows; it reads/writes the Sheet directly
+   through a Google Drive + Sheets connector and leaves the row at
+   `Ready to schedule`.
 3. **You** fill in title, description, tags, thumbnail, and the publish
    date, then flip status to `Scheduled`.
 4. **Request approval → handle the reply** — a daily Telegram ping with
@@ -56,7 +57,7 @@ Four things run inside n8n. One thing deliberately doesn't.
 | --- | --- |
 | Drive intake, Sheet logging | Built. Needs your `REPLACE_WITH_...` IDs filled in. |
 | Approval request/reply, scheduled publish | Built. Needs Telegram bot + YouTube Data API v3 credentials (not set up yet — see workflow 4's note). |
-| Auto-edit (soundtrack + Creatomate assembly + upscale) | Design is real; execution happens through Claude on request, not n8n. Needs: a Creatomate account + template (in progress), a Google Drive + Sheets connector granted to Claude (Drive granted; Sheets not yet — a Calendar connector was granted instead, which isn't the same product). |
+| Auto-edit (soundtrack + assembly via vidIQ) | Real, working tools (`vidiq_generate_music`, `vidiq_compose`) reachable now through Claude's chat connection — no third-party account or template needed. Still needs: a Google Drive + Sheets connector granted to Claude (Drive granted; Sheets not yet — a Calendar connector was granted instead, which isn't the same product), and the Raw Uploads folder set so files are link-accessible (vidIQ imports by public HTTPS URL). |
 | Monetization (ads, sponsorships, affiliate) | Deliberately last. Needs YouTube Partner Program eligibility first: 1,000 subscribers + 4,000 public watch hours in 12 months, or 10M Shorts views in 90 days. |
 
 ## Open questions the plan still depends on
@@ -71,6 +72,6 @@ Four things run inside n8n. One thing deliberately doesn't.
 
 See the sticky notes inside `youtube-automation-VISUAL.json` (or any of the
 `workflow-0N` files) for the full checklist: Google Drive + Sheets OAuth2
-in n8n, a Telegram bot + chat id, YouTube Data API v3 OAuth2, a Creatomate
-API key + template, and a Google Drive + Sheets connector granted to
-Claude for the auto-edit hand-off.
+in n8n, a Telegram bot + chat id, YouTube Data API v3 OAuth2, and a Google
+Drive + Sheets connector granted to Claude for the auto-edit hand-off.
+vidIQ needs no separate setup — it's already connected in this chat.

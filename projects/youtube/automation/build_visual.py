@@ -6,7 +6,7 @@ nodes (real types, real parameters) instead of No-Ops.
 
 This does not change what the workflow does — every node, connection and
 parameter is identical to the source files. It only changes where things
-sit on the canvas. The auto-edit step (soundtrack/Creatomate/upscale) is
+sit on the canvas. The auto-edit step (soundtrack + assembly via vidIQ) is
 NOT an n8n workflow — it's Claude, processing on request through a Google
 Drive+Sheets connector — so it's drawn as a note between Step 1 and Step 2,
 not as fake nodes.
@@ -79,16 +79,18 @@ SETUP_CHECKLIST = (
     "**4. YouTube Data API v3** — Google Cloud Console → new project → enable the API → OAuth "
     "consent screen → OAuth client → connect it as a YouTube credential in n8n, signed in as the "
     "channel's own account. See Step 3's note for the full sequence.\n\n"
-    "**5. Claude's own Google connector + Creatomate** — see the note below Step 1."
+    "**5. Claude's own Google connector** — see the note below Step 1. vidIQ needs no separate "
+    "setup; it's already connected."
 )
 
 CLAUDE_STEP_NOTE = (
     "## 🤖 Between Step 1 and Step 2 — Claude does this, not n8n\n\n"
     "`Needs edit` rows aren't picked up automatically. **You ping Claude** to process them: it "
-    "generates a soundtrack and upscales via Higgsfield, assembles the cut via a Creatomate "
-    "template, then reads/writes the row directly through a Google Drive + Sheets connector, "
-    "setting status to `Ready to schedule`. No n8n node calls Higgsfield — there's no confirmed "
-    "public endpoint for it reachable from n8n — and this runs on request, not on a schedule."
+    "generates a soundtrack (vidiq_generate_music) and assembles the cut (vidiq_compose — clip + "
+    "music + a title overlay, rendered to MP4), then reads/writes the row directly through a "
+    "Google Drive + Sheets connector, setting status to `Ready to schedule`. No n8n node calls "
+    "vidIQ — its tools only exist through Claude's own chat connection — and this runs on "
+    "request, not on a schedule."
 )
 
 

@@ -117,20 +117,20 @@
 
   <div class="phase">
     <div class="phase__head"><span class="phase__n">Step 2b</span><h2>Auto-edit, enhance, add a soundtrack</h2></div>
-    <p class="phase__note">Not an n8n workflow — this step runs when you ping Claude in chat. Claude generates a soundtrack and upscales via Higgsfield, assembles the cut via a Creatomate template, then reads/writes the row directly through a Google Drive + Sheets connector.</p>
+    <p class="phase__note">Not an n8n workflow — this step runs when you ping Claude in chat. Claude generates a soundtrack and assembles the cut with vidIQ's tools, then reads/writes the row directly through a Google Drive + Sheets connector.</p>
     <div class="groups">
       <div class="group group--engine">
         <h3>🎬 Assemble automatically</h3>
         <ul class="flow">
-          <li class="item"><div class="item__body"><h4>Generate a soundtrack</h4><p>A short generated track matched to the video's pillar/mood, made before assembly so it can be baked into the template render.</p></div></li>
-          <li class="item"><div class="item__body"><h4>Assemble from a template</h4><p>The raw clip, the generated soundtrack, and a title overlay are composited by a template-based render engine — mechanical assembly, not creative editing.</p></div></li>
+          <li class="item"><div class="item__body"><h4>Generate a soundtrack</h4><p>A short generated track matched to the video's pillar/mood (vidiq_generate_music), made before assembly so it can be baked into the compose step.</p></div></li>
+          <li class="item"><div class="item__body"><h4>Compose the cut</h4><p>The raw clip, the generated soundtrack, and a title overlay are composited by vidIQ's compose tool into a rendered MP4 — mechanical assembly, not creative editing.</p></div></li>
         </ul>
       </div>
       <div class="group group--engine">
-        <h3>✨ Enhance</h3>
+        <h3>🎯 Sharpen the metadata</h3>
         <ul class="flow">
-          <li class="item"><div class="item__body"><h4>Upscale for quality</h4><p>The assembled render is upscaled before it's filed as the finished cut.</p></div></li>
-          <li class="item"><div class="item__body"><h4>File as Ready to schedule</h4><p>Dropped into the Edited folder and logged back to the calendar by Claude — nothing left but the title and the publish date.</p></div></li>
+          <li class="item"><div class="item__body"><h4>Generate title & thumbnail options</h4><p>Scored candidates (vidiq_generate_titles/_thumbnail) ready for the human pick in the next step — not auto-applied.</p></div></li>
+          <li class="item"><div class="item__body"><h4>File as Ready to schedule</h4><p>Dropped into the Edited folder and logged back to the calendar by Claude — nothing left but the final title choice and the publish date.</p></div></li>
         </ul>
       </div>
     </div>

@@ -58,16 +58,17 @@ SETUP_CHECKLIST = (
     "to get your own numeric chat id. Add both to the Telegram credential and to the "
     "`REPLACE_WITH_YOUR_TELEGRAM_CHAT_ID` fields.\n\n"
     "**5. YouTube Data API v3** — see the dedicated note in lane 4.\n\n"
-    "**6. Claude's Google connector + Creatomate** — see the standalone note between lanes 1 and 2."
+    "**6. Claude's Google connector** — see the standalone note between lanes 1 and 2. vidIQ "
+    "needs no separate setup; it's already connected."
 )
 
 CLAUDE_STEP_NOTE = (
     "## 🤖 Claude does this step — it is NOT in this file\n\n"
     "Between `Needs edit` and `Ready to schedule`, nothing here runs automatically. **You ping "
-    "Claude** (in chat) to process pending rows: it generates a soundtrack and upscales via "
-    "Higgsfield, assembles the cut via a Creatomate template, then reads/writes the row directly "
-    "through a Google Drive + Sheets connector. No n8n workflow calls Higgsfield or Creatomate — "
-    "there's no confirmed public endpoint for Higgsfield reachable from n8n, and this step runs "
+    "Claude** (in chat) to process pending rows: it generates a soundtrack (vidiq_generate_music) "
+    "and assembles the cut (vidiq_compose — clip + music + title overlay, rendered to MP4), then "
+    "reads/writes the row directly through a Google Drive + Sheets connector. No n8n workflow "
+    "calls vidIQ — its tools only exist through Claude's own chat connection — and this step runs "
     "on request rather than on a schedule."
 )
 

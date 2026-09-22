@@ -5,7 +5,8 @@ reply, and publish approved items to YouTube on schedule. All four share
 one Google Sheet ("Content Calendar") as their common state.
 
 The auto-edit / enhance / soundtrack step (Step 2 of the plan) is
-deliberately NOT an n8n workflow. It needs Higgsfield's generation tools,
+deliberately NOT an n8n workflow. It uses vidIQ's generation tools
+(vidiq_generate_music, vidiq_compose, vidiq_generate_thumbnail/titles),
 which only exist through Claude's own MCP connection in chat, and it's
 processed on request rather than on a schedule — so it's Claude doing that
 step directly (via a Google Drive + Sheets connector), not a fifth file
@@ -25,13 +26,12 @@ SHEET_NOTE = (
     "`description` `tags` `thumbnail_link` `scheduled_datetime` `status` "
     "`telegram_message_id` `youtube_url`\n\n"
     "**status** moves through: `Needs edit` → **[you ping Claude — not an n8n "
-    "workflow — to generate the soundtrack, assemble via Creatomate, and "
-    "upscale]** → `Ready to schedule` → (you fill in title, description, tags, "
+    "workflow — to generate a soundtrack and assemble the cut with vidIQ]** → "
+    "`Ready to schedule` → (you fill in title, description, tags, "
     "thumbnail_link, scheduled_datetime, set status to `Scheduled`) → "
     "`Awaiting Approval` → `Approved` or `Rejected` → `Published`.\n\n"
-    "The auto-edit step isn't here because it needs Higgsfield's tools, which "
-    "only exist through Claude's chat connection — there's no confirmed public "
-    "REST endpoint to call from n8n directly."
+    "The auto-edit step isn't here because it needs vidIQ's generation tools, "
+    "which only exist through Claude's chat connection — no n8n node calls them."
 )
 
 CREDS_NOTE = (

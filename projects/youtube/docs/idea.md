@@ -10,11 +10,11 @@ isn't the first lever.
    watch hours, brand the channel, pick 3–5 recurring content pillars.
 2. **Collect & log** — raw video/photo dropped into one Drive folder, one
    naming rule, logged automatically as a tracked row.
-3. **Auto-edit, enhance, add a soundtrack** — a generated soundtrack, a
-   template-based assembly (cut/order/title overlay), an upscale pass.
-   Mechanical assembly, not creative judgment — that's why it needs a
-   template renderer rather than an editor's eye. This step is Claude,
-   not n8n: see the README for why.
+3. **Auto-edit, enhance, add a soundtrack** — a generated soundtrack
+   (`vidiq_generate_music`), then assembly into a rendered cut
+   (`vidiq_compose`: clip + music + title overlay). Mechanical assembly,
+   not creative judgment — that's why it's a composition tool rather than
+   an editor's eye. This step is Claude, not n8n: see the README for why.
 4. **Calendar** — title, description, tags, thumbnail, and a publish date,
    picked by a person, once per item.
 5. **Confirm before publish** — the one mandatory human checkpoint. Nothing
@@ -38,19 +38,26 @@ than guessing at them here.
 
 It needs two things n8n can't reach on its own:
 
-- **Higgsfield's soundtrack generation and upscaling** — these exist as
-  tools inside Claude's own chat connection (MCP). There's no confirmed
-  public REST endpoint for them that an n8n HTTP Request node could call
-  directly.
+- **vidIQ's generation tools** — `vidiq_generate_music` and `vidiq_compose`
+  exist as tools inside Claude's own chat connection (MCP), not as a public
+  REST endpoint an n8n HTTP Request node could call directly.
 - **A human decision about when to run it** — the user chose on-request
   processing ("ping me") over a standing schedule, so there's no cron
   trigger polling for this step the way there is for the other four.
 
 So instead: n8n logs a raw file as `Needs edit` and stops. The user pings
-Claude, who generates the soundtrack, calls Creatomate's real (documented)
-render API directly, upscales the result, and writes the finished cut back
-to Drive and the Sheet through a Google Drive + Sheets connector — closing
-the loop without n8n's involvement in this one step.
+Claude, who generates the soundtrack, composes the final cut (clip + music
++ title overlay) with vidIQ, and writes the finished cut back to Drive and
+the Sheet through a Google Drive + Sheets connector — closing the loop
+without n8n's involvement in this one step. vidIQ also has real tools for
+scored title/thumbnail suggestions (`vidiq_generate_titles`,
+`vidiq_generate_thumbnail`, and their `_score_` counterparts) that can
+speed up the Calendar step, though the final pick stays a human call.
+
+**What this drops from the earlier design:** no Creatomate account or
+template to build, and no separate "upscale" call — vidIQ's compose step
+doesn't include a quality-upscale pass. If footage quality turns out to
+need it, that's a gap to revisit, not something silently assumed solved.
 
 ## Open questions
 
