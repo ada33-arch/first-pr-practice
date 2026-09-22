@@ -18,6 +18,7 @@ A practice repository for the GitHub workflow — cloning, branching, committing
 - `scripts/slack-upload.sh` — uploads a file to Slack via the three-step external-upload flow
 - `connect-apps-plugin/` — a Claude Code plugin providing `/connect-apps:setup`
 - `projects/rentstore/` — the marketplace project, and the pattern every project here follows: `content/data.js` (all words, prices, stores), `design/styles.css`, `pages/*.html`, `code/site.js` + `code/bundle.mjs`, `automation/*.json` (n8n), `docs/idea.md` + `docs/timeline.html`. No build step; `node projects/rentstore/code/bundle.mjs` emits a single-file build.
+  - `projects/rentstore/automation-editor/` — a `@workflowbuilder/sdk` visual editor for `automation/01-signup-free.json` (hand-mapped, not a generic n8n importer). The one exception to rentstore's no-build-step rule; own `package.json`. See its `README.md` and `docs/idea.md` — the latter documents two real SDK bugs found only by rendering in a headless browser (the default node template renders nothing; JsonForms' generic `'Control'` uischema type doesn't exist in this SDK, use `'Text'`).
 - `projects/workflowbuilder/` — a minimal embed of [`@workflowbuilder/sdk`](https://github.com/synergycodes/workflowbuilder) (a React SDK for visual workflow editors), following the upstream "embed the SDK" quick start. Unlike `rentstore`, this one *does* need a build step (Vite + TypeScript, since the SDK ships as JSX) — it's its own `npm install`/`npm run build`/`npm run dev`, separate from the root `package.json`. See its own `README.md` and `docs/idea.md` for what it proves and what it deliberately skips (no custom nodes, no backend, no Docker).
 - `.claude/skills/workflow-canvas/` — the house style for any plan or workflow: draw it as an n8n canvas (numbered step zones, colour-coded groups, notes carrying the real numbers) **and** a readable page, both generated from one definition by `canvas.py`. Use it whenever a plan, workflow, automation, launch or marketing plan is asked for.
 - `.claude/skills/ui-ux-pro-max/` — UI/UX design-guidance skill (definition only; the `search.py` CLI and CSV data it references are not vendored here)
@@ -38,6 +39,7 @@ There is no test suite. `npm run typecheck` is the closest thing to one — run 
 
 - **Docs and content** — verified by reading.
 - **`projects/rentstore/`** — open the pages in a browser (`npx serve projects/rentstore/pages`) and click through: signup validation, the language and theme toggles, cart add/remove, and checkout. There is nothing to compile.
+- **`projects/rentstore/automation-editor/`** — has its own `package.json`; `cd` into it, `npm install`, then `npm run build` (typechecks and builds) or `npm run dev` and open the editor in a browser.
 - **`projects/workflowbuilder/`** — has its own `package.json`; `cd` into it, `npm install`, then `npm run build` (typechecks and builds) or `npm run dev` and open the editor in a browser.
 - **Actions and workflow** — CI exercises these on every PR. To check locally first, emulate the runner contract: inputs arrive as `INPUT_<NAME>`, and outputs/state are *appended* to the files named by `$GITHUB_OUTPUT` / `$GITHUB_STATE`.
 
