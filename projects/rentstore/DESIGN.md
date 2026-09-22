@@ -60,20 +60,32 @@ One accent, one ground. The house brief's "one accent hue, never two" rule holds
 | Raised | `#17130f` | `#ffffff` | cards, the topbar when stuck |
 | Ink | `#f7f2e8` | `#17140e` | 17.7:1 / 16.9:1 |
 | Ink soft | `#aca396` | `#5d574c` | 7.9:1 / 6.6:1 — body copy floor |
-| Accent | `#d8b475` | `#9a7433` | champagne |
-| On accent | `#1a1508` | `#fffaf0` | 9.3:1 on the dark-mode accent |
+| Accent (fills, rules, focus ring) | `#d8b475` | `#9a7433` | champagne; non-text use only in light |
+| Accent as text | `#d8b475` | `#7d5d24` | 10.1:1 / 5.6:1 |
+| Accent as a CTA surface | `#d8b475` | `#8a6728` | carries `--accent-ink` on top |
+| On accent | `#1a1508` | `#fffaf0` | 9.3:1 dark / 5.0:1 light |
 
-### Known failures — fix, do not propagate
+### Why champagne needs three tokens, not one
 
-Measured with `.claude/skills/antislop-human/contrast-check.py`:
+Measured with `.claude/skills/antislop-human/contrast-check.py`. One champagne
+value cannot do all three jobs in light mode, so the palette splits it:
 
-- `--ink-mute` `#726a5e` on the dark ground is **3.71:1**. Fails normal text.
-- `--ink-mute` `#8b8478` on the light ground is **3.40:1**. Fails normal text.
-- The light-mode accent `#9a7433` as *text* on `#f8f5ef` is **3.92:1**. It is
-  safe as a fill with `--accent-ink` on top, and unsafe as a label.
+| Was | Ratio | Verdict |
+|---|---|---|
+| `#9a7433` as text on `#f8f5ef` | 3.92:1 | fails AA |
+| `--accent-ink` `#fffaf0` on `#9a7433` | **4.10:1** | fails AA |
+| `#9a7433` as a rule or focus ring | 3.92:1 | passes the 3:1 non-text bar |
 
-Treat `--ink-mute` as a hairline-and-icon colour only. Any text currently using
-it needs `--ink-soft` or darker. Do not introduce a fourth grey to dodge this.
+An earlier draft of this file claimed `#9a7433` was safe as a fill with
+`--accent-ink` on top. It is not — that is the 4.10:1 row, and it was failing
+on every primary button, the brand mark and the cart badge in light mode.
+Hence `--accent-text` `#7d5d24` (5.6:1) and `--accent-solid` `#8a6728` (5.0:1
+under `--accent-ink`). `--accent` itself stays, for fills and rules only.
+
+`--ink-mute` was also colouring text at **3.71:1** dark and **3.40:1** light.
+It is now a control-edge colour only, which is the one job it clears 3:1 for in
+all four states. Do not colour text with it, and do not add a fourth grey to
+dodge this.
 
 ### Hard palette rules
 

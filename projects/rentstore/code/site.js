@@ -533,95 +533,6 @@
     }).join(" ");
   }
 
-  /* the phone in the hero runs a loop of someone using it */
-  function livePhone() {
-    var phone = qs(".phone");
-    if (!phone || reduced()) return;
-    var rows = qsa(".phone__links span", phone);
-    var tiles = qsa(".phone__grid i", phone);
-    if (!rows.length) return;
-
-    var cursor = document.createElement("span");
-    cursor.className = "phone__cursor";
-    phone.appendChild(cursor);
-
-    var i = 0;
-    function beat() {
-      rows.forEach(function (r) { r.classList.remove("is-focus"); });
-      tiles.forEach(function (t) { t.classList.remove("is-pop"); });
-
-      var row = rows[i % rows.length];
-      row.classList.add("is-focus");
-
-      var pr = phone.getBoundingClientRect();
-      var rr = row.getBoundingClientRect();
-      cursor.classList.add("is-on");
-      cursor.style.transform = "translate(" +
-        (rr.left - pr.left + rr.width * 0.16) + "px," +
-        (rr.top - pr.top + rr.height / 2 - 11) + "px)";
-      cursor.classList.remove("is-tap");
-      void cursor.offsetWidth;
-      cursor.classList.add("is-tap");
-
-      if (i % rows.length === rows.length - 1) {
-        tiles.forEach(function (t, n) {
-          loops.push(setTimeout(function () { t.classList.add("is-pop"); }, 320 + n * 140));
-        });
-      }
-      i++;
-      loops.push(setTimeout(beat, 2600));
-    }
-    loops.push(setTimeout(beat, 900));
-  }
-
-  /* the connector behind the three steps draws itself once, on arrival.
-     A plain scroll check, not an observer: jumping straight past an element
-     crosses no threshold, so an observer would never fire and the line would
-     sit at zero width forever. */
-  function drawSteps() {
-    var steps = qs(".steps");
-    if (!steps) return;
-    if (reduced()) { steps.classList.add("is-in"); return; }
-    function check() {
-      if (steps.getBoundingClientRect().top < window.innerHeight * 0.85) {
-        steps.classList.add("is-in");
-        window.removeEventListener("scroll", check);
-      }
-    }
-    window.addEventListener("scroll", check, { passive: true });
-    check();
-  }
-
-  /* prices roll up from zero when their card arrives */
-  function rollPrices() {
-    if (reduced() || !("IntersectionObserver" in window)) return;
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        var el = entry.target;
-        io.unobserve(el);
-        var text = el.textContent;
-        var match = text.match(/[\d,]+/);
-        if (!match) return;
-        var target = Number(match[0].replace(/,/g, ""));
-        if (!target) return;
-        var head = text.slice(0, match.index);
-        var tail = text.slice(match.index + match[0].length);
-        var started = null;
-        function frame(now) {
-          if (!started) started = now;
-          var k = Math.min(1, (now - started) / 850);
-          var eased = 1 - Math.pow(1 - k, 3);
-          el.textContent = head + Math.round(target * eased).toLocaleString("en-US") + tail;
-          if (k < 1) requestAnimationFrame(frame);
-        }
-        el.textContent = head + "0" + tail;
-        requestAnimationFrame(frame);
-      });
-    }, { rootMargin: "0px 0px -10% 0px" });
-    qsa(".plan__price").forEach(function (el) { io.observe(el); });
-  }
-
   /* primary buttons lean toward the cursor — only where there is a real cursor */
   function magnetise() {
     if (reduced() || !window.matchMedia("(pointer: fine)").matches) return;
@@ -667,17 +578,17 @@
       void root.offsetWidth;
       root.classList.add("is-entering");
     }
-    splitHeadline(qs(".hero--landing h1"));
-    livePhone();
-    drawSteps();
-    rollPrices();
+    /* The landing page runs MOTION 1: scroll reveal and hover, nothing else.
+       Every other page keeps the word-by-word headline. */
+    if (document.body.dataset.page !== "landing") splitHeadline(qs(".hero--landing h1"));
     magnetise();
     stagger();
   }
 
   /* ------------------------------------------------------------- pages -- */
   /* ------------------------------------------------------------ landing -- */
-  /* a live sketch of the seller page, built from the demo profile's own data */
+  /* A sketch of the seller page, drawn from the demo profile's own rows, so the
+     hero shows the thing being sold rather than a stock illustration. */
   function phoneMock() {
     var links = (S.links || []).slice(0, 3);
     var picks = (S.products || []).filter(function (x) { return x.featured; }).slice(0, 2);
@@ -687,9 +598,7 @@
           '<div class="phone__name">' + esc(tx(S.name)) + "</div>" +
           '<div class="phone__handle ltr">@' + esc(S.handle) + "</div>" +
           '<div class="phone__links">' +
-            links.map(function (l) {
-              return '<span><i>' + l.icon + "</i>" + esc(tx(l.title)) + "</span>";
-            }).join("") +
+            links.map(function (l) { return "<span>" + esc(tx(l.title)) + "</span>"; }).join("") +
           "</div>" +
           '<div class="phone__grid">' +
             picks.map(function (x) {
@@ -700,40 +609,47 @@
       "</div>";
   }
 
-  /* one row of categories, doubled so the loop has no seam */
-  function marqueeRow(items, extra) {
-    var cells = items.map(function (item) {
-      return '<span class="sell"><i>' + item.icon + "</i>" + esc(tx(item.label)) + "</span>";
-    }).join("");
-    return '<div class="marquee' + extra + '"><div class="marquee__track">' + cells + cells + "</div></div>";
+  /* The three prices, stated once under the hero. Every figure is read from the
+     plans in data.js; none of them is written here. */
+  function fact(value, label) {
+    return '<div class="fact">' +
+        '<dt class="fact__v">' + esc(value) + "</dt>" +
+        '<dd class="fact__k">' + esc(label) + "</dd>" +
+      "</div>";
   }
 
-  function planCard(plan, key) {
-    var isStore = key === "store";
+  function tierLines(plan, ticked) {
+    return (plan.lines || []).map(function (line) {
+      return "<li>" + (ticked ? icon("check") : "") + "<span>" + esc(tx(line)) + "</span></li>";
+    }).join("");
+  }
+
+  /* The store plan is the one decision this page asks for, so it is the only
+     raised surface in the section; the other two sit flat on the page. */
+  function leadTier(plan) {
+    return '<article class="tier tier--lead reveal">' +
+        '<h3 class="tier__name">' + esc(tx(plan.name)) + "</h3>" +
+        '<p class="tier__cost"><span class="tier__price">' + esc(money(plan.price)) + "</span> " +
+          '<span class="tier__period">' + esc(tx(plan.period)) + "</span></p>" +
+        '<ul class="tier__lines tier__lines--ticked">' + tierLines(plan, true) + "</ul>" +
+        '<a class="btn btn--primary btn--block" href="signup.html?plan=store" data-i18n="plan.ctaStore"></a>' +
+        '<p class="tier__note">' + esc(tx(plan.note)) + "</p>" +
+      "</article>";
+  }
+
+  function sideTier(plan, key) {
     var isSetup = key === "setup";
-    var price;
-    if (isStore) {
-      price = '<span class="plan__price">' + esc(money(plan.price)) + "</span>" +
-              '<span class="plan__period">' + esc(tx(plan.period)) + "</span>";
-    } else if (isSetup) {
-      price = '<span class="plan__price">' + esc(money(plan.price)) + "</span>" +
-              '<span class="plan__period">' + esc(tx(plan.once)) + "</span>";
-    } else {
-      price = '<span class="plan__price">' + esc(t("plan.freePrice")) + "</span>" +
-              '<span class="plan__period">' + esc(tx(plan.note)) + "</span>";
-    }
-    var cta = isStore ? "plan.ctaStore" : isSetup ? "plan.ctaSetup" : "plan.ctaFree";
-    var href = isStore ? "signup.html?plan=store" : isSetup ? "setup.html" : "signup.html";
-    return '<article class="plan' + (isStore ? " plan--lead" : "") + (isSetup ? " plan--setup" : "") + ' reveal">' +
-        (plan.badge ? '<span class="plan__badge">' + esc(tx(plan.badge)) + "</span>" : "") +
-        '<h3 class="plan__name">' + esc(tx(plan.name)) + "</h3>" +
-        '<div class="plan__cost">' + price + "</div>" +
-        "<ul>" + (plan.lines || []).map(function (line) {
-          return "<li>" + icon("check") + "<span>" + esc(tx(line)) + "</span></li>";
-        }).join("") + "</ul>" +
-        '<a class="btn ' + (isStore ? "btn--primary" : "btn--ghost") + ' btn--block" href="' + href +
-          '" data-i18n="' + cta + '"></a>' +
-        (isStore || isSetup ? '<p class="plan__note tiny muted">' + esc(tx(plan.note)) + "</p>" : "") +
+    return '<article class="tier tier--side reveal">' +
+        '<h3 class="tier__name">' + esc(tx(plan.name)) +
+          (isSetup && plan.badge ? '<span class="tier__tag">' + esc(tx(plan.badge)) + "</span>" : "") +
+        "</h3>" +
+        '<p class="tier__cost"><span class="tier__price">' +
+          esc(isSetup ? money(plan.price) : t("plan.freePrice")) + "</span> " +
+          '<span class="tier__period">' + esc(tx(isSetup ? plan.once : plan.note)) + "</span></p>" +
+        '<ul class="tier__lines">' + tierLines(plan, false) + "</ul>" +
+        '<a class="btn btn--ghost btn--block btn--sm" href="' + (isSetup ? "setup.html" : "signup.html") +
+          '" data-i18n="' + (isSetup ? "plan.ctaSetup" : "land.ctaMain") + '"></a>' +
+        (isSetup ? '<p class="tier__note">' + esc(tx(plan.note)) + "</p>" : "") +
       "</article>";
   }
 
@@ -742,60 +658,122 @@
     if (!root) return;
 
     root.innerHTML =
+      /* 1. Hero. Page ground, widest measure, asymmetric: the claim on one side,
+            the thing itself on the other, the prices ruled off underneath. */
       '<section class="hero hero--landing shell shell--wide">' +
-        '<div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>' +
         '<div class="hero__copy">' +
-          '<div class="eyebrow reveal" data-i18n="land.eyebrow"></div>' +
+          '<p class="eyebrow reveal" data-i18n="land.eyebrow"></p>' +
           '<h1 class="reveal" data-i18n="land.title"></h1>' +
-          '<p class="reveal" data-i18n="land.sub"></p>' +
+          '<p class="hero__lede reveal" data-i18n="land.sub"></p>' +
           '<div class="hero__cta reveal">' +
             '<a class="btn btn--primary" href="signup.html" data-i18n="land.ctaMain"></a>' +
             '<a class="btn btn--ghost" href="demo.html" data-i18n="land.ctaDemo"></a>' +
           "</div>" +
-          '<p class="tiny muted reveal">' + icon("check", "inline-tick") + '<span data-i18n="land.noCard"></span></p>' +
+          '<p class="tiny muted reveal">' + icon("check", "inline-tick") +
+            '<span data-i18n="land.noCard"></span></p>' +
         "</div>" +
         '<div class="hero__art reveal">' + phoneMock() + "</div>" +
+        '<dl class="facts reveal">' +
+          fact(t("plan.freePrice"), t("land.factFree")) +
+          fact(money(P.plans.store.price), t("land.factStore")) +
+          fact(t("land.factZero"), t("land.factCommission")) +
+        "</dl>" +
       "</section>" +
 
-      '<section class="section shell shell--wide">' +
-        '<div class="section__head"><h2 class="section__title" data-i18n="land.sells"></h2>' +
-        '<span class="tiny muted" data-i18n="land.sellsSub"></span></div>' +
-        marqueeRow(P.sells || [], "") +
-        marqueeRow((P.sells || []).slice().reverse(), " marquee--back") +
+      /* 2. What you can sell. A raised band at its narrowest measure: one short
+            beat between the hero and the how, set as a sentence, not as tiles. */
+      '<section class="band band--tight">' +
+        '<div class="shell shell--wide">' +
+          '<div class="measure">' +
+            '<h2 class="sect__title reveal" data-i18n="land.sells"></h2>' +
+            '<ul class="run reveal">' +
+              (P.sells || []).map(function (item) {
+                return "<li>" + esc(tx(item.label)) + "</li>";
+              }).join(" ") +
+            "</ul>" +
+            '<p class="sect__sub reveal" data-i18n="land.sellsSub"></p>' +
+          "</div>" +
+        "</div>" +
       "</section>" +
 
-      '<section class="section shell shell--wide">' +
-        '<div class="section__head"><h2 class="section__title" data-i18n="land.steps"></h2></div>' +
-        '<ol class="steps">' +
+      /* 3. How you open. Back to the page ground and the wide measure, as ruled
+            rows rather than three matching cards: the process is a sequence. */
+      '<section class="sect shell shell--wide" id="how">' +
+        '<div class="sect__head">' +
+          '<h2 class="sect__title" data-i18n="land.steps"></h2>' +
+          '<p class="sect__sub" data-i18n="land.stepsSub"></p>' +
+        "</div>" +
+        '<ol class="ladder">' +
           (P.steps || []).map(function (step, i) {
-            return '<li class="step reveal"><span class="step__num">' + (i + 1) + "</span>" +
-              "<div><h3>" + esc(tx(step.title)) + "</h3><p class=\"muted\">" + esc(tx(step.body)) + "</p></div></li>";
+            return '<li class="rung reveal">' +
+                '<span class="rung__n" aria-hidden="true">' + (i + 1) + "</span>" +
+                "<h3>" + esc(tx(step.title)) + "</h3>" +
+                "<p>" + esc(tx(step.body)) + "</p>" +
+              "</li>";
           }).join("") +
         "</ol>" +
       "</section>" +
 
-      '<section class="section shell shell--wide" id="pricing">' +
-        '<div class="section__head"><h2 class="section__title" data-i18n="land.pricing"></h2>' +
-        '<span class="tiny muted" data-i18n="land.pricingSub"></span></div>' +
-        '<div class="plans">' +
-          planCard(P.plans.free, "free") +
-          planCard(P.plans.store, "store") +
-          planCard(P.plans.setup, "setup") +
+      /* 4. What it costs. One raised tier against two flat ones, because the
+            page is asking for one of the three and should say which. */
+      '<section class="sect shell shell--wide" id="pricing">' +
+        '<div class="sect__head">' +
+          '<h2 class="sect__title" data-i18n="land.pricing"></h2>' +
+          '<p class="sect__sub" data-i18n="land.pricingSub"></p>' +
+        "</div>" +
+        '<div class="tiers">' +
+          leadTier(P.plans.store) +
+          '<div class="tiers__side">' +
+            sideTier(P.plans.free, "free") +
+            sideTier(P.plans.setup, "setup") +
+          "</div>" +
         "</div>" +
       "</section>" +
 
-      '<section class="section shell">' +
-        '<div class="section__head"><h2 class="section__title" data-i18n="land.faq"></h2></div>' +
-        '<div class="faq">' +
+      /* 5. What the subscription buys, and what it does not. The densest block
+            on the page, on the raised ground: every promise carries its limit. */
+      '<section class="band">' +
+        '<div class="shell shell--wide">' +
+          '<div class="sect__head">' +
+            '<h2 class="sect__title" data-i18n="land.work"></h2>' +
+            '<p class="sect__sub" data-i18n="land.workSub"></p>' +
+          "</div>" +
+          '<div class="ledger">' +
+            '<div class="ledger__head" aria-hidden="true">' +
+              '<span data-i18n="land.workDo"></span><span data-i18n="land.workLimit"></span>' +
+            "</div>" +
+            (P.pillars || []).map(function (x) {
+              return '<div class="ledger__row reveal">' +
+                  '<div class="ledger__do">' +
+                    "<h3>" + esc(tx(x.title)) + "</h3>" +
+                    "<p>" + esc(tx(x.body)) + "</p>" +
+                  "</div>" +
+                  '<p class="ledger__limit">' +
+                    '<span class="ledger__tag" data-i18n="land.workLimit"></span>' +
+                    "<span>" + esc(tx(x.limit)) + "</span>" +
+                  "</p>" +
+                "</div>";
+            }).join("") +
+          "</div>" +
+        "</div>" +
+      "</section>" +
+
+      /* 6. Questions. Narrow measure again, ruled rows, no card. */
+      '<section class="sect shell shell--wide" id="faq">' +
+        '<div class="measure measure--wide">' +
+        '<h2 class="sect__title" data-i18n="land.faq"></h2>' +
+        '<div class="faq faq--flat">' +
           (P.faq || []).map(function (item) {
-            return "<details class=\"reveal\"><summary>" + esc(tx(item.q)) + icon("chevron", "faq__arrow") +
-              "</summary><p>" + esc(tx(item.a)) + "</p></details>";
+            return '<details class="reveal"><summary>' + esc(tx(item.q)) +
+              icon("chevron", "faq__arrow") + "</summary><p>" + esc(tx(item.a)) + "</p></details>";
           }).join("") +
         "</div>" +
+        "</div>" +
       "</section>" +
 
-      '<section class="section shell">' +
-        '<div class="final reveal">' +
+      /* 7. The ask, alone on a band with nothing else to look at. */
+      '<section class="band band--close">' +
+        '<div class="shell shell--wide final final--flat reveal">' +
           '<h2 data-i18n="land.finalTitle"></h2>' +
           '<p class="muted" data-i18n="land.finalSub"></p>' +
           '<a class="btn btn--primary" href="signup.html" data-i18n="land.ctaMain"></a>' +

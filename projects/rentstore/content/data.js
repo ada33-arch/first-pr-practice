@@ -40,7 +40,7 @@ window.PLATFORM = {
       note: { ar: "الرسوم الحكومية تُدفع للجهة مباشرة", en: "Government fees are paid to the authority directly" },
       badge: { ar: "من الصفر للسوق", en: "Zero to selling" },
       lines: [
-        { ar: "كل مزايا المتجر — سنة كاملة", en: "Everything in Store — a full year" },
+        { ar: "كل مزايا المتجر، سنة كاملة", en: "Everything in Store, for a full year" },
         { ar: "رخصة تجارية باسمك (تجارة إلكترونية)", en: "A trade licence in your name (e-commerce)" },
         { ar: "تجهيز صفحتك ومتجرك ورفع منتجاتك", en: "Your page, store, and products set up for you" },
         { ar: "متابعة الطلب مع الجهة حتى الإصدار", en: "We follow the application through to issue" },
@@ -52,7 +52,8 @@ window.PLATFORM = {
       price: 55,                                  // ← your monthly price
       period: { ar: "شهرياً", en: "per month" },
       note: { ar: "تقدر توقفه في أي وقت", en: "Cancel whenever you want" },
-      badge: { ar: "الأكثر طلباً", en: "Most popular" },
+      // No "most popular" badge: nobody has counted, so it would be a claim
+      // with nothing behind it. The landing page leads this plan by layout.
       lines: [
         { ar: "كل مزايا الملف الشخصي", en: "Everything in Profile" },
         { ar: "منتجات بلا حد مع صور وأسعار", en: "Unlimited products with images and prices" },
@@ -133,12 +134,45 @@ window.PLATFORM = {
 
   // what people sell on it — the perfume shop is only one example
   sells: [
-    { icon: "🧴", label: { ar: "عطور ومستحضرات", en: "Perfume and beauty" } },
-    { icon: "📚", label: { ar: "كتب ومطبوعات", en: "Books and print" } },
-    { icon: "🎓", label: { ar: "دورات وملفات", en: "Courses and files" } },
-    { icon: "💻", label: { ar: "أنظمة وبرامج", en: "Software and systems" } },
-    { icon: "🛠️", label: { ar: "خدمات وحجوزات", en: "Services and bookings" } },
-    { icon: "🔁", label: { ar: "اشتراكات شهرية", en: "Monthly subscriptions" } },
+    { label: { ar: "عطور ومستحضرات", en: "Perfume and beauty" } },
+    { label: { ar: "كتب ومطبوعات", en: "Books and print" } },
+    { label: { ar: "دورات وملفات", en: "Courses and files" } },
+    { label: { ar: "أنظمة وبرامج", en: "Software and systems" } },
+    { label: { ar: "خدمات وحجوزات", en: "Services and bookings" } },
+    { label: { ar: "اشتراكات شهرية", en: "Monthly subscriptions" } },
+  ],
+
+  /* The four pillars from docs/idea.md, each carrying its own honest limit.
+     Nothing here is new: the limits are transcribed from that table. */
+  pillars: [
+    {
+      title: { ar: "نبني متجرك", en: "We build your store" },
+      body: { ar: "نرفع منتجاتك وصورك ونرتّب التصنيفات، والمتجر يفتح خلال أيام.",
+              en: "We upload your products and images and sort the categories, and the store opens within days." },
+      limit: { ar: "نبنيه بيدنا، فأحياناً فيه دور تنتظره.",
+               en: "We build by hand, so sometimes there is a queue." },
+    },
+    {
+      title: { ar: "نسوّق لك", en: "We market for you" },
+      body: { ar: "جمهور السوق نفسه، ومكان مميّز في الصفحة، وحساباتنا، وحملات المواسم.",
+              en: "The marketplace's own audience, featured placement, our accounts, and seasonal campaigns." },
+      limit: { ar: "ميزانية الإعلانات المدفوعة عليك، مو داخلة في الاشتراك.",
+               en: "Paid ad budget is yours. It is not part of the subscription." },
+    },
+    {
+      title: { ar: "نأمّن متجرك", en: "We keep it safe" },
+      body: { ar: "استضافة وصيانة، HTTPS، نسخ احتياطية، وفلترة الطلبات الوهمية.",
+              en: "Hosting and maintenance, HTTPS, backups, and fake-order filtering." },
+      limit: { ar: "ما نخزّن بيانات بطاقات أصلاً، وما ندّعي شهادات ما عندنا.",
+               en: "We store no card data at all, and we claim no certification we do not hold." },
+    },
+    {
+      title: { ar: "ندعمك", en: "We answer" },
+      body: { ar: "دعم على واتساب، وتنبيه يوصلك مع كل طلب، ومساعدة في كتابة المنتجات وتسعيرها.",
+              en: "WhatsApp support, an alert with every order, and help writing and pricing products." },
+      limit: { ar: "شخص واحد يرد، بأوقات الدوام، مو ٢٤ ساعة.",
+               en: "One person answering, in working hours, not 24/7." },
+    },
   ],
 
   steps: [
@@ -148,7 +182,7 @@ window.PLATFORM = {
     },
     {
       title: { ar: "جهّز صفحتك", en: "Set up your page" },
-      body: { ar: "صورتك، نبذتك، روابطك وحساباتك — وصفحتك جاهزة للبايو.", en: "Photo, bio, links, socials — ready for your bio." },
+      body: { ar: "صورتك، نبذتك، روابطك وحساباتك. وصفحتك جاهزة للبايو.", en: "Photo, bio, links, socials. Ready for your bio." },
     },
     {
       title: { ar: "فعّل المتجر وقت ما تحتاج", en: "Turn the store on when you need it" },
@@ -223,7 +257,7 @@ window.SITE = {
   links: [
     {
       icon: "🕌",
-      title: { ar: "المتجر — كل العطور", en: "Shop — every fragrance" },
+      title: { ar: "المتجر: كل العطور", en: "Shop: every fragrance" },
       sub:   { ar: "زيوت عطرية مركّزة · ١٥٠ د.إ", en: "Concentrated perfume oils · AED 150" },
       url: "store.html",
       tag: { ar: "الأهم", en: "Top" },
@@ -381,9 +415,18 @@ window.I18N = {
     "land.ctaMain": "أنشئ صفحتك مجاناً",
     "land.ctaDemo": "شوف مثال حقيقي",
     "land.noCard": "بدون بطاقة بنكية",
+    "land.factFree": "للتسجيل وصفحة الروابط",
+    "land.factStore": "شهرياً للمتجر",
+    "land.factZero": "0%",
+    "land.factCommission": "عمولة على مبيعاتك، أبداً",
     "land.sells": "بِع اللي تبيه",
     "land.sellsSub": "العطور مجرد مثال. المتجر ما يحدّد نوع منتجك.",
+    "land.work": "الشغل اللي نسويه عنك",
+    "land.workSub": "الاشتراك مو برنامج تشتريه. هذا اللي نشتغله بعد ما يفتح متجرك، وحد كل واحد منه مكتوب جنبه.",
+    "land.workDo": "نسويه",
+    "land.workLimit": "حدّه",
     "land.steps": "ثلاث خطوات وتبدأ",
+    "land.stepsSub": "ولا وحدة منها تحتاج بطاقة بنكية.",
     "land.pricing": "الأسعار",
     "land.pricingSub": "الصفحة مجانية دائماً. تدفع فقط لو بغيت متجر.",
     "land.faq": "أسئلة متكررة",
@@ -482,9 +525,18 @@ window.I18N = {
     "land.ctaMain": "Create your page free",
     "land.ctaDemo": "See a real example",
     "land.noCard": "No card required",
+    "land.factFree": "to sign up, and for the link page",
+    "land.factStore": "a month for the store",
+    "land.factZero": "0%",
+    "land.factCommission": "commission on your sales, ever",
     "land.sells": "Sell whatever you want",
     "land.sellsSub": "Perfume is only the example. The store doesn't care what you sell.",
+    "land.work": "The work we do for you",
+    "land.workSub": "The subscription isn't software you buy. It's what we do once your store is open, and each line carries its own limit.",
+    "land.workDo": "We do",
+    "land.workLimit": "Its limit",
     "land.steps": "Three steps to open",
+    "land.stepsSub": "Not one of them needs a bank card.",
     "land.pricing": "Pricing",
     "land.pricingSub": "The page is free forever. You only pay if you want a store.",
     "land.faq": "Common questions",
