@@ -60,6 +60,23 @@ response, printing assistant text and logging tool calls to stderr. Set
 `COMPOSIO_MCP_URL` to attach the Composio tool router as an HTTP MCP server;
 leave it unset to run with the built-in tools only.
 
+## Pinterest
+
+`scripts/pinterest.ts` wraps the Pinterest API v5. Create an app at
+<https://developers.pinterest.com/apps/>, register a redirect URI, and fill in
+the `PINTEREST_*` values in `.env`. Then:
+
+```bash
+npm run pinterest -- auth-url          # open it, approve, copy ?code= from the redirect
+npm run pinterest -- token <code>      # put access_token / refresh_token in .env
+npm run pinterest -- boards            # find a board ID
+npm run pinterest -- pin <board_id> <image_url> "Title" [link] [description]
+```
+
+Apps on trial access can only create pins in the sandbox; set
+`PINTEREST_API_BASE=https://api-sandbox.pinterest.com/v5` until standard access
+is approved.
+
 ## OmniRoute
 
 [OmniRoute](https://omniroute.online) is pinned as a devDependency, so a plain

@@ -5,6 +5,7 @@
   "scripts": {
     "agent": "tsx agent.ts",
     "omniroute": "omniroute",
+    "pinterest": "tsx scripts/pinterest.ts",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [],
