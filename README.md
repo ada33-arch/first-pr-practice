@@ -77,6 +77,29 @@ Apps on trial access can only create pins in the sandbox; set
 `PINTEREST_API_BASE=https://api-sandbox.pinterest.com/v5` until standard access
 is approved.
 
+### Rentstore pins
+
+`scripts/rentstore-pins.ts` turns the rentstore catalogue into pins. The
+products have no photos yet, so each pin is drawn from the product's own
+colours in `content/data.js`: the store's bottle at poster size (1000×1500),
+Arabic name first, English under it, notes, the real price, and the
+`rentstore.ae/@handle` it came from.
+
+```bash
+npm run pins -- render                   # out/pins/*.png + out/pins/index.html contact sheet
+npm run pins -- post <board_id> --dry-run
+npm run pins -- post <board_id>          # posts the next product not yet on that board
+npm run pins -- post <board_id> --all    # posts all remaining
+```
+
+`post` does one pin per run by default, so it is meant to be run on a
+daily schedule, not all at once. Each pin links back to
+`product.html?id=<id>` under `RENTSTORE_URL`, tagged with `utm_content=<id>`
+so analytics show which scent brought the visit. Posted pins go in
+`.pinterest-posted.json` (gitignored, per API host and board), so re-runs never
+double-post. Rendering needs a Chromium: `CHROME_PATH`, a
+`npx playwright install chromium` browser, or an installed Google Chrome.
+
 ## OmniRoute
 
 [OmniRoute](https://omniroute.online) is pinned as a devDependency, so a plain

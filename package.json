@@ -6,6 +6,7 @@
     "agent": "tsx agent.ts",
     "omniroute": "omniroute",
     "pinterest": "tsx scripts/pinterest.ts",
+    "pins": "tsx scripts/rentstore-pins.ts",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [],
@@ -15,6 +16,7 @@
   "devDependencies": {
     "@types/node": "^26.1.2",
     "omniroute": "^3.8.49",
+    "playwright-core": "^1.62.1",
     "tsx": "^4.23.1",
     "typescript": "^7.0.2"
   },

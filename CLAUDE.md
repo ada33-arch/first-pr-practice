@@ -17,6 +17,7 @@ A practice repository for the GitHub workflow — cloning, branching, committing
 - `.github/workflows/ci.yml` — runs the composite and docker actions on push to `main` and on every PR
 - `scripts/slack-upload.sh` — uploads a file to Slack via the three-step external-upload flow
 - `scripts/pinterest.ts` — Pinterest API v5 CLI (`npm run pinterest`): OAuth URL, code→token exchange, refresh, `me`, `boards`, and `pin`. Reads `PINTEREST_*` from `.env`
+- `scripts/rentstore-pins.ts` — `npm run pins`: draws a 1000×1500 pin per rentstore product from `content/data.js` (headless Chromium via `playwright-core`, fonts inlined), then posts them through `pinterest.ts`, one per run by default, recording what's posted in `.pinterest-posted.json`. Reads rentstore data but changes nothing in `projects/rentstore/`
 - `connect-apps-plugin/` — a Claude Code plugin providing `/connect-apps:setup`
 - `projects/rentstore/` — the marketplace project, and the pattern every project here follows: `content/data.js` (all words, prices, stores), `design/styles.css`, `pages/*.html`, `code/site.js` + `code/bundle.mjs`, `automation/*.json` (n8n), `docs/idea.md` + `docs/timeline.html`. No build step; `node projects/rentstore/code/bundle.mjs` emits a single-file build.
 - `projects/workflowbuilder/` — a minimal embed of [`@workflowbuilder/sdk`](https://github.com/synergycodes/workflowbuilder) (a React SDK for visual workflow editors), following the upstream "embed the SDK" quick start. Unlike `rentstore`, this one *does* need a build step (Vite + TypeScript, since the SDK ships as JSX) — it's its own `npm install`/`npm run build`/`npm run dev`, separate from the root `package.json`. See its own `README.md` and `docs/idea.md` for what it proves and what it deliberately skips (no custom nodes, no backend, no Docker).
@@ -49,6 +50,7 @@ There is no test suite. `npm run typecheck` is the closest thing to one — run 
   ```
 
 - **`scripts/pinterest.ts`** — covered by `npm run typecheck`; with no args it prints usage and exits 2. A real run needs a Pinterest app, and trial-access apps can only create pins against `api-sandbox.pinterest.com`.
+- **`scripts/rentstore-pins.ts`** — `npm run pins -- render` and look at `out/pins/*.png`; `post <board> --dry-run` prints payloads without calling anything. To exercise `post` end to end without Pinterest, point `PINTEREST_API_BASE` at a local server that answers `POST /v5/pins` with `{"id":"…"}`. Behind a proxy, Node's fetch needs `NODE_USE_ENV_PROXY=1` for the font download.
 - **`slack-upload.sh`** — `bash -n` checks syntax; invoking it with no args should print usage and exit 2. A real run needs a `SLACK_TOKEN` with the `files:write` scope and a `C...` channel ID the app has been invited to.
 
 ### Gotchas

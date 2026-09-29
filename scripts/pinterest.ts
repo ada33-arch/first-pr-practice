@@ -16,13 +16,15 @@
 // PINTEREST_API_BASE=https://api-sandbox.pinterest.com/v5 and use a sandbox
 // token, or `pin` returns 403 even though `me` and `boards` work.
 
+import { pathToFileURL } from "node:url";
+
 try {
   process.loadEnvFile();
 } catch {
   // no .env — fall back to whatever is already in the environment
 }
 
-const API = process.env.PINTEREST_API_BASE ?? "https://api.pinterest.com/v5";
+export const API = process.env.PINTEREST_API_BASE ?? "https://api.pinterest.com/v5";
 const SCOPES = "boards:read,pins:read,pins:write,user_accounts:read";
 
 function env(name: string): string {
@@ -36,7 +38,7 @@ function env(name: string): string {
 
 // Pinterest reports failures as a non-2xx status with {code, message}; print
 // both and stop rather than carrying on with a half-parsed body.
-async function call(path: string, init: RequestInit = {}): Promise<unknown> {
+export async function call(path: string, init: RequestInit = {}): Promise<unknown> {
   const res = await fetch(`${API}${path}`, init);
   const body = await res.text();
   if (!res.ok) {
@@ -46,7 +48,7 @@ async function call(path: string, init: RequestInit = {}): Promise<unknown> {
   return body ? JSON.parse(body) : {};
 }
 
-function bearer(): Record<string, string> {
+export function bearer(): Record<string, string> {
   return { Authorization: `Bearer ${env("PINTEREST_ACCESS_TOKEN")}` };
 }
 
@@ -128,7 +130,10 @@ async function main(): Promise<void> {
   process.exit(2);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+// Run as a CLI only when invoked directly; rentstore-pins.ts imports call/bearer.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}
