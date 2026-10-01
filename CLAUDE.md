@@ -71,6 +71,7 @@ Authorizing a project MCP server is an interactive, one-time step per environmen
 ## Conventions
 
 - The default branch is `main`. Following the repo's purpose, make changes on a feature branch and propose them via pull request rather than committing directly to `main`.
+- **Check a tool or setup at most twice, then stop.** The first check is when you set it up; the second is after the user has actually used it. If it works, it works: say so once and move on. Do not schedule recurring check-ins, hourly re-checks, or polling loops. Re-check only if the user reports a problem or asks for it.
 
 ## Agents
 
