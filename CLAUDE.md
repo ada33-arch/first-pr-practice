@@ -24,6 +24,7 @@ A practice repository for the GitHub workflow — cloning, branching, committing
 - `.claude/skills/workflow-canvas/` — the house style for any plan or workflow: draw it as an n8n canvas (numbered step zones, colour-coded groups, notes carrying the real numbers) **and** a readable page, both generated from one definition by `canvas.py`. Use it whenever a plan, workflow, automation, launch or marketing plan is asked for.
 - `.claude/skills/ui-ux-pro-max/` — UI/UX design-guidance skill (definition only; the `search.py` CLI and CSV data it references are not vendored here)
 - `.mcp.json` — HTTP MCP servers wired up for this repo: `github` and `graphify`
+- `.claude/settings.json` — project-level plugin config: the `hyperframes` marketplace (`heygen-com/hyperframes`) and its `hyperframes` plugin, enabled for everyone who opens this repo in Claude Code
 
 ## Commands
 
@@ -67,6 +68,17 @@ There is no test suite. `npm run typecheck` is the closest thing to one — run 
 - `graphify` — registered in #20 with no accompanying notes on what it's for.
 
 Authorizing a project MCP server is an interactive, one-time step per environment — it opens a browser for OAuth — so it can't be completed from a non-interactive or remote/headless session. In an interactive `claude` session in this repo, run `/mcp` (or `claude mcp` from the shell) to see each server's status and authorize the ones that need it. A session that can't open a browser will just report the server as unauthorized and leave it at that.
+
+## Plugins
+
+`.claude/settings.json` declares the `hyperframes` marketplace (`heygen-com/hyperframes`) under `extraKnownMarketplaces` and enables its `hyperframes` plugin under `enabledPlugins`, the project-level equivalent of running:
+
+```bash
+claude plugin marketplace add heygen-com/hyperframes
+claude plugin install hyperframes@hyperframes
+```
+
+Like `extraKnownMarketplaces` entries generally, this only takes effect in a trusted workspace: an interactive session prompts to trust the marketplace and install the plugin on first open; a non-interactive or remote/headless session won't see that prompt and should treat the plugin as not yet installed there.
 
 ## Conventions
 
