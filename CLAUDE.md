@@ -24,6 +24,7 @@ A practice repository for the GitHub workflow — cloning, branching, committing
 - `.claude/skills/workflow-canvas/` — the house style for any plan or workflow: draw it as an n8n canvas (numbered step zones, colour-coded groups, notes carrying the real numbers) **and** a readable page, both generated from one definition by `canvas.py`. Use it whenever a plan, workflow, automation, launch or marketing plan is asked for.
 - `.claude/skills/ui-ux-pro-max/` — UI/UX design-guidance skill (definition only; the `search.py` CLI and CSV data it references are not vendored here)
 - `.mcp.json` — HTTP MCP servers wired up for this repo: `github` and `graphify`
+- `.claude/settings.json` — registers the [ruflo](https://github.com/ruvnet/ruflo) plugin marketplace and enables `ruflo-core` (brings the `ruflo` stdio MCP server, so it is not listed in `.mcp.json`), `ruflo-console` (`/ruflo`), and `ruflo-mods`. Plugins install when a session starts; one already running needs `/reload-plugins` or a restart
 
 ## Commands
 
