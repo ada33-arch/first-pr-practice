@@ -24,7 +24,7 @@ A practice repository for the GitHub workflow — cloning, branching, committing
 - `.claude/skills/workflow-canvas/` — the house style for any plan or workflow: draw it as an n8n canvas (numbered step zones, colour-coded groups, notes carrying the real numbers) **and** a readable page, both generated from one definition by `canvas.py`. Use it whenever a plan, workflow, automation, launch or marketing plan is asked for.
 - `.claude/skills/ui-ux-pro-max/` — UI/UX design-guidance skill (definition only; the `search.py` CLI and CSV data it references are not vendored here)
 - `.mcp.json` — HTTP MCP servers wired up for this repo: `github` and `graphify`
-- `.claude/settings.json` — registers the [ruflo](https://github.com/ruvnet/ruflo) plugin marketplace and enables `ruflo-core` (brings the `ruflo` stdio MCP server, so it is not listed in `.mcp.json`), `ruflo-console` (`/ruflo`), and `ruflo-mods`. Plugins install when a session starts; one already running needs `/reload-plugins` or a restart
+- `.claude/settings.json` — registers the [ruflo](https://github.com/ruvnet/ruflo) plugin marketplace and enables `ruflo-core` (brings the `ruflo` stdio MCP server, so it is not listed in `.mcp.json`), `ruflo-console` (`/ruflo`), and `ruflo-mods`. Local sessions only: they install once the folder is trusted, and a running one needs `/reload-plugins`. Cloud sessions don't install repo-declared plugins. The marketplace is pinned to the `v3.63.0` release tag, never `main` — a marketplace source takes a branch or tag, not a commit SHA, so bump the tag deliberately after reading what changed. The plugins' MCP server and hooks still fall back to `npx … @latest` for the CLI when no local install is found
 
 ## Commands
 

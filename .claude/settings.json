@@ -3,7 +3,8 @@
     "ruflo": {
       "source": {
         "source": "github",
-        "repo": "ruvnet/ruflo"
+        "repo": "ruvnet/ruflo",
+        "ref": "v3.63.0"
       }
     }
   },
