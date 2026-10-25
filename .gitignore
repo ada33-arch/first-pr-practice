@@ -4,3 +4,6 @@ projects/rentstore/standalone.html
 __pycache__/
 out/
 .pinterest-posted.json
+.claude-flow/
+.claude/.proven-config-version
+.claude/proven-config.json

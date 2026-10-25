@@ -1,0 +1,52 @@
+{
+  "env": {
+    "RUFLO_MCP_SKIP_NPX": "1",
+    "RUFLO_HOOK_SKIP_NPX": "1",
+    "RUFLO_HOOK_CLI_OVERRIDE": "node node_modules/ruflo/bin/ruflo.js"
+  },
+  "extraKnownMarketplaces": {
+    "ruflo": {
+      "source": {
+        "source": "settings",
+        "name": "ruflo",
+        "owner": {
+          "name": "ruvnet"
+        },
+        "plugins": [
+          {
+            "name": "ruflo-core",
+            "source": {
+              "source": "git-subdir",
+              "url": "https://github.com/ruvnet/ruflo.git",
+              "path": "plugins/ruflo-core",
+              "sha": "18d2f18a4a8f591fff0b2a42e9b17570eb6b977a"
+            }
+          },
+          {
+            "name": "ruflo-console",
+            "source": {
+              "source": "git-subdir",
+              "url": "https://github.com/ruvnet/ruflo.git",
+              "path": "plugins/ruflo-console",
+              "sha": "18d2f18a4a8f591fff0b2a42e9b17570eb6b977a"
+            }
+          },
+          {
+            "name": "ruflo-mods",
+            "source": {
+              "source": "git-subdir",
+              "url": "https://github.com/ruvnet/ruflo.git",
+              "path": "plugins/ruflo-mods",
+              "sha": "18d2f18a4a8f591fff0b2a42e9b17570eb6b977a"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "enabledPlugins": {
+    "ruflo-core@ruflo": true,
+    "ruflo-console@ruflo": true,
+    "ruflo-mods@ruflo": true
+  }
+}
