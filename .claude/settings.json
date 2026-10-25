@@ -1,4 +1,9 @@
 {
+  "env": {
+    "RUFLO_MCP_SKIP_NPX": "1",
+    "RUFLO_HOOK_SKIP_NPX": "1",
+    "RUFLO_HOOK_CLI_OVERRIDE": "node node_modules/ruflo/bin/ruflo.js"
+  },
   "extraKnownMarketplaces": {
     "ruflo": {
       "source": {

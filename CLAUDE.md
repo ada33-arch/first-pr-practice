@@ -26,8 +26,8 @@ A practice repository for the GitHub workflow — cloning, branching, committing
 - `.mcp.json` — HTTP MCP servers wired up for this repo: `github` and `graphify`
 - `.claude/settings.json` — registers the [ruflo](https://github.com/ruvnet/ruflo) plugin marketplace and enables `ruflo-core` (brings the `ruflo` stdio MCP server, so it is not listed in `.mcp.json`), `ruflo-console` (`/ruflo`), and `ruflo-mods`. Local sessions only: they install once the folder is trusted; a running session picks up a change with `/reload-plugins`, a restart also works. Cloud sessions don't install repo-declared plugins. These plugins run hooks and an MCP server with full session access, so every source they load from must be pinned:
   - **Plugin source** — never track `main` or any branch. Pin to an immutable commit SHA where the source type accepts `sha`; a marketplace source accepts only `ref`, so use a release tag (currently `v3.63.0`), verify the tag's commit before bumping it, and treat the tag as mutable — it is not a substitute for a SHA.
-  - **ruflo CLI** — install an exact version (no `^`, `~`, or `@latest`) as a dependency so `package-lock.json` records its integrity hash, and set `RUFLO_MCP_SKIP_NPX=1` and `RUFLO_HOOK_SKIP_NPX=1` so the plugins fail closed instead of fetching `npx … @latest`.
-  - Until both are in place, the plugins are not hardened; don't extend them to more repos or users
+  - **ruflo CLI** — pinned as the exact devDependency `ruflo@3.63.0`, so `package-lock.json` records its integrity hash; run `npm install` before using the plugins. `settings.json`'s `env` sets `RUFLO_MCP_SKIP_NPX=1` and `RUFLO_HOOK_SKIP_NPX=1` so the plugins fail closed instead of fetching `npx … @latest`, and `RUFLO_HOOK_CLI_OVERRIDE` points the hooks at `node_modules/ruflo` (they otherwise look only on `PATH`). Without `npm install` the MCP server refuses to start and the hooks do nothing. Keep the pin exact (no `^`, `~`, or `@latest`) and bump it together with the marketplace tag.
+  - The CLI writes runtime state to `.claude-flow/` and `.claude/proven-config.json`; both are gitignored
 
 ## Commands
 
