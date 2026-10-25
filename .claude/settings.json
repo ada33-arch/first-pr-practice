@@ -7,9 +7,40 @@
   "extraKnownMarketplaces": {
     "ruflo": {
       "source": {
-        "source": "github",
-        "repo": "ruvnet/ruflo",
-        "ref": "v3.63.0"
+        "source": "settings",
+        "name": "ruflo",
+        "owner": {
+          "name": "ruvnet"
+        },
+        "plugins": [
+          {
+            "name": "ruflo-core",
+            "source": {
+              "source": "git-subdir",
+              "url": "https://github.com/ruvnet/ruflo.git",
+              "path": "plugins/ruflo-core",
+              "sha": "18d2f18a4a8f591fff0b2a42e9b17570eb6b977a"
+            }
+          },
+          {
+            "name": "ruflo-console",
+            "source": {
+              "source": "git-subdir",
+              "url": "https://github.com/ruvnet/ruflo.git",
+              "path": "plugins/ruflo-console",
+              "sha": "18d2f18a4a8f591fff0b2a42e9b17570eb6b977a"
+            }
+          },
+          {
+            "name": "ruflo-mods",
+            "source": {
+              "source": "git-subdir",
+              "url": "https://github.com/ruvnet/ruflo.git",
+              "path": "plugins/ruflo-mods",
+              "sha": "18d2f18a4a8f591fff0b2a42e9b17570eb6b977a"
+            }
+          }
+        ]
       }
     }
   },
